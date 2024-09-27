@@ -1,0 +1,9 @@
+rootProject.name = 'ticketPing'
+
+include ("services:user")
+include ("auth")
+include ("common")
+include ("services:order")
+include ("services:payment")
+include ("services:performance")
+include ("services:queue")
