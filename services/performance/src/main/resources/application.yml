@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: performance
+  datasource:
+    url: jdbc:postgresql://localhost:5432/performance
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  base-package:
+    jpa: com.ticketPing.performance.domain.entity
+  config:
+    import: "classpath:application-common.yml"
+
+
