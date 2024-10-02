@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli","ping"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  performance-db:
+    container_name: performance-db
+    image: postgres:15.8
+    ports:
+      - "5001:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  eureka-server:
+    container_name: eureka-server
+    image: ticketping/eureka-server:latest
+    ports:
+      - "10000:10000"
+
+  performance-server:
+    container_name: performance-server
+    image: ticketping/performance-server:latest
+    ports:
+      - "10022:10022"
+    depends_on:
+      performance-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+
+networks:
+  default:
+    driver: bridge
