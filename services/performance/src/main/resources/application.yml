@@ -2,7 +2,7 @@ spring:
   application:
     name: performance
   datasource:
-    url: jdbc:postgresql://localhost:5432/performance
+    url: jdbc:postgresql://performance-db:5432/postgres
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -10,5 +10,13 @@ spring:
     jpa: com.ticketPing.performance.domain.entity
   config:
     import: "classpath:application-common.yml"
+
+server:
+  port: 10022
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:10000/eureka/
 
 

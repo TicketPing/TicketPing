@@ -1,5 +1,6 @@
 rootProject.name = 'ticketPing'
 
+include ("eureka-server")
 include ("services:user")
 include ("auth")
 include ("common")
