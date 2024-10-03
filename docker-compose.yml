@@ -13,6 +13,22 @@ services:
       start_period: 30s
       timeout: 10s
 
+  user-db:
+    container_name: user-db
+    image: postgres:15.8
+    ports:
+      - "5000:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
   performance-db:
     container_name: performance-db
     image: postgres:15.8
@@ -34,6 +50,17 @@ services:
     image: ticketping/eureka-server:latest
     ports:
       - "10000:10000"
+
+  user-server:
+    container_name: user-server
+    image: ticketping/user-server:latest
+    ports:
+      - "10021:10021"
+    depends_on:
+      user-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
 
   performance-server:
     container_name: performance-server
