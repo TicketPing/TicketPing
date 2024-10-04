@@ -1,6 +1,6 @@
 package com.ticketPing.performance.domain.entity;
 
-import config.BaseEntity;
+import audit.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
