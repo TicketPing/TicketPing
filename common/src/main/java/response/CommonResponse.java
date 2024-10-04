@@ -1,8 +1,8 @@
 package response;
 
+import cases.ErrorCase;
+import cases.SuccessCase;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import exception.ErrorCase;
-import success.SuccessCase;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -17,25 +17,25 @@ public class CommonResponse<T> {
     private String message;
     private T data;
 
-    public static <T> CommonResponse<T> success(SuccessCase code, T data) {
+    public static <T> CommonResponse<T> success(SuccessCase successCase, T data) {
         return CommonResponse.<T>builder()
-            .status(code.getHttpStatus())
-            .message(code.getMessage())
+            .status(successCase.getHttpStatus())
+            .message(successCase.getMessage())
             .data(data)
             .build();
     }
 
-    public static <T> CommonResponse<T> success(SuccessCase code) {
+    public static <T> CommonResponse<T> success(SuccessCase successCase) {
         return CommonResponse.<T>builder()
-            .status(code.getHttpStatus())
-            .message(code.getMessage())
+            .status(successCase.getHttpStatus())
+            .message(successCase.getMessage())
             .build();
     }
 
-    public static <T> CommonResponse<T> error(ErrorCase errorResponse) {
+    public static <T> CommonResponse<T> error(ErrorCase errorCase) {
         return CommonResponse.<T>builder()
-            .status(errorResponse.getHttpStatus())
-            .message(errorResponse.getMessage())
+            .status(errorCase.getHttpStatus())
+            .message(errorCase.getMessage())
             .build();
     }
 }
