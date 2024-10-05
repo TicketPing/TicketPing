@@ -1,8 +1,9 @@
 spring:
   application:
-    name: performance
+    name: order
+
   datasource:
-    url: jdbc:postgresql://performance-db:5432/postgres
+    url: jdbc:postgresql://order-db:5432/postgres
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -10,11 +11,9 @@ spring:
     import: "classpath:application-jpa.yml"
 
 server:
-  port: 10022
+  port: 10023
 
 eureka:
   client:
     service-url:
       defaultZone: http://eureka-server:10000/eureka/
-
-
