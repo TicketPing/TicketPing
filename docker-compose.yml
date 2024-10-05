@@ -46,6 +46,28 @@ services:
       eureka-server:
         condition: service_started
 
+  queue-manage-server:
+    container_name: queue-manage-server
+    image: ticketping/queue-manage-server:latest
+    ports:
+      - "10031:10031"
+    depends_on:
+      redis:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+
+  client-channel-server:
+    container_name: client-channel-server
+    image: ticketping/client-channel-server:latest
+    ports:
+      - "10032:10032"
+    depends_on:
+      redis:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+
 networks:
   default:
     driver: bridge

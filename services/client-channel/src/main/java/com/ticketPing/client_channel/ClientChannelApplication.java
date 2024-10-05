@@ -1,13 +1,13 @@
-package com.ticketPing.queue;
+package com.ticketPing.client_channel;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class QueueApplication {
+public class ClientChannelApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(QueueApplication.class, args);
+		SpringApplication.run(ClientChannelApplication.class, args);
 	}
 
 }
