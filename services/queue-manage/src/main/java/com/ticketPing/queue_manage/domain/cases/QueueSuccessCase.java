@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum QueueSuccessCase implements SuccessCase {
 
-    ENTER_WAITING_QUEUE_SUCCESS(HttpStatus.OK, "대기열에 입장하였습니다.");
+    ENTER_WAITING_QUEUE_SUCCESS(HttpStatus.OK, "대기열 진입 완료."),
+    GET_WAITING_QUEUE_INFO_SUCCESS(HttpStatus.OK, "대기열 정보 조회 완료.");
 
     private final HttpStatus httpStatus;
     private final String message;

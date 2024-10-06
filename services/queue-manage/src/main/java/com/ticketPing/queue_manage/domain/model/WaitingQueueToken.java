@@ -17,12 +17,14 @@ import lombok.NoArgsConstructor;
 @Builder(access = AccessLevel.PRIVATE)
 public class WaitingQueueToken {
 
-    private Long tokenId;
+    private int tokenId;
     private UUID userId;
     private String tokenValue;
-    private Long position;
-    private LocalDateTime validUntil;
     private QueueStatus status;
+    private LocalDateTime validUntil;
+
+    private long position;
+    private long totalUsers;
 
     public static WaitingQueueToken create(EnterWaitingQueueRequest request) {
         return WaitingQueueToken.builder()
@@ -33,14 +35,14 @@ public class WaitingQueueToken {
                 .build();
     }
 
-    public WaitingQueueToken withPositionValue(Long position) {
-        this.position= position;
-        return this;
-    }
-
-    public WaitingQueueToken calculatePosition(Long minTokenId) {
-        Long position = this.tokenId - minTokenId + 1;
-        return this.withPositionValue(position);
+    public static WaitingQueueToken tokenWithPosition(UUID userId, String tokenValue, long position, long totalUsers) {
+        return WaitingQueueToken.builder()
+                .userId(userId)
+                .tokenValue(tokenValue)
+                .status(QueueStatus.WAITING)
+                .position(position)
+                .totalUsers(totalUsers)
+                .build();
     }
 
 }

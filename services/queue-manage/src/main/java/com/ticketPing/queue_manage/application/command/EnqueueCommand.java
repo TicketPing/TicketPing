@@ -20,4 +20,5 @@ public class EnqueueCommand {
                 .score(System.currentTimeMillis() / 1000.0)
                 .build();
     }
+
 }
