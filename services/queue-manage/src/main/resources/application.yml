@@ -22,4 +22,8 @@ eureka:
     service-url:
       defaultZone: http://eureka-server:10000/eureka/
 
+redis:
+  host: localhost
+  port: 6379
+
 

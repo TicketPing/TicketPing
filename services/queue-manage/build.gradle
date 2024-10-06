@@ -25,8 +25,16 @@ dependencies {
 	implementation project(path: ':common')
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+
+	// swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+	// redisson
+	implementation 'org.redisson:redisson-spring-boot-starter:3.33.0'
+
+	// kafka
+	implementation 'org.springframework.kafka:spring-kafka'
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
