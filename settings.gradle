@@ -1,9 +1,17 @@
 rootProject.name = 'ticketPing'
 
 include ("eureka-server")
-include ("services:user")
 include ("auth")
+
 include ("common")
+include ("common-jpa")
+
+include ("dtos:user-dto")
+include ("dtos:order-dto")
+include ("dtos:payment-dto")
+include ("dtos:performance-dto")
+
+include ("services:user")
 include ("services:order")
 include ("services:payment")
 include ("services:performance")

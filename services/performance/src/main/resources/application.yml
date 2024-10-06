@@ -9,7 +9,7 @@ spring:
   base-package:
     jpa: com.ticketPing.performance.domain.entity
   config:
-    import: "classpath:application-common.yml"
+    import: "classpath:application-jpa.yml"
 
 server:
   port: 10022
