@@ -95,6 +95,8 @@ services:
       eureka-server:
         condition: service_started
 
+  
+
 networks:
   default:
     driver: bridge
