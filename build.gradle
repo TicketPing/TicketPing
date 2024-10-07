@@ -35,7 +35,16 @@ subprojects {
 	apply plugin: 'io.spring.dependency-management'
 
 	// Spring Boot가 필요한 모듈에만 적용
-	if (project.path in [':eureka-server', ':auth', ':services:user', ':services:order', ':services:payment', ':services:queue', ':services:performance']) {
+	if (project.path in [
+			':eureka-server',
+			':auth',
+			':services:user',
+			':services:order',
+			':services:payment',
+			':services:performance',
+			':services:queue-manage',
+			':services:client-channel',
+	]) {
 		apply plugin: 'org.springframework.boot'
 	}
 
