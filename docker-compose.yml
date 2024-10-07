@@ -13,13 +13,17 @@ services:
       start_period: 30s
       timeout: 10s
 
-  order-redis:
-    container_name: order-redis
-    image: redis:latest
+  user-db:
+    container_name: user-db
+    image: postgres:15.8
     ports:
-      - "7379:6379"
+      - "5000:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     healthcheck:
-      test: [ "CMD", "redis-cli","ping" ]
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
       interval: 10s
       retries: 5
       start_period: 30s
@@ -41,27 +45,22 @@ services:
       start_period: 30s
       timeout: 10s
 
-  order-db:
-    container_name: order-db
-    image: postgres:15.8
-    ports:
-      - "5002:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres" ]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
-
   eureka-server:
     container_name: eureka-server
     image: ticketping/eureka-server:latest
     ports:
       - "10000:10000"
+
+  user-server:
+    container_name: user-server
+    image: ticketping/user-server:latest
+    ports:
+      - "10021:10021"
+    depends_on:
+      user-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
 
   performance-server:
     container_name: performance-server
@@ -74,13 +73,24 @@ services:
       eureka-server:
         condition: service_started
 
-  order-server:
-    container_name: order-server
-    image: ticketping/order-server:latest
+  queue-manage-server:
+    container_name: queue-manage-server
+    image: ticketping/queue-manage-server:latest
     ports:
-      - "10023:10023"
+      - "10031:10031"
     depends_on:
-      order-db:
+      redis:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+
+  client-channel-server:
+    container_name: client-channel-server
+    image: ticketping/client-channel-server:latest
+    ports:
+      - "10032:10032"
+    depends_on:
+      redis:
         condition: service_healthy
       eureka-server:
         condition: service_started
