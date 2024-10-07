@@ -54,22 +54,26 @@ public class HallSeats {
     @Column(nullable = false) // 공연 날짜
     private LocalDate performanceDate; // LocalDate 사용 가능
 
+    @Column(nullable = false)
+    private UUID performanceHallId;
+
     @Column(nullable = false) // 전체 좌석 수
     private int totalSeats; // 전체 좌석 수
 
     @Builder
-    public HallSeats(int row, int column, int price, SeatRate seatRate, String performanceHall,
-        LocalTime performanceStartTime, LocalTime performanceEndTime, LocalDate performanceDate,
-        int totalSeats) {
-        this.seatRow = row;
-        this.seatColumn = column;
+    public HallSeats(int seatRow, int seatColumn, int price, SeatRate seatRate, String performanceHall,
+        LocalTime startTime, LocalTime endTime, LocalDate performanceDate,
+        int totalSeats, UUID performanceHallId) {
+        this.seatRow = seatRow;
+        this.seatColumn = seatColumn;
         this.price = price;
         this.seatRate = seatRate;
         this.performanceHall = performanceHall;
-        this.startTime = performanceStartTime;
-        this.endTime = performanceEndTime;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.performanceDate = performanceDate;
         this.totalSeats = totalSeats;
+        this.performanceHallId = performanceHallId;
     }
 
 }

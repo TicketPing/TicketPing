@@ -1,0 +1,2 @@
+## 공연 정보 예매 RDB와 Redis에 저장하기
+GET http://localhost:10023/api/v1/orders/performance-halls/fccd1693-c337-48e5-9885-4a5b2026c986/seats/redis

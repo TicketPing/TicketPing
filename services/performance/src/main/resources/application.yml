@@ -9,6 +9,7 @@ spring:
   config:
     import: "classpath:application-jpa.yml"
 
+
 server:
   port: 10022
 

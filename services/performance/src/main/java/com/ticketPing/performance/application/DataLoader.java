@@ -122,15 +122,16 @@ public class DataLoader implements CommandLineRunner {
         for (int row = 1; row <= rows; row++) {
             for (int column = 1; column <= columns; column++) {
                 HallSeats hallSeat = HallSeats.builder()
-                    .row(row)
-                    .column(column)
+                    .seatRow(row) // row 필드로 변경
+                    .seatColumn(column) // column 필드로 변경
                     .price(determinePrice(row, hall)) // 가격을 결정하는 로직 추가
                     .seatRate(determineSeatRate(row)) // 좌석 등급 결정
                     .performanceHall(hall.getName())
                     .performanceDate(performanceDate)
-                    .performanceStartTime(LocalTime.of(19, 0)) // 공연 시작 시간
-                    .performanceEndTime(LocalTime.of(21, 0)) // 공연 종료 시간
+                    .startTime(LocalTime.of(19, 0)) // 공연 시작 시간
+                    .endTime(LocalTime.of(21, 0)) // 공연 종료 시간
                     .totalSeats(rows * columns) // 전체 좌석 수
+                    .performanceHallId(hall.getId()) // performanceHallId 추가
                     .build();
                 // 좌석 저장
                 hallSeatsRepository.save(hallSeat);
@@ -171,5 +172,4 @@ public class DataLoader implements CommandLineRunner {
             return SeatRate.B; // B등급
         }
     }
-
 }
