@@ -3,13 +3,14 @@ spring:
     name: user
   datasource:
     url: jdbc:postgresql://user-db:5432/postgres
+#    url: jdbc:postgresql://localhost:5432/ticketping-user
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
   base-package:
     jpa: com.ticketPing.performance.domain.entity
   config:
-    import: "classpath:application-common.yml"
+    import: "classpath:application-jpa.yml"
 
 server:
   port: 10021

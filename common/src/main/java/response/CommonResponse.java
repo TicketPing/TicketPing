@@ -38,4 +38,11 @@ public class CommonResponse<T> {
             .message(errorCase.getMessage())
             .build();
     }
+
+    public static <T> CommonResponse<T> error(HttpStatus httpStatus, String message) {
+        return CommonResponse.<T>builder()
+                .status(httpStatus)
+                .message(message)
+                .build();
+    }
 }
