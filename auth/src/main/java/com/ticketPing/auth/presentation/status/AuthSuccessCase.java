@@ -1,6 +1,6 @@
 package com.ticketPing.auth.presentation.status;
 
-import cases.SuccessCase;
+import common.cases.SuccessCase;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

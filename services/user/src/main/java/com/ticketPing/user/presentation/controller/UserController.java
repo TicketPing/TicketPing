@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.ticketPing.user.application.dto.request.CreateUserRequest;
-import response.CommonResponse;
+import common.response.CommonResponse;
 import response.UserResponse;
 
 import java.util.UUID;

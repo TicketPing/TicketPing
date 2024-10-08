@@ -1,6 +1,6 @@
-package exception;
+package common.exception;
 
-import cases.ErrorCase;
+import common.cases.ErrorCase;
 import lombok.Getter;
 
 @Getter

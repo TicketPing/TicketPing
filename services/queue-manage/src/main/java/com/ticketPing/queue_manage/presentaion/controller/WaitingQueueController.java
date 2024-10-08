@@ -1,8 +1,8 @@
 package com.ticketPing.queue_manage.presentaion.controller;
 
-import static com.ticketPing.queue_manage.domain.cases.QueueSuccessCase.ENTER_WAITING_QUEUE_SUCCESS;
-import static com.ticketPing.queue_manage.domain.cases.QueueSuccessCase.GET_WAITING_QUEUE_INFO_SUCCESS;
-import static response.CommonResponse.success;
+import static com.ticketPing.queue_manage.presentaion.cases.QueueSuccessCase.ENTER_WAITING_QUEUE_SUCCESS;
+import static com.ticketPing.queue_manage.presentaion.cases.QueueSuccessCase.GET_WAITING_QUEUE_INFO_SUCCESS;
+import static common.response.CommonResponse.success;
 
 import com.ticketPing.queue_manage.application.dto.WaitingQueueInfoResponse;
 import com.ticketPing.queue_manage.application.service.WaitingQueueApplicationService;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import response.CommonResponse;
+import common.response.CommonResponse;
 
 @RequiredArgsConstructor
 @RestController

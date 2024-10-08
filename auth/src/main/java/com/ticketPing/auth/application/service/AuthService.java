@@ -7,7 +7,7 @@ import com.ticketPing.auth.domain.repository.UserRepository;
 import com.ticketPing.auth.presentation.status.AuthErrorCase;
 import com.ticketPing.auth.security.JwtUtil;
 import com.ticketPing.auth.security.Role;
-import exception.ApplicationException;
+import common.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

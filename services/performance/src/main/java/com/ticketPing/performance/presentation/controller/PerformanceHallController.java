@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import response.CommonResponse;
+import common.response.CommonResponse;
 
 @RestController
 @RequestMapping("/api/v1/performance-halls")

@@ -2,9 +2,9 @@ package com.ticketPing.queue_manage.domain.model;
 
 import static com.ticketPing.queue_manage.domain.utils.QueueTokenValueGenerator.generateTokenValue;
 
-import com.ticketPing.queue_manage.application.dto.mapper.ObjectMapperBasedVoMapper;
 import com.ticketPing.queue_manage.domain.model.enums.QueueStatus;
 import com.ticketPing.queue_manage.presentaion.request.EnterWaitingQueueRequest;
+import common.dto.mapper.ObjectMapperBasedVoMapper;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

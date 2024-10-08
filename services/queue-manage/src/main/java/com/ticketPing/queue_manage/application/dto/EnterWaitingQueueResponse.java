@@ -1,7 +1,7 @@
 package com.ticketPing.queue_manage.application.dto;
 
-import com.ticketPing.queue_manage.application.dto.mapper.ObjectMapperBasedVoMapper;
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
+import common.dto.mapper.ObjectMapperBasedVoMapper;
 import java.util.UUID;
 
 public record EnterWaitingQueueResponse(
