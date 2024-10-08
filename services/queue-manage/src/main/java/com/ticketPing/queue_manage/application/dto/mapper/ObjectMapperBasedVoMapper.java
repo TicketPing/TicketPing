@@ -1,4 +1,4 @@
-package com.ticketPing.queue_manage.application.mapper;
+package com.ticketPing.queue_manage.application.dto.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;

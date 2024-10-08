@@ -1,4 +1,4 @@
-package com.ticketPing.queue_manage.domain.repository.impl;
+package com.ticketPing.queue_manage.domain.repository;
 
 import static com.ticketPing.queue_manage.domain.cases.QueueErrorCase.USER_NOT_FOUND;
 import static com.ticketPing.queue_manage.domain.model.WaitingQueueToken.tokenWithPosition;
@@ -6,7 +6,6 @@ import static com.ticketPing.queue_manage.domain.model.WaitingQueueToken.tokenWi
 import com.ticketPing.queue_manage.application.command.EnqueueCommand;
 import com.ticketPing.queue_manage.application.command.RetrieveTokenCommand;
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
-import com.ticketPing.queue_manage.domain.repository.WaitingQueueRepository;
 import exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RScoredSortedSet;

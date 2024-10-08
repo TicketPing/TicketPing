@@ -1,4 +1,4 @@
-package com.ticketPing.queue_manage.application.service.impl;
+package com.ticketPing.queue_manage.application.service;
 
 import static com.ticketPing.queue_manage.domain.model.WaitingQueueToken.create;
 
@@ -6,7 +6,6 @@ import com.ticketPing.queue_manage.application.command.EnqueueCommand;
 import com.ticketPing.queue_manage.application.command.RetrieveTokenCommand;
 import com.ticketPing.queue_manage.application.dto.EnterWaitingQueueResponse;
 import com.ticketPing.queue_manage.application.dto.WaitingQueueInfoResponse;
-import com.ticketPing.queue_manage.application.service.WaitingQueueApplicationService;
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
 import com.ticketPing.queue_manage.domain.repository.WaitingQueueRepository;
 import com.ticketPing.queue_manage.presentaion.request.EnterWaitingQueueRequest;
