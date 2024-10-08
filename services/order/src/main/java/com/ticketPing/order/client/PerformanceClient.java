@@ -13,4 +13,7 @@ public interface PerformanceClient extends PerformanceService{
 
     @GetMapping("/api/v1/performances/hall-seats/{performanceHallId}")
     List<OrderPerformanceDto> getHallSeatsByPerformanceHallId(@PathVariable("performanceHallId") UUID performanceHallId);
+
+    @GetMapping("/api/v1/performance-halls/name/{performanceHallId}")
+    String getPerformanceHallName(@PathVariable UUID performanceHallId);
 }

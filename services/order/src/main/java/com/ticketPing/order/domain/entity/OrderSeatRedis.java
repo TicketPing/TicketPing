@@ -1,5 +1,6 @@
 package com.ticketPing.order.domain.entity;
 
+import com.ticketPing.order.application.dtos.OrderCreateResponseDto;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
@@ -39,11 +40,30 @@ public class OrderSeatRedis {
     private LocalTime endTime; // 공연 종료 시간
     private LocalDate performanceDate; // 공연 날짜
     private int totalSeats; // 전체 좌석 수
+    private String performanceName;
 
     @Setter
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private OrderStatus orderStatus = OrderStatus.NO_RESERVATION; // 기본값 설정
+
+    public OrderCreateResponseDto OrderSeatRedisToDto() {
+        return new OrderCreateResponseDto(
+            this.getPerformanceHall(),
+            this.getPerformanceName(),
+            this.getStartTime(),
+            this.getEndTime(),
+            this.getId(),
+            this.getPerformanceDate(),
+            this.getOrderStatus().name(),
+            this.getPrice(),
+            this.getSeatGrade(),
+            this.getUserId(),
+            this.getReservationDate(),
+            this.getRowNumber(),
+            this.getSeatNumber()
+        );
+    }
 }
 
 

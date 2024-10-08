@@ -39,6 +39,12 @@ dependencies {
 	implementation project(':dtos:performance-dto')
 	implementation project(':dtos:order-dto')
 
+	// redisson
+	implementation 'org.redisson:redisson-spring-boot-starter:3.33.0'
+
+	// kafka
+	//implementation 'org.springframework.kafka:spring-kafka'
+
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'

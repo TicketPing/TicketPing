@@ -9,11 +9,10 @@ spring:
     driver-class-name: org.postgresql.Driver
   config:
     import: "classpath:application-jpa.yml"
-  data:
-    redis:
-      host: order-redis
-      port: 6379
 
+redis:
+  host: order-redis
+  port: 6379
 
 
 server:

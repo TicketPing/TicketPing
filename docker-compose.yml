@@ -51,16 +51,16 @@ services:
     ports:
       - "10000:10000"
 
-  user-server:
-    container_name: user-server
-    image: ticketping/user-server:latest
-    ports:
-      - "10021:10021"
-    depends_on:
-      user-db:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
+#  user-server:
+#    container_name: user-server
+#    image: ticketping/user-server:latest
+#    ports:
+#      - "10021:10021"
+#    depends_on:
+#      user-db:
+#        condition: service_healthy
+#      eureka-server:
+#        condition: service_started
 
   performance-server:
     container_name: performance-server
@@ -72,28 +72,28 @@ services:
         condition: service_healthy
       eureka-server:
         condition: service_started
-
-  queue-manage-server:
-    container_name: queue-manage-server
-    image: ticketping/queue-manage-server:latest
-    ports:
-      - "10031:10031"
-    depends_on:
-      redis:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
-
-  client-channel-server:
-    container_name: client-channel-server
-    image: ticketping/client-channel-server:latest
-    ports:
-      - "10032:10032"
-    depends_on:
-      redis:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
+#
+#  queue-manage-server:
+#    container_name: queue-manage-server
+#    image: ticketping/queue-manage-server:latest
+#    ports:
+#      - "10031:10031"
+#    depends_on:
+#      redis:
+#        condition: service_healthy
+#      eureka-server:
+#        condition: service_started
+#
+#  client-channel-server:
+#    container_name: client-channel-server
+#    image: ticketping/client-channel-server:latest
+#    ports:
+#      - "10032:10032"
+#    depends_on:
+#      redis:
+#        condition: service_healthy
+#      eureka-server:
+#        condition: service_started
 
   order-redis:
     container_name: order-redis

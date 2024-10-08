@@ -1,5 +1,7 @@
 package com.ticketPing.order.presentation.controller;
 
+import static com.ticketPing.order.presentation.response.success.OrderSuccessCase.ORDER_SUCCESS;
+
 import com.ticketPing.order.application.dtos.OrderCreateRequestDto;
 import com.ticketPing.order.application.dtos.OrderCreateResponseDto;
 import com.ticketPing.order.application.service.OrderService;
@@ -27,9 +29,12 @@ public class OrderController {
     }
 
 
+
     @PostMapping
-    public CommonResponse<OrderCreateResponseDto> createOrder(
+    public CommonResponse<OrderCreateResponseDto> orderPerformanceSeats(
         @RequestBody OrderCreateRequestDto requestDto) {
-        return null;
+        OrderCreateResponseDto orderCreateResponseDto = orderService.orderPerformanceSeats(requestDto);
+
+        return CommonResponse.success(ORDER_SUCCESS,orderCreateResponseDto);
     }
 }

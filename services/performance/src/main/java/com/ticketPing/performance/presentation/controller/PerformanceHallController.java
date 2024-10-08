@@ -40,5 +40,10 @@ public class PerformanceHallController {
             performanceHallResponseDtoList);
     }
 
+    @GetMapping("/name/{performanceHallId}")
+    public String getPerformanceHallName(@PathVariable UUID performanceHallId) {
+        return hallService.findPerformanceHallName(performanceHallId);
+    }
+
 }
 

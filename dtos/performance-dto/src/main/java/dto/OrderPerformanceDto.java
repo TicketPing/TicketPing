@@ -25,5 +25,6 @@ public class OrderPerformanceDto {
     private UUID userId; // 사용자 아이디
     private UUID scheduleId; // 공연 일정 아이디
     private UUID companyId; // 회사명
+    private String performanceName;
 }
 

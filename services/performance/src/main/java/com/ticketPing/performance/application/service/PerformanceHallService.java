@@ -28,5 +28,12 @@ public class PerformanceHallService {
 
         return performanceHallList.stream().map(PerformanceHallResponseDto::of).toList();
     }
+
+    public String findPerformanceHallName(UUID performanceHallId) {
+        PerformanceHall performanceHall = hallRepository.findById(performanceHallId)
+            .orElseThrow(()-> new RuntimeException(PERFORMANCE_HALL_NOT_FOUND.getMessage()));
+
+        return performanceHall.getName();
+    }
 }
 

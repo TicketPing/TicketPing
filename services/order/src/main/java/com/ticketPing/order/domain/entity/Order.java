@@ -78,6 +78,9 @@ public class Order extends BaseEntity {
     @Column
     private int totalSeats; // 전체 좌석 수
 
+    @Column
+    private String performanceName;
+
     @Setter
     @Column
     @Enumerated(EnumType.STRING)
@@ -99,7 +102,8 @@ public class Order extends BaseEntity {
         LocalTime endTime,
         LocalDate performanceDate,
         int totalSeats,
-        OrderStatus orderStatus
+        OrderStatus orderStatus,
+        String performanceName
     ) {
         this.orderCancelled = orderCancelled;
         this.reservationDate = reservationDate;
@@ -116,5 +120,6 @@ public class Order extends BaseEntity {
         this.performanceDate = performanceDate;
         this.totalSeats = totalSeats;
         this.orderStatus = orderStatus != null ? orderStatus : OrderStatus.NO_RESERVATION; // 기본값 설정
+        this.performanceName = performanceName;
     }
 }
