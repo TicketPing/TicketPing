@@ -51,6 +51,17 @@ services:
     ports:
       - "10000:10000"
 
+  auth-server:
+    container_name: auth-server
+    image: ticketping/auth-server:latest
+    ports:
+      - "10010:10010"
+    depends_on:
+      user-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+
   user-server:
     container_name: user-server
     image: ticketping/user-server:latest
