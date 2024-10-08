@@ -1,0 +1,14 @@
+### 공연 정보 예매 RDB와 Redis에 저장하기
+GET http://localhost:10023/api/v1/orders/performance-halls/9f5e5c85-605e-4609-b6f3-224b0bbfdb84/seats/redis
+
+### 예매
+
+### 좌석 예약 요청
+POST http://localhost:10023/api/v1/orders
+Content-Type: application/json
+
+{
+  "orderId": "0b4881b3-678b-42e4-b097-f5d8f4894fa0"
+}
+
+### 공연 정보 예매 RDB와 Redis에 저장하기 먼저 실행 후 좌석 예약 요청을 해주세요

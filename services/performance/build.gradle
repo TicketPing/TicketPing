@@ -36,10 +36,12 @@ dependencyManagement {
 dependencies {
 	implementation project(':common')
 	implementation project(':common-jpa')
+	implementation project(':dtos:performance-dto')
 
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 }
 
 tasks.named('test') {

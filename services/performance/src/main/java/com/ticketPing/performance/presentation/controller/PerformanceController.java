@@ -1,5 +1,6 @@
 package com.ticketPing.performance.presentation.controller;
 
+import dto.OrderPerformanceDto;
 import com.ticketPing.performance.application.dtos.PerformanceResponseDto;
 import com.ticketPing.performance.application.dtos.PerformanceScheduleResponseDto;
 import com.ticketPing.performance.application.service.PerformanceService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import response.CommonResponse;
+
 
 @RestController
 @RequestMapping("/api/v1/performances")
@@ -52,5 +54,12 @@ public class PerformanceController {
         return CommonResponse.success(PerformanceSuccessCase.PERFORMANCE_SCHEDULE_SUCCESS,
             performanceScheduleResponseDtoList);
     }
+
+    @GetMapping("/hall-seats/{performanceHallId}")
+    public List<OrderPerformanceDto> getHallSeatsByPerformanceHallId(@PathVariable UUID performanceHallId) {
+
+        return performanceService.findByPerformanceHallId(performanceHallId); // 좌석 리스트 반환
+    }
+
 }
 
