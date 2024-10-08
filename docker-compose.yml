@@ -95,7 +95,7 @@ services:
     ports:
       - "10023:10023"
     depends_on:
-      user-db:
+      payment-db:
         condition: service_healthy
       eureka-server:
         condition: service_started

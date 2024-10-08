@@ -1,10 +1,11 @@
 spring:
   application:
     name: payment
+
   datasource:
-    url: jdbc:postgresql://payment-db:5432/postgres
+    url: jdbc:postgresql://localhost:5432/ticketPing
     username: postgres
-    password: postgres
+    password: 1234
     driver-class-name: org.postgresql.Driver
   config:
     import: "classpath:application-jpa.yml"
