@@ -1,4 +1,4 @@
-package com.ticketPing.queue_manage.domain.model;
+package com.ticketPing.queue_manage.domain.model.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

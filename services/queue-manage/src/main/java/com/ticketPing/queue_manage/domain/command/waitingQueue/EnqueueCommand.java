@@ -1,14 +1,16 @@
-package com.ticketPing.queue_manage.application.command;
+package com.ticketPing.queue_manage.domain.command.waitingQueue;
 
-import static com.ticketPing.queue_manage.domain.model.QueueName.WAITING_QUEUE;
+import static com.ticketPing.queue_manage.domain.model.enums.QueueName.WAITING_QUEUE;
 
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public class EnqueueCommand {
+
     private String queueName;
     private String user;
     private double score;
