@@ -1,7 +1,7 @@
-package response;
+package common.response;
 
-import cases.ErrorCase;
-import cases.SuccessCase;
+import common.cases.ErrorCase;
+import common.cases.SuccessCase;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;

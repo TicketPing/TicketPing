@@ -1,8 +1,9 @@
-package cases;
+package common.cases;
 
 import org.springframework.http.HttpStatus;
 
-public interface SuccessCase {
+public interface ErrorCase {
     HttpStatus getHttpStatus();
     String getMessage();
 }
+

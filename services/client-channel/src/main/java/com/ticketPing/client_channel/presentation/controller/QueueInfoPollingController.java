@@ -1,7 +1,7 @@
 package com.ticketPing.client_channel.presentation.controller;
 
-import static com.ticketPing.client_channel.domain.cases.ClientSuccessCase.GET_WAITING_QUEUE_INFO_SUCCESS;
-import static response.CommonResponse.success;
+import static com.ticketPing.client_channel.presentation.cases.ClientSuccessCase.GET_WAITING_QUEUE_INFO_SUCCESS;
+import static common.response.CommonResponse.success;
 
 import com.ticketPing.client_channel.application.dto.WaitingQueueInfoResponse;
 import com.ticketPing.client_channel.application.service.QueueInfoPollingService;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import response.CommonResponse;
+import common.response.CommonResponse;
 
 @RestController
 @RequiredArgsConstructor

@@ -5,7 +5,7 @@ import com.ticketPing.client_channel.application.dto.WaitingQueueInfoResponse;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import response.CommonResponse;
+import common.response.CommonResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -14,8 +14,8 @@ public class QueueInfoPollingServiceImpl implements QueueInfoPollingService {
     private final QueueManageClientAdapter queueManageClient;
 
     public WaitingQueueInfoResponse getWaitingQueueInfo(UUID userId) {
-        CommonResponse response = queueManageClient.getWaitingQueueInfo(userId);
-        return (WaitingQueueInfoResponse) response.getData();
+        CommonResponse<WaitingQueueInfoResponse> response = queueManageClient.getWaitingQueueInfo(userId);
+        return response.getData();
     }
 
 }

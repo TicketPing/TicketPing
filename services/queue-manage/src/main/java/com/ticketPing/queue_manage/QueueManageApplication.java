@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @EnableFeignClients
-@ComponentScan(basePackages = {"com.ticketPing.queue_manage", "exception", "aop"})
+@ComponentScan(basePackages = {"com.ticketPing.queue_manage", "common"})
 @SpringBootApplication
 public class QueueManageApplication {
 
