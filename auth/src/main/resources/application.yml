@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: auth
+  profiles:
+    include: private
+  datasource:
+#    url: jdbc:postgresql://localhost:5432/ticketping-user
+    url: jdbc:postgresql://user-db:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  config:
+    import: "classpath:application-jpa.yml"
+
+server:
+  port: 10010
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:10000/eureka/
