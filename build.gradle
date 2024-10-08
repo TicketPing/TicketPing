@@ -37,6 +37,7 @@ subprojects {
 	// Spring Boot가 필요한 모듈에만 적용
 	if (project.path in [
 			':eureka-server',
+			':gateway',
 			':auth',
 			':services:user',
 			':services:order',
