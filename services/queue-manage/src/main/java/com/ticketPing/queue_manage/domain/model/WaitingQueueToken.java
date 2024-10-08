@@ -2,8 +2,9 @@ package com.ticketPing.queue_manage.domain.model;
 
 import static com.ticketPing.queue_manage.domain.utils.QueueTokenValueGenerator.generateTokenValue;
 
+import com.ticketPing.queue_manage.application.dto.mapper.ObjectMapperBasedVoMapper;
+import com.ticketPing.queue_manage.domain.model.enums.QueueStatus;
 import com.ticketPing.queue_manage.presentaion.request.EnterWaitingQueueRequest;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,11 +18,9 @@ import lombok.NoArgsConstructor;
 @Builder(access = AccessLevel.PRIVATE)
 public class WaitingQueueToken {
 
-    private int tokenId;
     private UUID userId;
     private String tokenValue;
     private QueueStatus status;
-    private LocalDateTime validUntil;
 
     private long position;
     private long totalUsers;
@@ -31,7 +30,6 @@ public class WaitingQueueToken {
                 .userId(request.userId())
                 .tokenValue(generateTokenValue(request.userId()))
                 .status(QueueStatus.WAITING)
-                .validUntil(LocalDateTime.now().plusMinutes(60))
                 .build();
     }
 
@@ -43,6 +41,14 @@ public class WaitingQueueToken {
                 .position(position)
                 .totalUsers(totalUsers)
                 .build();
+    }
+
+    public static WaitingQueueToken valueOf(String tokenValue) {
+        return WaitingQueueToken.builder().tokenValue(tokenValue).build();
+    }
+
+    public WorkingQueueToken toWorkingQueueToken(){
+        return ObjectMapperBasedVoMapper.convert(this, WorkingQueueToken.class).withWorking();
     }
 
 }

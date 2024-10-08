@@ -3,10 +3,15 @@ package com.ticketPing.queue_manage.domain.repository;
 import static com.ticketPing.queue_manage.domain.cases.QueueErrorCase.USER_NOT_FOUND;
 import static com.ticketPing.queue_manage.domain.model.WaitingQueueToken.tokenWithPosition;
 
-import com.ticketPing.queue_manage.application.command.EnqueueCommand;
-import com.ticketPing.queue_manage.application.command.RetrieveTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.DequeueCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.EnqueueCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveTopTokensCommand;
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
 import exception.ApplicationException;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RScoredSortedSet;
 import org.redisson.api.RedissonClient;
@@ -34,6 +39,21 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
         } catch (Exception e) {
             throw new ApplicationException(USER_NOT_FOUND);
         }
+    }
+
+    @Override
+    public List<WaitingQueueToken> retrieveTopTokens(RetrieveTopTokensCommand command) {
+        RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(command.getQueueName());
+        Collection<String> tokenValues = sortedSet.valueRange(0, command.getCount() - 1);
+        return tokenValues.stream()
+                .map(WaitingQueueToken::valueOf)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean dequeue(DequeueCommand command) {
+        RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(command.getQueueName());
+        return sortedSet.remove(command.getUser());
     }
 
 }

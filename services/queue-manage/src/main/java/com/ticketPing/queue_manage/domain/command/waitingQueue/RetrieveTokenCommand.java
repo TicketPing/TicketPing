@@ -1,15 +1,17 @@
-package com.ticketPing.queue_manage.application.command;
+package com.ticketPing.queue_manage.domain.command.waitingQueue;
 
-import static com.ticketPing.queue_manage.domain.model.QueueName.WAITING_QUEUE;
+import static com.ticketPing.queue_manage.domain.model.enums.QueueName.WAITING_QUEUE;
 import static com.ticketPing.queue_manage.domain.utils.QueueTokenValueGenerator.generateTokenValue;
 
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public class RetrieveTokenCommand {
+
     private String queueName;
     private UUID userId;
     private String user;
@@ -21,4 +23,5 @@ public class RetrieveTokenCommand {
                 .user(generateTokenValue(userId))
                 .build();
     }
+
 }
