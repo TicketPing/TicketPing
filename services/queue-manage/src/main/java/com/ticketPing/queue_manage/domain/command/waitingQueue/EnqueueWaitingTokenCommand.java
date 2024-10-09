@@ -9,16 +9,16 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class EnqueueCommand {
+public class EnqueueWaitingTokenCommand {
 
     private String queueName;
-    private String user;
+    private String tokenValue;
     private double score;
 
-    public static EnqueueCommand create(WaitingQueueToken token) {
-        return EnqueueCommand.builder()
+    public static EnqueueWaitingTokenCommand create(WaitingQueueToken token) {
+        return EnqueueWaitingTokenCommand.builder()
                 .queueName(WAITING_QUEUE.getValue())
-                .user(token.getTokenValue())
+                .tokenValue(token.getTokenValue())
                 .score(System.currentTimeMillis() / 1000.0)
                 .build();
     }

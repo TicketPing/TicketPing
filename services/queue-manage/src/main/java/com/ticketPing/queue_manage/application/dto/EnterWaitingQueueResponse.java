@@ -7,7 +7,8 @@ import java.util.UUID;
 public record EnterWaitingQueueResponse(
         UUID userId,
         String tokenValue,
-        String status) {
+        String tokenStatus
+) {
 
     public static EnterWaitingQueueResponse from(WaitingQueueToken token) {
         return ObjectMapperBasedVoMapper.convert(token, EnterWaitingQueueResponse.class);
