@@ -4,9 +4,9 @@ import static com.ticketPing.queue_manage.presentaion.cases.QueueSuccessCase.ENT
 import static com.ticketPing.queue_manage.presentaion.cases.QueueSuccessCase.GET_WAITING_QUEUE_INFO_SUCCESS;
 import static common.response.CommonResponse.success;
 
-import com.ticketPing.queue_manage.application.dto.WaitingQueueInfoResponse;
+import com.ticketPing.queue_manage.application.dto.waitingQueue.WaitingQueueInfoResponse;
 import com.ticketPing.queue_manage.application.service.WaitingQueueApplicationService;
-import com.ticketPing.queue_manage.application.dto.EnterWaitingQueueResponse;
+import com.ticketPing.queue_manage.application.dto.waitingQueue.EnterWaitingQueueResponse;
 import com.ticketPing.queue_manage.presentaion.request.EnterWaitingQueueRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -33,7 +33,7 @@ public class WaitingQueueController {
         return success(ENTER_WAITING_QUEUE_SUCCESS,waitingQueueService.enterWaitingQueue(request));
     }
 
-    @Operation(summary = "대기열 상태 확인")
+    @Operation(summary = "대기열 상태 조회")
     @GetMapping("/{userId}")
     public CommonResponse<WaitingQueueInfoResponse> getWaitingQueueInfo(@Valid @PathVariable("userId") UUID userId) {
         return success(GET_WAITING_QUEUE_INFO_SUCCESS, waitingQueueService.getWaitingQueueInfo(userId));

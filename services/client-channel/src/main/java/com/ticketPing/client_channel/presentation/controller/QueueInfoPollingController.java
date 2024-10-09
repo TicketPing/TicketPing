@@ -20,7 +20,7 @@ public class QueueInfoPollingController {
 
     private final QueueInfoPollingService queueInfoPollingService;
 
-    @Operation(summary = "대기열 상태 확인 Polling")
+    @Operation(summary = "대기열 상태 조회 Polling")
     @GetMapping("/api/waiting-queue/{userId}")
     public CommonResponse<WaitingQueueInfoResponse> getWaitingQueueInfo(@Valid @PathVariable("userId") UUID userId) {
         return success(GET_WAITING_QUEUE_INFO_SUCCESS, queueInfoPollingService.getWaitingQueueInfo(userId));

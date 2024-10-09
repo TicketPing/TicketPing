@@ -1,6 +1,8 @@
 package com.ticketPing.queue_manage.application.service;
 
+import com.ticketPing.queue_manage.application.dto.workingQueue.WorkingQueueTokenResponse;
 import com.ticketPing.queue_manage.domain.command.waitingQueue.DequeueCommand;
+import com.ticketPing.queue_manage.domain.command.workingQueue.RetrieveTokenCommand;
 import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveTopTokensCommand;
 import com.ticketPing.queue_manage.domain.command.workingQueue.CacheTokenCommand;
 import com.ticketPing.queue_manage.domain.command.workingQueue.CountAvailableSlotsCommand;
@@ -9,6 +11,7 @@ import com.ticketPing.queue_manage.domain.model.AvailableSlots;
 import com.ticketPing.queue_manage.domain.model.WorkingQueueToken;
 import com.ticketPing.queue_manage.domain.repository.WaitingQueueRepository;
 import com.ticketPing.queue_manage.domain.repository.WorkingQueueRepository;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +39,12 @@ public class WorkingQueueApplicationServiceImpl implements WorkingQueueApplicati
                     workingQueueRepository.enqueue(CacheTokenCommand.create(workingQueueToken), IncrementCounterCommand.create());
                     waitingQueueRepository.dequeue(DequeueCommand.create(waitingToken));
                 });
+    }
+
+    @Override
+    public WorkingQueueTokenResponse getWorkingQueueToken(UUID userId) {
+        WorkingQueueToken token = workingQueueRepository.retrieveToken(RetrieveTokenCommand.create(userId));
+        return WorkingQueueTokenResponse.from(token);
     }
 
 }
