@@ -1,4 +1,4 @@
-package com.ticketPing.auth.application.dto.response;
+package com.ticketPing.auth.application.dto;
 
 public record LoginResponse (
         String jwtToken
