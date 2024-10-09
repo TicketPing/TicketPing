@@ -1,6 +1,6 @@
-package com.ticketPing.auth.application.dto.request;
+package com.ticketPing.auth.presentation.request;
 
-import com.ticketPing.auth.presentation.status.UserInfoErrorMessage;
+import com.ticketPing.auth.presentation.cases.UserInfoErrorMessage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 

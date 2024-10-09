@@ -1,4 +1,4 @@
-package com.ticketPing.auth.presentation.status;
+package com.ticketPing.auth.presentation.cases;
 
 import common.cases.ErrorCase;
 import lombok.AllArgsConstructor;
