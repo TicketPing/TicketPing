@@ -10,12 +10,12 @@ public class QueueTokenValueGenerator {
 
     private static final String SECRET_KEY = "secret-key";
 
-    public static String generateTokenValue(UUID userId) {
+    public static String generateTokenValue(String performanceName, UUID userId) {
         try {
             String input = userId + SECRET_KEY;
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
-            return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+            return performanceName + ":" + Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error generating token", e);
         }

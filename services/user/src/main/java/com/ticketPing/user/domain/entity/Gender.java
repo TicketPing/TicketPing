@@ -1,7 +1,7 @@
 package com.ticketPing.user.domain.entity;
 
 import com.ticketPing.user.presentation.status.UserErrorCase;
-import exception.ApplicationException;
+import common.exception.ApplicationException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -1,15 +1,16 @@
 package com.ticketPing.queue_manage.domain.repository;
 
-import com.ticketPing.queue_manage.domain.command.waitingQueue.DequeueCommand;
-import com.ticketPing.queue_manage.domain.command.waitingQueue.EnqueueCommand;
-import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveTokenCommand;
-import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveTopTokensCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.DequeueWaitingTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.EnqueueWaitingTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveWaitingTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveTopWaitingTokensCommand;
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
 import java.util.List;
+import java.util.Optional;
 
 public interface WaitingQueueRepository {
-    boolean enqueue(EnqueueCommand command);
-    WaitingQueueToken retrieveToken(RetrieveTokenCommand command);
-    List<WaitingQueueToken> retrieveTopTokens(RetrieveTopTokensCommand command);
-    boolean dequeue(DequeueCommand command);
+    boolean enqueueWaitingToken(EnqueueWaitingTokenCommand command);
+    Optional<WaitingQueueToken> retrieveWaitingToken(RetrieveWaitingTokenCommand command);
+    List<WaitingQueueToken> retrieveTopWaitingTokens(RetrieveTopWaitingTokensCommand command);
+    boolean dequeueWaitingToken(DequeueWaitingTokenCommand command);
 }

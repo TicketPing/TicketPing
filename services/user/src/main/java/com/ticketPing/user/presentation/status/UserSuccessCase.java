@@ -3,7 +3,7 @@ package com.ticketPing.user.presentation.status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import cases.SuccessCase;
+import common.cases.SuccessCase;
 
 @Getter
 @AllArgsConstructor

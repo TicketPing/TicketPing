@@ -1,6 +1,7 @@
 package com.ticketPing.auth.security;
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,7 @@ public class JwtUtil {
                         .setSubject(username)
                         .claim(AUTHORIZATION_KEY, role)
                         .setExpiration(new Date(now.getTime() + TOKEN_EXPIRATION))
-                        .signWith(this.secretKey)
+                        .signWith(this.secretKey, SignatureAlgorithm.HS256)
                         .compact();
     }
 }

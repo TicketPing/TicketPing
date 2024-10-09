@@ -1,6 +1,8 @@
 package com.ticketPing.queue_manage.domain.model;
 
-import com.ticketPing.queue_manage.domain.model.enums.QueueStatus;
+import com.ticketPing.queue_manage.domain.model.enums.TokenStatus;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,12 +15,25 @@ import lombok.NoArgsConstructor;
 @Builder(access = AccessLevel.PRIVATE)
 public class WorkingQueueToken {
 
+    private UUID userId;
     private String tokenValue;
-    private QueueStatus status;
+    private TokenStatus tokenStatus;
+
+    private LocalDateTime validUntil;
 
     public WorkingQueueToken withWorking() {
-        this.status = QueueStatus.WORKING;
+        this.tokenStatus = TokenStatus.WORKING;
         return this;
+    }
+
+    public static WorkingQueueToken tokenWithValidUntil(UUID userId, String tokenValue, LocalDateTime validUntil
+    ) {
+        return WorkingQueueToken.builder()
+                .userId(userId)
+                .tokenValue(tokenValue)
+                .tokenStatus(TokenStatus.WORKING)
+                .validUntil(validUntil)
+                .build();
     }
 
 }
