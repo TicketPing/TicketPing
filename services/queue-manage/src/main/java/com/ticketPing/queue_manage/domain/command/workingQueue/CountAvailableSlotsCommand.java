@@ -1,7 +1,5 @@
 package com.ticketPing.queue_manage.domain.command.workingQueue;
 
-import static com.ticketPing.queue_manage.domain.model.enums.QueueName.WORKING_QUEUE;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,12 +9,10 @@ import lombok.Getter;
 public class CountAvailableSlotsCommand {
 
     private String performanceName;
-    private String queueName;
 
-    public static CountAvailableSlotsCommand create() {
+    public static CountAvailableSlotsCommand create(String performanceName) {
         return CountAvailableSlotsCommand.builder()
-                .performanceName("temp")
-                .queueName(WORKING_QUEUE.getValue())
+                .performanceName(performanceName)
                 .build();
     }
 

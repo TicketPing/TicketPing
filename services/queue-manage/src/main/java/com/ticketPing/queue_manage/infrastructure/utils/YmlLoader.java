@@ -111,7 +111,7 @@ public class YmlLoader {
 
     public static int workingQueueMaxSize() {
         YmlLoader loader = YmlLoader.ymlLoader();
-        return Integer.parseInt(loader.configMap.getOrDefault("working-queue.max-size", "1000"));
+        return Integer.parseInt(loader.configMap.getOrDefault("working-queue.max-size", "100"));
     }
 
     public static int workingQueueTokenTTL() {

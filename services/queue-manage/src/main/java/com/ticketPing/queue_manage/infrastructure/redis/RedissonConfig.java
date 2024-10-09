@@ -1,4 +1,4 @@
-package com.ticketPing.queue_manage.infrastructure.config;
+package com.ticketPing.queue_manage.infrastructure.redis;
 
 import static com.ticketPing.queue_manage.infrastructure.utils.YmlLoader.redisHost;
 import static com.ticketPing.queue_manage.infrastructure.utils.YmlLoader.redisPort;

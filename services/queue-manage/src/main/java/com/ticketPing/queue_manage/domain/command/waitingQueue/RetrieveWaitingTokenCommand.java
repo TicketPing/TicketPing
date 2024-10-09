@@ -1,6 +1,5 @@
 package com.ticketPing.queue_manage.domain.command.waitingQueue;
 
-import static com.ticketPing.queue_manage.domain.model.enums.QueueName.WAITING_QUEUE;
 import static com.ticketPing.queue_manage.domain.utils.QueueTokenValueGenerator.generateTokenValue;
 
 import java.util.UUID;
@@ -12,15 +11,17 @@ import lombok.Getter;
 @Builder(access = AccessLevel.PRIVATE)
 public class RetrieveWaitingTokenCommand {
 
-    private String queueName;
     private UUID userId;
+    private String performanceName;
     private String tokenValue;
+    private String queueName;
 
-    public static RetrieveWaitingTokenCommand create(UUID userId) {
+    public static RetrieveWaitingTokenCommand create(UUID userId, String performanceName) {
         return RetrieveWaitingTokenCommand.builder()
-                .queueName(WAITING_QUEUE.getValue())
                 .userId(userId)
-                .tokenValue(generateTokenValue("temp", userId))
+                .performanceName(performanceName)
+                .tokenValue(generateTokenValue(userId, performanceName))
+                .queueName(performanceName + "_Queue")
                 .build();
     }
 

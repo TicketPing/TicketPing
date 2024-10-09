@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -24,8 +25,9 @@ public class WorkingQueueController {
 
     @Operation(summary = "작업열 토큰 조회")
     @GetMapping("/{userId}")
-    public CommonResponse<GeneralTokenResponse> getWorkingQueueToken(@Valid @PathVariable("userId") UUID userId) {
-        return success(GET_WORKING_QUEUE_TOKEN_SUCCESS, workingQueueService.getWorkingQueueToken(userId));
+    public CommonResponse<GeneralTokenResponse> getWorkingQueueToken(@Valid @PathVariable("userId") UUID userId,
+                                                                     @Valid @RequestParam("performanceName") String performanceName) {
+        return success(GET_WORKING_QUEUE_TOKEN_SUCCESS, workingQueueService.getWorkingQueueToken(userId, performanceName));
     }
 
 }
