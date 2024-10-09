@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.ticketPing.performance", "audit", "exception", "aop"})
+@ComponentScan(basePackages = {"com.ticketPing.performance", "audit", "exception", "aop"})//{"com.ticketPing.performance", "common"} 으로 수정하기
 @EnableFeignClients
 public class PerformanceApplication {
 

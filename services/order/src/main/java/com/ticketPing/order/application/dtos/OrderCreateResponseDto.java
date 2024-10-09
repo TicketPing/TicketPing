@@ -1,5 +1,7 @@
 package com.ticketPing.order.application.dtos;
 
+import com.ticketPing.order.application.dtos.mapper.ObjectMapperBasedVoMapper;
+import com.ticketPing.order.domain.entity.OrderSeatRedis;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -20,5 +22,8 @@ public record OrderCreateResponseDto(
     int rowNumber,
     int seatNumber
 ) {
+    public static OrderCreateResponseDto from(OrderSeatRedis orderSeatRedis) {
+        return ObjectMapperBasedVoMapper.convert(orderSeatRedis, OrderCreateResponseDto.class);
+    }
 
 }
