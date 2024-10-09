@@ -41,6 +41,9 @@ dependencies {
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	//stripe
+	implementation "com.stripe:stripe-java:27.1.0"
+	implementation("com.google.code.gson:gson:2.10.1")
 }
 
 dependencyManagement {

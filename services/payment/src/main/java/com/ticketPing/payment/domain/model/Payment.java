@@ -1,9 +1,7 @@
 package com.ticketPing.payment.domain.model;
 
 import audit.BaseEntity;
-import com.ticketPing.payment.application.dto.PaymentResponseDto;
-import com.ticketPing.payment.domain.enums.PayType;
-import com.ticketPing.payment.domain.enums.PaymentStatus;
+import com.ticketPing.payment.application.dto.StripeResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,44 +18,47 @@ public class Payment extends BaseEntity {
 
     @Id
     private UUID paymentId;
-    private String companyName;
-    private String customerEmail;
-    private String customerName;
+    //Stripe intent id
+    private String paymentIntentId;
+    //private String currency;
+    private String status;
+    private String userEmail;
+    @Embedded
+    private OrderInfo orderInfo;
+    private LocalDateTime paymentIntentTime;
+    private LocalDateTime updateTime;
+    @Transient //db 저장 X
+    private String previousPaymentStatus;
 
-    @Enumerated(EnumType.STRING)
-    private PayType payType;
-    @Setter
-    private String paymentKey;
-    private String performanceName;
-    private LocalDateTime paymentTime;
-    private long amount;
-    private boolean paySuccessYn;
-
-    @Enumerated(EnumType.STRING)
-    private PaymentStatus paymentStatus;
-    //mapping
-    private UUID orderId;
-    //mapping
-    private UUID userId;
-    //mapping
-    //private UUID receiptId;
-
-    public PaymentResponseDto toResponseDto() {
-        return PaymentResponseDto.builder()
-                .payType(payType)
-                .amount(amount)
-                .orderId(orderId)
-                .performanceName(performanceName)
-                .companyName(companyName)
-                .customerEmail(customerEmail)
-                .customerName(customerName)
-                .paymentTime(paymentTime)
-                .paySuccessYn(paySuccessYn)
-                .build();
+    public Payment(StripeResponseDto responseDto) {
+        this.paymentIntentId = responseDto.getPaymentIntentId();
+        this.status = responseDto.getStatus();
+        this.userEmail = responseDto.getUserEmail();
+        if(this.orderInfo == null) {
+            this.orderInfo = new OrderInfo();
+            this.orderInfo.setOrderId(responseDto.getOrderId());
+            this.orderInfo.setAmount(responseDto.getAmount());
+            this.orderInfo.setSeatInfo(responseDto.getSeatInfo());
+            this.orderInfo.setPerformanceName(responseDto.getPerformanceName());
+            this.orderInfo.setPerformanceTime(responseDto.getPerformanceTime());
+        }
     }
 
     @PrePersist
-    protected void createUUID(){
+    protected void onPrePersist(){
         if(paymentId == null) paymentId = UUID.randomUUID();
+        this.paymentIntentTime = LocalDateTime.now();  // 현재 시간 설정
+        this.updateTime = LocalDateTime.now();
+        this.previousPaymentStatus = this.status;
     }
+
+    // 결제 상태가 변경될 때만 updateTime update
+    @PreUpdate
+    public void onPreUpdate() {
+        if (!this.status.equals(this.previousPaymentStatus)) {
+            this.updateTime = LocalDateTime.now();  // 상태가 변경되었을 때만 업데이트 시간 갱신
+            this.previousPaymentStatus = this.status;  // 이전 상태를 현재 상태로 갱신
+        }
+    }
+
 }
