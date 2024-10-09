@@ -1,16 +1,15 @@
 package com.ticketPing.queue_manage.domain.repository;
 
-import static com.ticketPing.queue_manage.presentaion.cases.QueueErrorCase.USER_NOT_FOUND;
 import static com.ticketPing.queue_manage.domain.model.WaitingQueueToken.tokenWithPosition;
 
-import com.ticketPing.queue_manage.domain.command.waitingQueue.DequeueCommand;
-import com.ticketPing.queue_manage.domain.command.waitingQueue.EnqueueCommand;
-import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveTokenCommand;
-import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveTopTokensCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.DequeueWaitingTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.EnqueueWaitingTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveWaitingTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveTopWaitingTokensCommand;
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
-import common.exception.ApplicationException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RScoredSortedSet;
@@ -24,25 +23,25 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
     private final RedissonClient redissonClient;
 
     @Override
-    public boolean enqueue(EnqueueCommand command) {
+    public boolean enqueueWaitingToken(EnqueueWaitingTokenCommand command) {
         RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(command.getQueueName());
-        return sortedSet.add(command.getScore(), command.getUser());
+        return sortedSet.add(command.getScore(), command.getTokenValue());
     }
 
     @Override
-    public WaitingQueueToken retrieveToken(RetrieveTokenCommand command) {
+    public Optional<WaitingQueueToken> retrieveWaitingToken(RetrieveWaitingTokenCommand command) {
         RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(command.getQueueName());
         int totalSize = sortedSet.size();
         try {
-            int position = sortedSet.rank(command.getUser()) + 1;
-            return tokenWithPosition(command.getUserId(), command.getUser(), position, totalSize);
+            int position = sortedSet.rank(command.getTokenValue()) + 1;
+            return Optional.of(tokenWithPosition(command.getUserId(), command.getTokenValue(), position, totalSize));
         } catch (Exception e) {
-            throw new ApplicationException(USER_NOT_FOUND);
+            return Optional.empty();
         }
     }
 
     @Override
-    public List<WaitingQueueToken> retrieveTopTokens(RetrieveTopTokensCommand command) {
+    public List<WaitingQueueToken> retrieveTopWaitingTokens(RetrieveTopWaitingTokensCommand command) {
         RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(command.getQueueName());
         Collection<String> tokenValues = sortedSet.valueRange(0, command.getCount() - 1);
         return tokenValues.stream()
@@ -51,9 +50,9 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
     }
 
     @Override
-    public boolean dequeue(DequeueCommand command) {
+    public boolean dequeueWaitingToken(DequeueWaitingTokenCommand command) {
         RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(command.getQueueName());
-        return sortedSet.remove(command.getUser());
+        return sortedSet.remove(command.getTokenValue());
     }
 
 }

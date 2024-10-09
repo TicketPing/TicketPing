@@ -8,13 +8,13 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class RetrieveTopTokensCommand {
+public class RetrieveTopWaitingTokensCommand {
 
     private String queueName;
     private int count;
 
-    public static RetrieveTopTokensCommand create(long count) {
-        return RetrieveTopTokensCommand.builder()
+    public static RetrieveTopWaitingTokensCommand create(long count) {
+        return RetrieveTopWaitingTokensCommand.builder()
                 .queueName(WAITING_QUEUE.getValue())
                 .count((int) count)
                 .build();

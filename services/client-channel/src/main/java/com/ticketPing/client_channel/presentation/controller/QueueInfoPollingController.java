@@ -1,9 +1,9 @@
 package com.ticketPing.client_channel.presentation.controller;
 
-import static com.ticketPing.client_channel.presentation.cases.ClientSuccessCase.GET_WAITING_QUEUE_INFO_SUCCESS;
+import static com.ticketPing.client_channel.presentation.cases.ClientSuccessCase.GET_QUEUE_TOKEN_SUCCESS;
 import static common.response.CommonResponse.success;
 
-import com.ticketPing.client_channel.application.dto.WaitingQueueInfoResponse;
+import com.ticketPing.client_channel.application.dto.GeneralTokenResponse;
 import com.ticketPing.client_channel.application.service.QueueInfoPollingService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -22,8 +22,8 @@ public class QueueInfoPollingController {
 
     @Operation(summary = "대기열 상태 조회 Polling")
     @GetMapping("/api/waiting-queue/{userId}")
-    public CommonResponse<WaitingQueueInfoResponse> getWaitingQueueInfo(@Valid @PathVariable("userId") UUID userId) {
-        return success(GET_WAITING_QUEUE_INFO_SUCCESS, queueInfoPollingService.getWaitingQueueInfo(userId));
+    public CommonResponse<GeneralTokenResponse> getWaitingQueueInfo(@Valid @PathVariable("userId") UUID userId) {
+        return success(GET_QUEUE_TOKEN_SUCCESS, queueInfoPollingService.getWaitingQueueInfo(userId));
     }
 
 }

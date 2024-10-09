@@ -1,14 +1,14 @@
 package com.ticketPing.queue_manage.domain.repository;
 
-import static com.ticketPing.queue_manage.presentaion.cases.QueueErrorCase.INVALID_TOKEN;
+import static com.ticketPing.queue_manage.domain.model.WorkingQueueToken.tokenWithValidUntil;
+import static com.ticketPing.queue_manage.infrastructure.utils.TTLConverter.toLocalDateTime;
 
-import com.ticketPing.queue_manage.domain.command.workingQueue.CacheTokenCommand;
+import com.ticketPing.queue_manage.domain.command.workingQueue.CacheWorkingTokenCommand;
 import com.ticketPing.queue_manage.domain.command.workingQueue.CountAvailableSlotsCommand;
-import com.ticketPing.queue_manage.domain.command.workingQueue.IncrementCounterCommand;
-import com.ticketPing.queue_manage.domain.command.workingQueue.RetrieveTokenCommand;
+import com.ticketPing.queue_manage.domain.command.workingQueue.RetrieveWorkingTokenCommand;
 import com.ticketPing.queue_manage.domain.model.AvailableSlots;
 import com.ticketPing.queue_manage.domain.model.WorkingQueueToken;
-import common.exception.ApplicationException;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RAtomicLong;
@@ -29,30 +29,21 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
     }
 
     @Override
-    public void enqueue(CacheTokenCommand cacheTokenCommand, IncrementCounterCommand incrementCounterCommand) {
-        cacheToken(cacheTokenCommand);
-        incrementCounter(incrementCounterCommand);
-    }
-
-    private boolean cacheToken(CacheTokenCommand command) {
-        RBucket<String> bucket = redissonClient.getBucket(command.getUser());
+    public void enqueueWorkingToken(CacheWorkingTokenCommand command) {
+        RBucket<String> bucket = redissonClient.getBucket(command.getTokenValue());
         bucket.set(command.getValue(), command.getTtl(), TimeUnit.MINUTES);
-        return true;
-    }
-
-    private long incrementCounter(IncrementCounterCommand command) {
-        RAtomicLong counter = redissonClient.getAtomicLong(command.getQueueName());
-        return counter.addAndGet(command.getValue());
     }
 
     @Override
-    public WorkingQueueToken retrieveToken(RetrieveTokenCommand command) {
-        RBucket<String> bucket = redissonClient.getBucket(command.getUser());
+    public Optional<WorkingQueueToken> retrieveWorkingToken(RetrieveWorkingTokenCommand command) {
+        RBucket<String> bucket = redissonClient.getBucket(command.getTokenValue());
         String value = bucket.get();
         if (value == null) {
-            throw new ApplicationException(INVALID_TOKEN);
+            return Optional.empty();
         }
-        return WorkingQueueToken.valueOf(command.getUserId(), command.getUser());
+        long ttl = bucket.remainTimeToLive();
+        WorkingQueueToken token = tokenWithValidUntil(command.getUserId(), command.getTokenValue(), toLocalDateTime(ttl));
+        return Optional.of(token);
     }
 
 }

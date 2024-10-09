@@ -3,7 +3,6 @@ package com.ticketPing.queue_manage.domain.model;
 import static com.ticketPing.queue_manage.domain.utils.QueueTokenValueGenerator.generateTokenValue;
 
 import com.ticketPing.queue_manage.domain.model.enums.TokenStatus;
-import com.ticketPing.queue_manage.presentaion.request.EnterWaitingQueueRequest;
 import common.dto.mapper.ObjectMapperBasedVoMapper;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -25,10 +24,10 @@ public class WaitingQueueToken {
     private long position;
     private long totalUsers;
 
-    public static WaitingQueueToken create(EnterWaitingQueueRequest request) {
+    public static WaitingQueueToken create(UUID userId) {
         return WaitingQueueToken.builder()
-                .userId(request.userId())
-                .tokenValue(generateTokenValue(request.userId()))
+                .userId(userId)
+                .tokenValue(generateTokenValue(userId))
                 .tokenStatus(TokenStatus.WAITING)
                 .build();
     }

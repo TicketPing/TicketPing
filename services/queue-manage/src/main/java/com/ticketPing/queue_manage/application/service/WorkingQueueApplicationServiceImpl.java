@@ -1,16 +1,19 @@
 package com.ticketPing.queue_manage.application.service;
 
-import com.ticketPing.queue_manage.application.dto.workingQueue.WorkingQueueTokenResponse;
-import com.ticketPing.queue_manage.domain.command.waitingQueue.DequeueCommand;
-import com.ticketPing.queue_manage.domain.command.workingQueue.RetrieveTokenCommand;
-import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveTopTokensCommand;
-import com.ticketPing.queue_manage.domain.command.workingQueue.CacheTokenCommand;
+import static com.ticketPing.queue_manage.presentaion.cases.QueueErrorCase.INVALID_TOKEN;
+
+import com.ticketPing.queue_manage.application.dto.GeneralTokenResponse;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.DequeueWaitingTokenCommand;
+import com.ticketPing.queue_manage.domain.command.workingQueue.RetrieveWorkingTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveTopWaitingTokensCommand;
+import com.ticketPing.queue_manage.domain.command.workingQueue.CacheWorkingTokenCommand;
 import com.ticketPing.queue_manage.domain.command.workingQueue.CountAvailableSlotsCommand;
-import com.ticketPing.queue_manage.domain.command.workingQueue.IncrementCounterCommand;
 import com.ticketPing.queue_manage.domain.model.AvailableSlots;
 import com.ticketPing.queue_manage.domain.model.WorkingQueueToken;
 import com.ticketPing.queue_manage.domain.repository.WaitingQueueRepository;
 import com.ticketPing.queue_manage.domain.repository.WorkingQueueRepository;
+import common.exception.ApplicationException;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,19 +35,19 @@ public class WorkingQueueApplicationServiceImpl implements WorkingQueueApplicati
 
         // 여유 있으면 대기열 -> 작업열 이동
         long count = availableSlots.getCount();
-        waitingQueueRepository.retrieveTopTokens(RetrieveTopTokensCommand.create(count)).stream()
+        waitingQueueRepository.retrieveTopWaitingTokens(RetrieveTopWaitingTokensCommand.create(count)).stream()
                 .toList()
                 .forEach(waitingToken -> {
                     WorkingQueueToken workingQueueToken = waitingToken.toWorkingQueueToken();
-                    workingQueueRepository.enqueue(CacheTokenCommand.create(workingQueueToken), IncrementCounterCommand.create());
-                    waitingQueueRepository.dequeue(DequeueCommand.create(waitingToken));
+                    workingQueueRepository.enqueueWorkingToken(CacheWorkingTokenCommand.create(workingQueueToken));
+                    waitingQueueRepository.dequeueWaitingToken(DequeueWaitingTokenCommand.create(waitingToken));
                 });
     }
 
     @Override
-    public WorkingQueueTokenResponse getWorkingQueueToken(UUID userId) {
-        WorkingQueueToken token = workingQueueRepository.retrieveToken(RetrieveTokenCommand.create(userId));
-        return WorkingQueueTokenResponse.from(token);
+    public GeneralTokenResponse getWorkingQueueToken(UUID userId) {
+        Optional<WorkingQueueToken> token = workingQueueRepository.retrieveWorkingToken(RetrieveWorkingTokenCommand.create(userId));
+        return GeneralTokenResponse.from(token.orElseThrow(() -> new ApplicationException(INVALID_TOKEN)));
     }
 
 }

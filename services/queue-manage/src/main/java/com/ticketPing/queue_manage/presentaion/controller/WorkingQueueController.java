@@ -3,7 +3,7 @@ package com.ticketPing.queue_manage.presentaion.controller;
 import static com.ticketPing.queue_manage.presentaion.cases.QueueSuccessCase.GET_WORKING_QUEUE_TOKEN_SUCCESS;
 import static common.response.CommonResponse.success;
 
-import com.ticketPing.queue_manage.application.dto.workingQueue.WorkingQueueTokenResponse;
+import com.ticketPing.queue_manage.application.dto.GeneralTokenResponse;
 import com.ticketPing.queue_manage.application.service.WorkingQueueApplicationService;
 import common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +24,7 @@ public class WorkingQueueController {
 
     @Operation(summary = "작업열 토큰 조회")
     @GetMapping("/{userId}")
-    public CommonResponse<WorkingQueueTokenResponse> getWorkingQueueToken(@Valid @PathVariable("userId") UUID userId) {
+    public CommonResponse<GeneralTokenResponse> getWorkingQueueToken(@Valid @PathVariable("userId") UUID userId) {
         return success(GET_WORKING_QUEUE_TOKEN_SUCCESS, workingQueueService.getWorkingQueueToken(userId));
     }
 
