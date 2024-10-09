@@ -5,7 +5,9 @@ import com.ticketPing.payment.application.dto.StripeResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 @Entity
@@ -25,7 +27,7 @@ public class Payment extends BaseEntity {
     private String userEmail;
     @Embedded
     private OrderInfo orderInfo;
-    private LocalDateTime paymentIntentTime;
+    private Long paymentIntentTime;
     private LocalDateTime updateTime;
     @Transient //db 저장 X
     private String previousPaymentStatus;
@@ -36,19 +38,22 @@ public class Payment extends BaseEntity {
         this.userEmail = responseDto.getUserEmail();
         if(this.orderInfo == null) {
             this.orderInfo = new OrderInfo();
-            this.orderInfo.setOrderId(responseDto.getOrderId());
-            this.orderInfo.setAmount(responseDto.getAmount());
-            this.orderInfo.setSeatInfo(responseDto.getSeatInfo());
-            this.orderInfo.setPerformanceName(responseDto.getPerformanceName());
-            this.orderInfo.setPerformanceTime(responseDto.getPerformanceTime());
         }
+        this.orderInfo.setOrderId(responseDto.getOrderId());
+        this.orderInfo.setAmount(responseDto.getAmount());
+        this.orderInfo.setSeatInfo(responseDto.getSeatInfo());
+        this.orderInfo.setPerformanceName(responseDto.getPerformanceName());
+        this.orderInfo.setPerformanceTime(responseDto.getPerformanceTime());
+        this.paymentIntentTime = responseDto.getPaymentIntentTime();
     }
 
     @PrePersist
     protected void onPrePersist(){
         if(paymentId == null) paymentId = UUID.randomUUID();
-        this.paymentIntentTime = LocalDateTime.now();  // 현재 시간 설정
-        this.updateTime = LocalDateTime.now();
+        if(paymentIntentTime != null){
+        Instant instant = Instant.ofEpochSecond(paymentIntentTime);
+        this.updateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        }
         this.previousPaymentStatus = this.status;
     }
 

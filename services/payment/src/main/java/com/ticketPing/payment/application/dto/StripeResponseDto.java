@@ -17,9 +17,10 @@ public class StripeResponseDto {
     private String performanceName;
     private String performanceTime;
     private String seatInfo;
+    private Long paymentIntentTime;
 
 
-    public StripeResponseDto(String paymentIntentId, UUID orderId, String userEmail, String status, Long amount, String clientSecret, String description) {
+    public StripeResponseDto(String paymentIntentId, UUID orderId, String userEmail, String status, Long amount, String clientSecret, String description, Long paymentIntentTime) {
         this.paymentIntentId = paymentIntentId;
         this.orderId = orderId;
         this.userEmail = userEmail;
@@ -31,5 +32,6 @@ public class StripeResponseDto {
         this.performanceName = parts[0];
         this.performanceTime = parts[1];
         this.seatInfo = parts[2];
+        this.paymentIntentTime = paymentIntentTime;
     }
 }

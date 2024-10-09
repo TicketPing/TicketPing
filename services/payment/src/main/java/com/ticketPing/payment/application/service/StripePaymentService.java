@@ -40,7 +40,8 @@ public class StripePaymentService {
                     paymentIntent.getStatus(),
                     paymentIntent.getAmount(),
                     paymentIntent.getClientSecret(),
-                    paymentIntent.getDescription());
+                    paymentIntent.getDescription(),
+                    paymentIntent.getCreated());
 
             //dto -> entity
             Payment payment = new Payment(responseDto);
