@@ -2,7 +2,7 @@ package com.ticketPing.queue_manage.domain.model;
 
 import static com.ticketPing.queue_manage.domain.utils.QueueTokenValueGenerator.generateTokenValue;
 
-import com.ticketPing.queue_manage.domain.model.enums.QueueStatus;
+import com.ticketPing.queue_manage.domain.model.enums.TokenStatus;
 import com.ticketPing.queue_manage.presentaion.request.EnterWaitingQueueRequest;
 import common.dto.mapper.ObjectMapperBasedVoMapper;
 import java.util.UUID;
@@ -20,7 +20,7 @@ public class WaitingQueueToken {
 
     private UUID userId;
     private String tokenValue;
-    private QueueStatus status;
+    private TokenStatus tokenStatus;
 
     private long position;
     private long totalUsers;
@@ -29,7 +29,7 @@ public class WaitingQueueToken {
         return WaitingQueueToken.builder()
                 .userId(request.userId())
                 .tokenValue(generateTokenValue(request.userId()))
-                .status(QueueStatus.WAITING)
+                .tokenStatus(TokenStatus.WAITING)
                 .build();
     }
 
@@ -37,14 +37,16 @@ public class WaitingQueueToken {
         return WaitingQueueToken.builder()
                 .userId(userId)
                 .tokenValue(tokenValue)
-                .status(QueueStatus.WAITING)
+                .tokenStatus(TokenStatus.WAITING)
                 .position(position)
                 .totalUsers(totalUsers)
                 .build();
     }
 
     public static WaitingQueueToken valueOf(String tokenValue) {
-        return WaitingQueueToken.builder().tokenValue(tokenValue).build();
+        return WaitingQueueToken.builder()
+                .tokenValue(tokenValue)
+                .build();
     }
 
     public WorkingQueueToken toWorkingQueueToken(){

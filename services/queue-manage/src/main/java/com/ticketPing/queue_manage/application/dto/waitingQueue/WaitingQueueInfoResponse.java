@@ -1,4 +1,4 @@
-package com.ticketPing.queue_manage.application.dto;
+package com.ticketPing.queue_manage.application.dto.waitingQueue;
 
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
 import common.dto.mapper.ObjectMapperBasedVoMapper;
@@ -7,7 +7,7 @@ import java.util.UUID;
 public record WaitingQueueInfoResponse(
         UUID userId,
         String tokenValue,
-        String status,
+        String tokenStatus,
         long position,
         long totalUsers) {
 

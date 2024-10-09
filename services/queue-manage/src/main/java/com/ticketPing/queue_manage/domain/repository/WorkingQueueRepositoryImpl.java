@@ -1,9 +1,14 @@
 package com.ticketPing.queue_manage.domain.repository;
 
+import static com.ticketPing.queue_manage.presentaion.cases.QueueErrorCase.INVALID_TOKEN;
+
 import com.ticketPing.queue_manage.domain.command.workingQueue.CacheTokenCommand;
 import com.ticketPing.queue_manage.domain.command.workingQueue.CountAvailableSlotsCommand;
 import com.ticketPing.queue_manage.domain.command.workingQueue.IncrementCounterCommand;
+import com.ticketPing.queue_manage.domain.command.workingQueue.RetrieveTokenCommand;
 import com.ticketPing.queue_manage.domain.model.AvailableSlots;
+import com.ticketPing.queue_manage.domain.model.WorkingQueueToken;
+import common.exception.ApplicationException;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RAtomicLong;
@@ -30,7 +35,7 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
     }
 
     private boolean cacheToken(CacheTokenCommand command) {
-        RBucket<Object> bucket = redissonClient.getBucket(command.getUser());
+        RBucket<String> bucket = redissonClient.getBucket(command.getUser());
         bucket.set(command.getValue(), command.getTtl(), TimeUnit.MINUTES);
         return true;
     }
@@ -38,6 +43,16 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
     private long incrementCounter(IncrementCounterCommand command) {
         RAtomicLong counter = redissonClient.getAtomicLong(command.getQueueName());
         return counter.addAndGet(command.getValue());
+    }
+
+    @Override
+    public WorkingQueueToken retrieveToken(RetrieveTokenCommand command) {
+        RBucket<String> bucket = redissonClient.getBucket(command.getUser());
+        String value = bucket.get();
+        if (value == null) {
+            throw new ApplicationException(INVALID_TOKEN);
+        }
+        return WorkingQueueToken.valueOf(command.getUserId(), command.getUser());
     }
 
 }
