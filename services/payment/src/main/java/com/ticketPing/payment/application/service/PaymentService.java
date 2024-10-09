@@ -53,6 +53,7 @@ public class PaymentService {
             Payment payment = paymentRequestDto.toEntity();
             paymentRepository.save(payment);
             //Todo: 유저 존재 확인
+            //Todo : 결제 상태 (결제 대기)로 설정
             paymentResponseDto = payment.toResponseDto();
             paymentResponseDto.setSuccessUrl(tossPaymentConfig.getSuccessUrl());
             paymentResponseDto.setFailUrl(tossPaymentConfig.getFailUrl());
@@ -62,41 +63,41 @@ public class PaymentService {
         }
     }
 
-//    public void verifyRequest(String paymentKey, UUID orderId, Long amount) {
-//        paymentRepository.findByOrderId(orderId)
-//                .ifPresentOrElse(
-//                        P -> {
-//                            if(P.getAmount() == amount) {
-//                                P.setPaymentKey(paymentKey);
-//                            } else {
-//                                throw new IllegalArgumentException("verifyRequest error");
-//                            }
-//                        }, () -> {
-//                            throw new IllegalArgumentException("verifyRequest2 error");
-//                        }
-//                );
-//    }
-//
-//    public String requestFinalPayment(String paymentKey, UUID orderId, Long amount) {
-//        RestTemplate restTemplate = new RestTemplate();
-//        HttpHeaders headers = new HttpHeaders();
-//
-//        String testSecretApiKey = tossPaymentConfig.getTestSecretKey() + ":";
-//        String encodedAuth = new String(Base64.getEncoder().encode(testSecretApiKey.getBytes(StandardCharsets.UTF_8)));
-//
-//        headers.setBasicAuth(encodedAuth);
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-//
-//        JSONObject param = new JSONObject();
-//        param.put("orderId", orderId);
-//        param.put("amount", amount);
-//
-//        return restTemplate.postForEntity(
-//                tossPaymentConfig.getTossOriginUrl() + paymentKey,
-//                new HttpEntity<>(param, headers),
-//                String.class
-//        ).getBody();
-//
-//    }
+    public void verifyRequest(String paymentKey, UUID orderId, Long amount) {
+        paymentRepository.findByOrderId(orderId)
+                .ifPresentOrElse(
+                        P -> {
+                            if(P.getAmount() == amount) {
+                                P.setPaymentKey(paymentKey);
+                            } else {
+                                throw new IllegalArgumentException("verifyRequest error");
+                            }
+                        }, () -> {
+                            throw new IllegalArgumentException("verifyRequest2 error");
+                        }
+                );
+    }
+
+    public String requestFinalPayment(String paymentKey, UUID orderId, Long amount) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+
+        String testSecretApiKey = tossPaymentConfig.getTestSecretKey() + ":";
+        String encodedAuth = new String(Base64.getEncoder().encode(testSecretApiKey.getBytes(StandardCharsets.UTF_8)));
+
+        headers.setBasicAuth(encodedAuth);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        JSONObject param = new JSONObject();
+        param.put("orderId", orderId);
+        param.put("amount", amount);
+
+        return restTemplate.postForEntity(
+                tossPaymentConfig.getTossOriginUrl() + paymentKey,
+                new HttpEntity<>(param, headers),
+                String.class
+        ).getBody();
+
+    }
 }

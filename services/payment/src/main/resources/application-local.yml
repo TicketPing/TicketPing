@@ -3,7 +3,7 @@ spring:
     name: payment
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/ticketPing
+    url: jdbc:postgresql://localhost:5432/ticketping
     username: postgres
     password: 1234
     driver-class-name: org.postgresql.Driver
@@ -11,7 +11,7 @@ spring:
     import: "classpath:application-jpa.yml"
 
 server:
-  port: 10023
+  port: 8080
 
 eureka:
   client:

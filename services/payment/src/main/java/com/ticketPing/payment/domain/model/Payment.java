@@ -1,5 +1,6 @@
 package com.ticketPing.payment.domain.model;
 
+import audit.BaseEntity;
 import com.ticketPing.payment.application.dto.PaymentResponseDto;
 import com.ticketPing.payment.domain.enums.PayType;
 import com.ticketPing.payment.domain.enums.PaymentStatus;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "P_PAYMENTS")
-public class Payment {
+public class Payment extends BaseEntity {
 
     @Id
     private UUID paymentId;

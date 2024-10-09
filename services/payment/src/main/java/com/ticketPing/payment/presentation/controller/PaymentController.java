@@ -29,24 +29,24 @@ public class PaymentController {
         }
     }
 
-//    @GetMapping("/success")
-//    public ResponseEntity requestFinalPayments(@RequestParam String paymentKey,
-//                                               @RequestParam UUID orderId,
-//                                               @RequestParam Long amount
-//    ) {
-//        try {
-//            System.out.println("paymentKey : " + paymentKey);
-//            System.out.println("orderId : " + orderId);
-//            System.out.println("amount : " + amount);
-//
-//            paymentService.verifyRequest(paymentKey, orderId, amount);
-//            String result = paymentService.requestFinalPayment(paymentKey, orderId, amount);
-//
-//            return ResponseEntity.ok(result);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new IllegalArgumentException("requestFinalPayments 에러");
-//        }
-//
-//    }
+    @GetMapping("/success")
+    public ResponseEntity requestFinalPayments(@RequestParam String paymentKey,
+                                               @RequestParam UUID orderId,
+                                               @RequestParam Long amount
+    ) {
+        try {
+            System.out.println("paymentKey : " + paymentKey);
+            System.out.println("orderId : " + orderId);
+            System.out.println("amount : " + amount);
+
+            paymentService.verifyRequest(paymentKey, orderId, amount);
+            String result = paymentService.requestFinalPayment(paymentKey, orderId, amount);
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("requestFinalPayments 에러");
+        }
+
+    }
 }

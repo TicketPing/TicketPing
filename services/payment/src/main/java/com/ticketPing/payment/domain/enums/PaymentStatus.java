@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum PaymentStatus {
+    //Todo : 결제 대기 추가
     PAYMENT_FAIL("결제 실패"),
     PAYMENT_COMPLETED("결제 완료"),
     PAYMENT_CONFIRMED("결제 확정"),
