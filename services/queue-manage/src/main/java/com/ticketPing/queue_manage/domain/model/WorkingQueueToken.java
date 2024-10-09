@@ -18,6 +18,7 @@ public class WorkingQueueToken {
     private UUID userId;
     private String tokenValue;
     private TokenStatus tokenStatus;
+
     private LocalDateTime validUntil;
 
     public WorkingQueueToken withWorking() {
