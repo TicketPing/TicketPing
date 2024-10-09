@@ -20,7 +20,7 @@ public class RetrieveWaitingTokenCommand {
         return RetrieveWaitingTokenCommand.builder()
                 .queueName(WAITING_QUEUE.getValue())
                 .userId(userId)
-                .tokenValue(generateTokenValue(userId))
+                .tokenValue(generateTokenValue("temp", userId))
                 .build();
     }
 

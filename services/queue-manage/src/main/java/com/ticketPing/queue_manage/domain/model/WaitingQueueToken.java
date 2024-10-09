@@ -27,7 +27,7 @@ public class WaitingQueueToken {
     public static WaitingQueueToken create(UUID userId) {
         return WaitingQueueToken.builder()
                 .userId(userId)
-                .tokenValue(generateTokenValue(userId))
+                .tokenValue(generateTokenValue("temp", userId))
                 .tokenStatus(TokenStatus.WAITING)
                 .build();
     }

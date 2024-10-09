@@ -10,9 +10,10 @@ import com.ticketPing.queue_manage.domain.model.AvailableSlots;
 import com.ticketPing.queue_manage.domain.model.WorkingQueueToken;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RAtomicLong;
 import org.redisson.api.RBucket;
+import org.redisson.api.RKeys;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Repository;
 
@@ -24,8 +25,10 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
 
     @Override
     public AvailableSlots countAvailableSlots(CountAvailableSlotsCommand command) {
-        RAtomicLong counter = redissonClient.getAtomicLong(command.getQueueName());
-        return AvailableSlots.from(counter.get());
+        RKeys keys = redissonClient.getKeys();
+        String pattern = command.getPerformanceName() + "*";
+        long count = StreamSupport.stream(keys.getKeysByPattern(pattern).spliterator(), false).count();
+        return AvailableSlots.from(count);
     }
 
     @Override
