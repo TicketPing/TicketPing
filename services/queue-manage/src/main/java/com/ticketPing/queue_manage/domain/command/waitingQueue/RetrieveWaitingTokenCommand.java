@@ -10,17 +10,17 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class RetrieveTokenCommand {
+public class RetrieveWaitingTokenCommand {
 
     private String queueName;
     private UUID userId;
-    private String user;
+    private String tokenValue;
 
-    public static RetrieveTokenCommand create(UUID userId) {
-        return RetrieveTokenCommand.builder()
+    public static RetrieveWaitingTokenCommand create(UUID userId) {
+        return RetrieveWaitingTokenCommand.builder()
                 .queueName(WAITING_QUEUE.getValue())
                 .userId(userId)
-                .user(generateTokenValue(userId))
+                .tokenValue(generateTokenValue(userId))
                 .build();
     }
 

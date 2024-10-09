@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ClientSuccessCase implements SuccessCase {
 
-    GET_WAITING_QUEUE_INFO_SUCCESS(HttpStatus.OK, "대기열 정보 조회 완료.");
+    GET_QUEUE_TOKEN_SUCCESS(HttpStatus.OK, "토큰 조회 완료.");
 
     private final HttpStatus httpStatus;
     private final String message;

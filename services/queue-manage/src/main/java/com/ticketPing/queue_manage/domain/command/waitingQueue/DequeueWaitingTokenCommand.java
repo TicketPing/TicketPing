@@ -9,15 +9,15 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class DequeueCommand {
+public class DequeueWaitingTokenCommand {
 
     private String queueName;
-    private String user;
+    private String tokenValue;
 
-    public static DequeueCommand create(WaitingQueueToken token) {
-        return DequeueCommand.builder()
+    public static DequeueWaitingTokenCommand create(WaitingQueueToken token) {
+        return DequeueWaitingTokenCommand.builder()
                 .queueName(WAITING_QUEUE.getValue())
-                .user(token.getTokenValue())
+                .tokenValue(token.getTokenValue())
                 .build();
     }
 
