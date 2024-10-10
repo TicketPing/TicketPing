@@ -14,10 +14,12 @@ import com.ticketPing.payment.infrastructure.configuration.StripePaymentConfig;
 import com.ticketPing.payment.infrastructure.repository.PaymentJpaRepository;
 import com.ticketPing.payment.presentation.request.StripeRequestDto;
 import exception.ApplicationException;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -74,21 +76,35 @@ public class StripePaymentService {
                 .build();
     }
 
-    public void updateStatus(UUID paymentId) {
+    public void updateStatus(String paymentIntentId) {
         try {
-        //id값으로 orderId값 찾아오기
-        Payment payment= repository.findById(paymentId)
+        //paymentIntentId 값으로 orderId값 찾아오기
+        Payment payment= repository.findByPaymentIntentId(paymentIntentId)
                 .orElseThrow(() -> new ApplicationException(PAYMENT_NOT_FOUND));
         UUID orderId = payment.getOrderInfo().getOrderId();
         // Todo : 일단 succeeded 처리
         payment.setStatus("succeeded");
         //status = succeeded 일 경우 예매 호출
         if(payment.getStatus().equals("succeeded")) {
-            reservationClient.updateOrderStatus(orderId, "결제 완료");
+            try {
+                reservationClient.updateOrderStatus(orderId, "결제 완료");
+            } catch (FeignException fe) {
+                System.err.println("FeignClient success call failed = paymentIntentId : " + paymentIntentId);
+                fe.printStackTrace();
+                throw new ApplicationException(FEIGN_CLIENT_FAIL);
+            }
         } else if(payment.getStatus().equals("canceled")) {
-            reservationClient.updateOrderStatus(orderId, "결제 실패");
+            try {
+                reservationClient.updateOrderStatus(orderId, "결제 실패");
+            } catch (FeignException fe) {
+                System.err.println("FeignClient fail call failed = paymentIntentId : " + paymentIntentId);
+                fe.printStackTrace();
+                throw new ApplicationException(FEIGN_CLIENT_FAIL);
+            }
         }
         } catch (Exception e) {
+            System.err.println("Error updating status for paymentIntentId: " + paymentIntentId);
+            e.printStackTrace(); // 로그에 스택 트레이스를 출력
             throw new ApplicationException(STATUS_UPDATE_FAIL);
         }
     }

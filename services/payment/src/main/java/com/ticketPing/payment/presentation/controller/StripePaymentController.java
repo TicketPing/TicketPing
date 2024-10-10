@@ -35,9 +35,9 @@ public class StripePaymentController {
     }
 
     @Operation(summary = "결제 및 주문(예매) 상태 변경", description = "(임의) 결제 상태 변경 및 주문 상태 변경 위한 주문 호출 api")
-    @PatchMapping("/{paymentId}")
-    public CommonResponse<StripeResponseDto> updateStatus(@PathVariable("paymentId") UUID paymentId) {
-        paymentService.updateStatus(paymentId);
+    @PatchMapping("/{paymentIntentId}")
+    public CommonResponse<StripeResponseDto> updateStatus(@PathVariable("paymentIntentId") String paymentIntentId) {
+        paymentService.updateStatus(paymentIntentId);
         return CommonResponse.success(ORDER_CALL_SUCCESS);
     }
 }
