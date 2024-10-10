@@ -7,12 +7,12 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record GeneralTokenResponse(
         UUID userId,
+        String performanceName,
         String tokenValue,
         String tokenStatus,
         Long position,
         Long totalUsers,
         LocalDateTime validUntil
 ) {
-
 }
 

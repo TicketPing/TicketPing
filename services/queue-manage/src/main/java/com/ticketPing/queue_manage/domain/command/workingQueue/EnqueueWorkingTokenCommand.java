@@ -9,15 +9,17 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class CacheWorkingTokenCommand {
+public class EnqueueWorkingTokenCommand {
 
+    private String performanceName;
     private String tokenValue;
     private String value;
     private long ttl;
 
-    public static CacheWorkingTokenCommand create(WorkingQueueToken workingQueueToken) {
-        return CacheWorkingTokenCommand.builder()
-                .tokenValue(workingQueueToken.getTokenValue())
+    public static EnqueueWorkingTokenCommand create(WorkingQueueToken token) {
+        return EnqueueWorkingTokenCommand.builder()
+                .performanceName(token.getPerformanceName())
+                .tokenValue(token.getTokenValue())
                 .value("NA")
                 .ttl(workingQueueTokenTTL()).build();
     }

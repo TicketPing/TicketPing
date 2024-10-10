@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: payment
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ticketping
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+  config:
+    import: "classpath:application-jpa.yml"
+
+server:
+  port: 8080
+
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://eureka-server:10000/eureka/
+
+stripe:
+  secret-key: ${secret-key}
+  public-key: ${public-key}

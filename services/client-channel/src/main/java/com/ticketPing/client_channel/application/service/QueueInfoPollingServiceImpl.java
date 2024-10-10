@@ -13,8 +13,8 @@ public class QueueInfoPollingServiceImpl implements QueueInfoPollingService {
 
     private final QueueManageClientAdapter queueManageClient;
 
-    public GeneralTokenResponse getWaitingQueueInfo(UUID userId) {
-        CommonResponse<GeneralTokenResponse> response = queueManageClient.getWaitingQueueInfo(userId);
+    public GeneralTokenResponse getWaitingQueueInfo(UUID userId, String performanceName) {
+        CommonResponse<GeneralTokenResponse> response = queueManageClient.getWaitingQueueInfo(userId, performanceName);
         return response.getData();
     }
 

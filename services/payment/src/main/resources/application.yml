@@ -1,21 +1,23 @@
 spring:
   application:
     name: payment
-  jpa:
-    hibernate:
-      ddl-auto: update
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/ticketping
+    url: jdbc:postgresql://payment-db:5432/postgres
     username: postgres
-    password: 1234
+    password: postgres
     driver-class-name: org.postgresql.Driver
+  config:
+    import: "classpath:application-jpa.yml"
 
-payment:
-  toss:
-    test_client_api_key : test_ck_DpexMgkW36bObXqBW4Nd3GbR5ozO
-    test_secret_api_key : test_sk_jExPeJWYVQ4qevAzYeaq349R5gvN
-    success_url : "http://localhost:8080/api/v1/payments/toss/success"
-    fail_url : "http://localhost:8080/api/v1/payments/toss/fail"
-    origin_url: "https://api.tosspayments.com/v1/payments/"
+server:
+  port: 10023
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:10000/eureka/
+
+stripe:
+  secret-key: ${secret-key}
+  public-key: ${public-key}
 

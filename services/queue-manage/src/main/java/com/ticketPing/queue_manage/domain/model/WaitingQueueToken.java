@@ -18,23 +18,26 @@ import lombok.NoArgsConstructor;
 public class WaitingQueueToken {
 
     private UUID userId;
+    private String performanceName;
     private String tokenValue;
     private TokenStatus tokenStatus;
 
     private long position;
     private long totalUsers;
 
-    public static WaitingQueueToken create(UUID userId) {
+    public static WaitingQueueToken create(UUID userId, String performanceName) {
         return WaitingQueueToken.builder()
                 .userId(userId)
-                .tokenValue(generateTokenValue(userId))
+                .performanceName(performanceName)
+                .tokenValue(generateTokenValue(userId, performanceName))
                 .tokenStatus(TokenStatus.WAITING)
                 .build();
     }
 
-    public static WaitingQueueToken tokenWithPosition(UUID userId, String tokenValue, long position, long totalUsers) {
+    public static WaitingQueueToken tokenWithPosition(UUID userId, String performanceName, String tokenValue, long position, long totalUsers) {
         return WaitingQueueToken.builder()
                 .userId(userId)
+                .performanceName(performanceName)
                 .tokenValue(tokenValue)
                 .tokenStatus(TokenStatus.WAITING)
                 .position(position)
@@ -42,14 +45,15 @@ public class WaitingQueueToken {
                 .build();
     }
 
-    public static WaitingQueueToken valueOf(String tokenValue) {
+    public static WaitingQueueToken valueOf(String performanceName, String tokenValue) {
         return WaitingQueueToken.builder()
+                .performanceName(performanceName)
                 .tokenValue(tokenValue)
                 .build();
     }
 
-    public WorkingQueueToken toWorkingQueueToken(){
-        return ObjectMapperBasedVoMapper.convert(this, WorkingQueueToken.class).withWorking();
+    public WorkingQueueToken toWorkingQueueToken() {
+        return ObjectMapperBasedVoMapper.convert(this, WorkingQueueToken.class);
     }
 
 }

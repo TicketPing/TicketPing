@@ -1,5 +1,6 @@
 package com.ticketPing.client_channel.application.client;
 
+import com.ticketPing.client_channel.application.dto.GeneralTokenResponse;
 import com.ticketPing.client_channel.infrastructure.annotation.FeignClientAdapter;
 import com.ticketPing.client_channel.infrastructure.client.QueueManageClient;
 import java.util.UUID;
@@ -12,8 +13,8 @@ public class QueueManageClientAdapter {
 
     private final QueueManageClient queueManageClient;
 
-    public CommonResponse getWaitingQueueInfo(UUID userId) {
-        return queueManageClient.getWaitingQueueInfo(userId);
+    public CommonResponse<GeneralTokenResponse> getWaitingQueueInfo(UUID userId, String performanceName) {
+        return queueManageClient.getWaitingQueueInfo(userId, performanceName);
     }
 
 }
