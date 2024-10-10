@@ -49,7 +49,7 @@ services:
     container_name: payment-db
     image: postgres:15.8
     ports:
-      - "5002:5432"
+      - "5003:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -104,7 +104,7 @@ services:
     container_name: payment-server
     image: ticketping/payment-server:latest
     ports:
-      - "10023:10023"
+      - "10024:10024"
     depends_on:
       payment-db:
         condition: service_healthy
@@ -132,18 +132,6 @@ services:
         condition: service_healthy
       eureka-server:
         condition: service_started
-
-  order-redis:
-    container_name: order-redis
-    image: redis:latest
-    ports:
-      - "7379:6379"
-    healthcheck:
-      test: [ "CMD", "redis-cli","ping" ]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
 
   order-db:
     container_name: order-db

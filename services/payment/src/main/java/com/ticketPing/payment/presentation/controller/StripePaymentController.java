@@ -1,17 +1,12 @@
 package com.ticketPing.payment.presentation.controller;
 
-import com.stripe.model.PaymentIntent;
 import com.ticketPing.payment.application.dto.StripeResponseDto;
 import com.ticketPing.payment.application.service.StripePaymentService;
-import com.ticketPing.payment.infrastructure.client.ReservationClient;
 import com.ticketPing.payment.presentation.request.StripeRequestDto;
+import common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import response.CommonResponse;
 
 import java.util.UUID;
 
@@ -35,9 +30,9 @@ public class StripePaymentController {
     }
 
     @Operation(summary = "결제 및 주문(예매) 상태 변경", description = "(임의) 결제 상태 변경 및 주문 상태 변경 위한 주문 호출 api")
-    @PatchMapping("/{paymentId}")
-    public CommonResponse<StripeResponseDto> updateStatus(@PathVariable("paymentId") UUID paymentId) {
-        paymentService.updateStatus(paymentId);
+    @PatchMapping("/{paymentIntentId}")
+    public CommonResponse<StripeResponseDto> updateStatus(@PathVariable("paymentIntentId") String paymentIntentId) {
+        paymentService.updateStatus(paymentIntentId);
         return CommonResponse.success(ORDER_CALL_SUCCESS);
     }
 }
