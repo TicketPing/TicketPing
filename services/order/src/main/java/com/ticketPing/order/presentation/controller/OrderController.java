@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import common.response.CommonResponse;
 
@@ -56,18 +57,13 @@ public class OrderController {
         return CommonResponse.success(ORDER_REQUEST_PAYMENT_SUCCESS,orderCreateResponseDto);
     }
 
-    @PutMapping("/payment/success")
-    public void OrderPaymentSuccess(
-        @RequestBody OrderPaymentDto orderPaymentDto
+    @PutMapping("{orderId}/status")
+    public void updateOrderStatus( //성공 이냐 실패로 나눔
+        @PathVariable("orderId")UUID orderId,
+        @RequestParam("status") String status
     ) {
-        orderService.OrderPaymentSuccess(orderPaymentDto);
+        orderService.updateOrderStatus(orderId,status);
     }
 
-    @PutMapping("/payment/fail")
-    public void OrderPaymentFail(
-        @RequestBody OrderPaymentDto orderPaymentDto
-    ) {
-        orderService.OrderPaymentFail(orderPaymentDto);
-        // TODO : 좌석선점 된 상태로 결제페이지 리다이렉트
-    }
+
 }

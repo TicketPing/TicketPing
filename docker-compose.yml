@@ -106,18 +106,6 @@ services:
       eureka-server:
         condition: service_started
 
-  order-redis:
-    container_name: order-redis
-    image: redis:latest
-    ports:
-      - "7379:6379"
-    healthcheck:
-      test: [ "CMD", "redis-cli","ping" ]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
-
   order-db:
     container_name: order-db
     image: postgres:15.8
