@@ -3,6 +3,7 @@ package com.ticketPing.payment.application.service;
 import com.stripe.StripeClient;
 import com.stripe.model.PaymentIntent;
 import com.ticketPing.payment.application.dto.StripeResponseDto;
+import com.ticketPing.payment.infrastructure.client.ReservationClient;
 import com.ticketPing.payment.infrastructure.configuration.StripePaymentConfig;
 import com.ticketPing.payment.infrastructure.repository.PaymentJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,12 +18,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StripePaymentServiceTest {
     private StripePaymentService stripePaymentService;
     private PaymentJpaRepository repository;
+    private ReservationClient reservationClient;
     private StripePaymentConfig config;
     private StripeClient client;
 
     @BeforeEach
     void setUp() {
-        stripePaymentService = new StripePaymentService(config, repository);
+        stripePaymentService = new StripePaymentService(config, repository, reservationClient);
         client = new StripeClient(config.getSecretKey());
     }
 
