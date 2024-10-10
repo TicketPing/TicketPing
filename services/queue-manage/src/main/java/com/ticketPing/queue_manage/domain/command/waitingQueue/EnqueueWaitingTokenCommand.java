@@ -1,7 +1,5 @@
 package com.ticketPing.queue_manage.domain.command.waitingQueue;
 
-import static com.ticketPing.queue_manage.domain.model.enums.QueueName.WAITING_QUEUE;
-
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,14 +9,16 @@ import lombok.Getter;
 @Builder(access = AccessLevel.PRIVATE)
 public class EnqueueWaitingTokenCommand {
 
-    private String queueName;
+    private String performanceName;
     private String tokenValue;
+    private String queueName;
     private double score;
 
     public static EnqueueWaitingTokenCommand create(WaitingQueueToken token) {
         return EnqueueWaitingTokenCommand.builder()
-                .queueName(WAITING_QUEUE.getValue())
+                .performanceName(token.getPerformanceName())
                 .tokenValue(token.getTokenValue())
+                .queueName(token.getPerformanceName() + "_Queue")
                 .score(System.currentTimeMillis() / 1000.0)
                 .build();
     }

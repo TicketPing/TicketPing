@@ -10,6 +10,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record GeneralTokenResponse(
         UUID userId,
+        String performanceName,
         String tokenValue,
         TokenStatus tokenStatus,
         Long position,
@@ -20,10 +21,11 @@ public record GeneralTokenResponse(
     public static GeneralTokenResponse from(WaitingQueueToken token) {
         return new GeneralTokenResponse(
                 token.getUserId(),
+                token.getPerformanceName(),
                 token.getTokenValue(),
                 token.getTokenStatus(),
-                token.getPosition(),
-                token.getTotalUsers(),
+                token.getPosition() == 0 ? null : token.getPosition(),
+                token.getTotalUsers() == 0 ? null : token.getTotalUsers(),
                 null
         );
     }
@@ -31,6 +33,7 @@ public record GeneralTokenResponse(
     public static GeneralTokenResponse from(WorkingQueueToken token) {
         return new GeneralTokenResponse(
                 token.getUserId(),
+                token.getPerformanceName(),
                 token.getTokenValue(),
                 token.getTokenStatus(),
                 null,

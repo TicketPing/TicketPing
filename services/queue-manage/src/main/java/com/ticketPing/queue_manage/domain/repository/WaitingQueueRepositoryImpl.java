@@ -2,15 +2,11 @@ package com.ticketPing.queue_manage.domain.repository;
 
 import static com.ticketPing.queue_manage.domain.model.WaitingQueueToken.tokenWithPosition;
 
-import com.ticketPing.queue_manage.domain.command.waitingQueue.DequeueWaitingTokenCommand;
 import com.ticketPing.queue_manage.domain.command.waitingQueue.EnqueueWaitingTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.DequeueFirstWaitingTokenCommand;
 import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveWaitingTokenCommand;
-import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveTopWaitingTokensCommand;
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RScoredSortedSet;
 import org.redisson.api.RedissonClient;
@@ -34,25 +30,21 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
         int totalSize = sortedSet.size();
         try {
             int position = sortedSet.rank(command.getTokenValue()) + 1;
-            return Optional.of(tokenWithPosition(command.getUserId(), command.getTokenValue(), position, totalSize));
+            return Optional.of(tokenWithPosition(command.getUserId(), command.getPerformanceName(), command.getTokenValue(), position, totalSize));
         } catch (Exception e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public List<WaitingQueueToken> retrieveTopWaitingTokens(RetrieveTopWaitingTokensCommand command) {
+    public Optional<WaitingQueueToken> dequeueFirstWaitingToken(DequeueFirstWaitingTokenCommand command) {
         RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(command.getQueueName());
-        Collection<String> tokenValues = sortedSet.valueRange(0, command.getCount() - 1);
-        return tokenValues.stream()
-                .map(WaitingQueueToken::valueOf)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean dequeueWaitingToken(DequeueWaitingTokenCommand command) {
-        RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(command.getQueueName());
-        return sortedSet.remove(command.getTokenValue());
+        String tokenValue = sortedSet.first();
+        if (tokenValue == null) {
+            return Optional.empty();
+        }
+        sortedSet.remove(tokenValue);
+        return Optional.of(WaitingQueueToken.valueOf(command.getPerformanceName(), tokenValue));
     }
 
 }
