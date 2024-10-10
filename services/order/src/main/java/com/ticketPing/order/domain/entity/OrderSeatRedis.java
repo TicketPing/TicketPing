@@ -1,6 +1,7 @@
 package com.ticketPing.order.domain.entity;
 
 import com.ticketPing.order.application.dtos.OrderCreateResponseDto;
+import com.ticketPing.order.application.dtos.mapper.ObjectMapperBasedVoMapper;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
@@ -24,7 +25,7 @@ import org.springframework.data.redis.core.RedisHash;
 public class OrderSeatRedis {
 
     @Id
-    private UUID id; // Redis에서 사용되는 ID
+    private UUID id; //orderId Redis에서 사용되는 ID
 
     private boolean orderCancelled; // 예매취소여부 (true or false)
     private LocalDateTime reservationDate; // 예매 생성 시간
@@ -63,6 +64,10 @@ public class OrderSeatRedis {
             this.getRowNumber(),
             this.getSeatNumber()
         );
+    }
+
+    public static OrderSeatRedis from(Order order) {
+        return ObjectMapperBasedVoMapper.convert(order, OrderSeatRedis.class);
     }
 }
 

@@ -63,7 +63,7 @@ public class OrderServiceTest {
                     LocalDate.now()
                 );
 
-                orderService.orderPerformanceSeats(requestDto);
+                orderService.orderOccupyingSeats(requestDto);
             } catch (Exception e) {
                 // 예외 처리
                 e.printStackTrace();
