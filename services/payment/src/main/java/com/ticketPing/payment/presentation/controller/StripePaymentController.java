@@ -1,17 +1,12 @@
 package com.ticketPing.payment.presentation.controller;
 
-import com.stripe.model.PaymentIntent;
 import com.ticketPing.payment.application.dto.StripeResponseDto;
 import com.ticketPing.payment.application.service.StripePaymentService;
-import com.ticketPing.payment.infrastructure.client.ReservationClient;
 import com.ticketPing.payment.presentation.request.StripeRequestDto;
+import common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import response.CommonResponse;
 
 import java.util.UUID;
 

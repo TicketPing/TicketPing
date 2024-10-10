@@ -13,7 +13,7 @@ import com.ticketPing.payment.infrastructure.client.ReservationClient;
 import com.ticketPing.payment.infrastructure.configuration.StripePaymentConfig;
 import com.ticketPing.payment.infrastructure.repository.PaymentJpaRepository;
 import com.ticketPing.payment.presentation.request.StripeRequestDto;
-import exception.ApplicationException;
+import common.exception.ApplicationException;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

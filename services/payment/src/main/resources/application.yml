@@ -10,7 +10,7 @@ spring:
     import: "classpath:application-jpa.yml"
 
 server:
-  port: 10023
+  port: 10024
 
 eureka:
   client:
