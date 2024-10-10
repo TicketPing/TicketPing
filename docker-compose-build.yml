@@ -13,6 +13,12 @@ services:
       dockerfile: Dockerfile
     image: ticketping/auth-server
 
+  gateway-server:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    image: ticketping/gateway-server
+
   user-server:
     build:
       context: ./services/user
