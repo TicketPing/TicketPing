@@ -13,12 +13,15 @@ import com.ticketPing.payment.infrastructure.client.ReservationClient;
 import com.ticketPing.payment.infrastructure.configuration.StripePaymentConfig;
 import com.ticketPing.payment.infrastructure.repository.PaymentJpaRepository;
 import com.ticketPing.payment.presentation.request.StripeRequestDto;
+import exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.UUID;
+
+import static com.ticketPing.payment.cases.PaymentErrorCase.*;
 
 @Service
 public class StripePaymentService {
@@ -57,7 +60,7 @@ public class StripePaymentService {
             repository.save(payment);
             return responseDto;
         } catch (StripeException e) {
-            throw new IllegalArgumentException(e.getMessage(), e);
+            throw new ApplicationException(PAYMENT_INTENT_FAIL);
         }
     }
 
@@ -75,7 +78,7 @@ public class StripePaymentService {
         try {
         //id값으로 orderId값 찾아오기
         Payment payment= repository.findById(paymentId)
-                .orElseThrow(() -> new IllegalArgumentException("payment 조회 실패"));
+                .orElseThrow(() -> new ApplicationException(PAYMENT_NOT_FOUND));
         UUID orderId = payment.getOrderInfo().getOrderId();
         // Todo : 일단 succeeded 처리
         payment.setStatus("succeeded");
@@ -86,7 +89,7 @@ public class StripePaymentService {
             reservationClient.updateOrderStatus(orderId, "결제 실패");
         }
         } catch (Exception e) {
-            throw new IllegalArgumentException("상태 변경 실패");
+            throw new ApplicationException(STATUS_UPDATE_FAIL);
         }
     }
 }
