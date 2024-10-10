@@ -23,7 +23,7 @@ eureka:
       defaultZone: http://eureka-server:10000/eureka/
 
 redis:
-  host: localhost
+  host: redis
   port: 6379
 
 
