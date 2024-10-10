@@ -45,6 +45,22 @@ services:
       start_period: 30s
       timeout: 10s
 
+  payment-db:
+    container_name: payment-db
+    image: postgres:15.8
+    ports:
+      - "5002:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
   eureka-server:
     container_name: eureka-server
     image: ticketping/eureka-server:latest
@@ -80,6 +96,17 @@ services:
       - "10022:10022"
     depends_on:
       performance-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+
+  payment-server:
+    container_name: payment-server
+    image: ticketping/payment-server:latest
+    ports:
+      - "10023:10023"
+    depends_on:
+      payment-db:
         condition: service_healthy
       eureka-server:
         condition: service_started
