@@ -151,6 +151,8 @@ services:
   payment-server:
     container_name: payment-server
     image: ticketping/payment-server:latest
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
     ports:
       - "10024:10024"
     depends_on:

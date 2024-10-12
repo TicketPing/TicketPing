@@ -18,6 +18,6 @@ eureka:
       defaultZone: http://eureka-server:10000/eureka/
 
 stripe:
-  secret-key: ${secret-key}
-  public-key: ${public-key}
+  secret-key: ${SECRET_KEY}
+  public-key: ${PUBLIC_KEY}
 
