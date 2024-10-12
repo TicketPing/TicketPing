@@ -45,6 +45,22 @@ services:
       start_period: 30s
       timeout: 10s
 
+  order-db:
+    container_name: order-db
+    image: postgres:15.8
+    ports:
+      - "5002:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
   payment-db:
     container_name: payment-db
     image: postgres:15.8
@@ -78,6 +94,27 @@ services:
       eureka-server:
         condition: service_started
 
+  gateway-server:
+    container_name: gateway-server
+    image: ticketping/gateway-server:latest
+    ports:
+      - "10020:10020"
+    depends_on:
+      auth-server:
+        condition: service_started
+      user-server:
+        condition: service_started
+      performance-server:
+        condition: service_started
+      order-server:
+        condition: service_started
+      payment-server:
+        condition: service_started
+      queue-manage-server:
+        condition: service_started
+      client-channel-server:
+        condition: service_started
+
   user-server:
     container_name: user-server
     image: ticketping/user-server:latest
@@ -96,6 +133,17 @@ services:
       - "10022:10022"
     depends_on:
       performance-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+
+  order-server:
+    container_name: order-server
+    image: ticketping/order-server:latest
+    ports:
+      - "10023:10023"
+    depends_on:
+      order-db:
         condition: service_healthy
       eureka-server:
         condition: service_started
@@ -129,45 +177,6 @@ services:
       - "10032:10032"
     depends_on:
       redis:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
-
-  order-redis:
-    container_name: order-redis
-    image: redis:latest
-    ports:
-      - "7379:6379"
-    healthcheck:
-      test: [ "CMD", "redis-cli","ping" ]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
-
-  order-db:
-    container_name: order-db
-    image: postgres:15.8
-    ports:
-      - "5002:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres" ]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
-
-  order-server:
-    container_name: order-server
-    image: ticketping/order-server:latest
-    ports:
-      - "10023:10023"
-    depends_on:
-      order-db:
         condition: service_healthy
       eureka-server:
         condition: service_started

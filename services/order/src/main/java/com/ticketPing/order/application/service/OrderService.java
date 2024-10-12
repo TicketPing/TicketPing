@@ -181,12 +181,12 @@ public class OrderService {
     }
 
     @Transactional
-    public void OrderPaymentSuccess(OrderPaymentDto orderPaymentDto) {
+    public void updateOrderStatus(UUID orderId, String status) {
         OrderSeatRedis orderSeatRedis = orderSeatRedisRepository.findById(
-                orderPaymentDto.orderId())
+                orderId)
             .orElseThrow(() -> new RuntimeException(ORDER_NOT_FOUND_AT_REDIS.getMessage()));
 
-        Order order = orderRepository.findById(orderPaymentDto.orderId())
+        Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new RuntimeException(ORDER_NOT_FOUND.getMessage()));
         // TODO : 게이트웨이 userId(현재 접속된 Id)와 orderSeatRedis.userId 비교하기
 
@@ -194,28 +194,27 @@ public class OrderService {
             throw new RuntimeException(ORDER_STATUS_NOT_PENDING.getMessage());
         }
 
-        if (!orderSeatRedis.getUserId().equals(orderPaymentDto.userId())) {
-            //TODO : 결제 환불 API 호출
+        //if (status.equals())
 
-            changeOrderStatusInRedisAndDb(orderSeatRedis, order, OrderStatus.NO_RESERVATION);
-
-            throw new RuntimeException(USER_ID_WITH_SEATS_NOT_MATCHED.getMessage());
-        }
-
-        if (!order.getId().equals(orderSeatRedis.getId())) {
-            //TODO : 결제 환불 API 호출
-
-            changeOrderStatusInRedisAndDb(orderSeatRedis, order, OrderStatus.NO_RESERVATION);
-
-            throw new RuntimeException(ORDER_EACH_USER_NOT_MATCHED.getMessage());
-        }
+//        if (!orderSeatRedis.getOrderStatus()Id().equals(orderPaymentDto.userId())) {
+//            //TODO : 결제 환불 API 호출
+//
+//            changeOrderStatusInRedisAndDb(orderSeatRedis, order, OrderStatus.NO_RESERVATION);
+//
+//            throw new RuntimeException(USER_ID_WITH_SEATS_NOT_MATCHED.getMessage());
+//        }
+//
+//        if (!order.getId().equals(orderSeatRedis.getId())) {
+//            //TODO : 결제 환불 API 호출
+//
+//            changeOrderStatusInRedisAndDb(orderSeatRedis, order, OrderStatus.NO_RESERVATION);
+//
+//            throw new RuntimeException(ORDER_EACH_USER_NOT_MATCHED.getMessage());
+//        }
 
         changeOrderStatusInRedisAndDb(orderSeatRedis, order, OrderStatus.RESERVATION);
     }
 
-    public void OrderPaymentFail(OrderPaymentDto orderPaymentDto) {
-        //TODO : 결제 실패 후 로직
-    }
 
     public void changeOrderStatusInRedisAndDb(OrderSeatRedis orderSeatRedis, Order order,
         OrderStatus orderStatus) {

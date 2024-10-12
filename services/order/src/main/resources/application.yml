@@ -11,7 +11,7 @@ spring:
     import: "classpath:application-jpa.yml"
 
 redis:
-  host: order-redis
+  host: redis
   port: 6379
 
 
