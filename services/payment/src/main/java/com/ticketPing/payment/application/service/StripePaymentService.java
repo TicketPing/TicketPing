@@ -32,9 +32,11 @@ public class StripePaymentService {
     private final StripeClient client;
     private final PaymentJpaRepository repository;
     private final ReservationClient reservationClient;
+    private final StripePaymentConfig config;
 
 
     public StripePaymentService(StripePaymentConfig config, PaymentJpaRepository repository, ReservationClient reservationClient) {
+        this.config = config;
         this.client = new StripeClient(config.getSecretKey());
         this.repository = repository;
         this.reservationClient = reservationClient;
