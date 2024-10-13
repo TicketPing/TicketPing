@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.ticketPing.user.presentation.request.CreateUserRequest;
 import common.response.CommonResponse;
+import request.LoginRequest;
 
 import java.util.UUID;
 
@@ -25,6 +26,14 @@ public class UserController {
         return ResponseEntity
                 .status(201)
                 .body(CommonResponse.success(UserSuccessCase.SUCCESS_CREATE_USER, userResponse));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<CommonResponse<UserResponse>> getUser(@RequestBody LoginRequest request) {
+        UserResponse userResponse = userService.findUserByEmailAndPassword(request);
+        return ResponseEntity
+                .status(200)
+                .body(CommonResponse.success(UserSuccessCase.SUCCESS_GET_USER, userResponse));
     }
 
     @GetMapping("/{userId}")

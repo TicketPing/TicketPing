@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ticketPing.user.presentation.request.CreateUserRequest;
+import request.LoginRequest;
 
 import java.util.UUID;
 
@@ -46,6 +47,22 @@ public class UserService {
     @Transactional
     public User findUserById(UUID userId) {
         return userRepository.findById(userId)
+                .orElseThrow(() -> new ApplicationException(UserErrorCase.USER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponse findUserByEmailAndPassword(LoginRequest request) {
+        User user = findUserByEmail(request.email());
+
+        if(!passwordEncoder.matches(request.password(), user.getPassword()))
+            throw new ApplicationException(UserErrorCase.PASSWORD_NOT_EQUAL);
+
+        return UserResponse.of(user);
+    }
+
+    @Transactional
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ApplicationException(UserErrorCase.USER_NOT_FOUND));
     }
 }

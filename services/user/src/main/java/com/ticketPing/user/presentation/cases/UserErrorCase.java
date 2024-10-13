@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 public enum UserErrorCase implements ErrorCase {
     DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "Email already exists"),
     INVALID_GENDER(HttpStatus.BAD_REQUEST, "Invalid gender"),
-    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "User not found");
+    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "User not found"),
+    PASSWORD_NOT_EQUAL(HttpStatus.BAD_REQUEST, "Password not equal");
 
     private final HttpStatus httpStatus;
     private final String message;
