@@ -1,14 +1,14 @@
 package com.ticketPing.user.presentation.controller;
 
+import com.ticketPing.user.application.dto.UserResponse;
 import com.ticketPing.user.application.service.UserService;
-import com.ticketPing.user.presentation.status.UserSuccessCase;
+import com.ticketPing.user.presentation.cases.UserSuccessCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.ticketPing.user.application.dto.request.CreateUserRequest;
+import com.ticketPing.user.presentation.request.CreateUserRequest;
 import common.response.CommonResponse;
-import response.UserResponse;
 
 import java.util.UUID;
 

@@ -3,7 +3,7 @@ package com.ticketPing.user.domain.entity;
 import audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import com.ticketPing.user.application.dto.request.CreateUserRequest;
+import com.ticketPing.user.presentation.request.CreateUserRequest;
 
 import java.time.LocalDate;
 import java.util.UUID;
