@@ -14,7 +14,6 @@ import com.ticketPing.queue_manage.domain.model.WorkingQueueToken;
 import com.ticketPing.queue_manage.domain.repository.WaitingQueueRepository;
 import com.ticketPing.queue_manage.domain.repository.WorkingQueueRepository;
 import common.exception.ApplicationException;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,36 +25,36 @@ public class WaitingQueueApplicationServiceImpl implements WaitingQueueApplicati
     private final WorkingQueueRepository workingQueueRepository;
 
     @Override
-    public GeneralTokenResponse enterWaitingQueue(UUID userId, String performanceName) {
-        AvailableSlots availableSlots = workingQueueRepository.countAvailableSlots(CountAvailableSlotsCommand.create(performanceName));
+    public GeneralTokenResponse enterWaitingQueue(String userId, String performanceId) {
         // 작업열 인원 여유 확인
+        AvailableSlots availableSlots = workingQueueRepository.countAvailableSlots(CountAvailableSlotsCommand.create(performanceId));
         if (availableSlots.isLimited()) {
-            return getWaitingTokenResponse(userId, performanceName);
+            return getWaitingTokenResponse(userId, performanceId);
         }
-        return getWorkingTokenResponse(userId, performanceName);
+        return getWorkingTokenResponse(userId, performanceId);
     }
 
     // 대기열 진입
-    private GeneralTokenResponse getWaitingTokenResponse(UUID userId, String performanceName) {
-        WaitingQueueToken token = WaitingQueueToken.create(userId, performanceName);
+    private GeneralTokenResponse getWaitingTokenResponse(String userId, String performanceId) {
+        WaitingQueueToken token = WaitingQueueToken.create(userId, performanceId);
         waitingQueueRepository.enqueueWaitingToken(EnqueueWaitingTokenCommand.create(token));
         return GeneralTokenResponse.from(token);
     }
 
-    // 작업열 진입
-    private GeneralTokenResponse getWorkingTokenResponse(UUID userId, String performanceName) {
-        WorkingQueueToken token = WorkingQueueToken.create(userId, performanceName);
+    // 작업열 진입 및 카운터 증가
+    private GeneralTokenResponse getWorkingTokenResponse(String userId, String performanceId) {
+        WorkingQueueToken token = WorkingQueueToken.create(userId, performanceId);
         workingQueueRepository.enqueueWorkingToken(EnqueueWorkingTokenCommand.create(token));
         return GeneralTokenResponse.from(token);
     }
 
     @Override
-    public GeneralTokenResponse getQueueToken(UUID userId, String performanceName) {
-        return waitingQueueRepository.retrieveWaitingToken(RetrieveWaitingTokenCommand.create(userId, performanceName))
+    public GeneralTokenResponse getQueueToken(String userId, String performanceId) {
+        return waitingQueueRepository.retrieveWaitingToken(RetrieveWaitingTokenCommand.create(userId, performanceId))
                 .map(GeneralTokenResponse::from)
                 // 대기열 존재하지 않을 떄
                 .orElseGet(() ->
-                        workingQueueRepository.retrieveWorkingToken(RetrieveWorkingTokenCommand.create(userId, performanceName))
+                        workingQueueRepository.retrieveWorkingToken(RetrieveWorkingTokenCommand.create(userId, performanceId))
                                 .map(GeneralTokenResponse::from)
                                 // 작업열 존재하지 않을 때
                                 .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND))

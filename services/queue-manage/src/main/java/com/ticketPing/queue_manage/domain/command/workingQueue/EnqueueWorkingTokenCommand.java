@@ -11,14 +11,14 @@ import lombok.Getter;
 @Builder(access = AccessLevel.PRIVATE)
 public class EnqueueWorkingTokenCommand {
 
-    private String performanceName;
+    private String performanceId;
     private String tokenValue;
     private String value;
     private long ttl;
 
     public static EnqueueWorkingTokenCommand create(WorkingQueueToken token) {
         return EnqueueWorkingTokenCommand.builder()
-                .performanceName(token.getPerformanceName())
+                .performanceId(token.getPerformanceId())
                 .tokenValue(token.getTokenValue())
                 .value("NA")
                 .ttl(workingQueueTokenTTL()).build();

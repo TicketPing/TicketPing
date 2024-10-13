@@ -8,12 +8,12 @@ import lombok.Getter;
 @Builder(access = AccessLevel.PRIVATE)
 public class DequeueWorkingTokenCommand {
 
-    private String performanceName;
+    private String performanceId;
     private String tokenValue;
 
     public static DequeueWorkingTokenCommand create(String tokenValue) {
         return DequeueWorkingTokenCommand.builder()
-                .performanceName(tokenValue.split("_")[0])
+                .performanceId(tokenValue.split(":")[1])
                 .tokenValue(tokenValue)
                 .build();
     }
