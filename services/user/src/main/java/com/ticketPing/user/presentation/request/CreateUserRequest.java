@@ -1,6 +1,6 @@
-package com.ticketPing.user.application.dto.request;
+package com.ticketPing.user.presentation.request;
 
-import com.ticketPing.user.presentation.status.UserInfoErrorMessage;
+import com.ticketPing.user.presentation.cases.UserInfoErrorMessage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 public record CreateUserRequest(
         @NotBlank(message = UserInfoErrorMessage.EMAIL_REQUIRED)
-        @Pattern(regexp = "^[A-Za-z0-9]+@[A-Za-z0-9]+.[A-Za-z]{2,6}",
+        @Pattern(regexp = "^[A-Za-z0-9]+@[A-Za-z0-9]+\\.[A-Za-z]{2,6}",
                 message = UserInfoErrorMessage.INVALID_EMAIL)
         String email,
 
