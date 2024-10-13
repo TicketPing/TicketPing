@@ -1,15 +1,15 @@
 package com.ticketPing.user.application.service;
 
+import com.ticketPing.user.application.dto.UserResponse;
 import com.ticketPing.user.domain.entity.User;
 import com.ticketPing.user.domain.repository.UserRepository;
-import com.ticketPing.user.presentation.status.UserErrorCase;
+import com.ticketPing.user.presentation.cases.UserErrorCase;
 import common.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.ticketPing.user.application.dto.request.CreateUserRequest;
-import response.UserResponse;
+import com.ticketPing.user.presentation.request.CreateUserRequest;
 
 import java.util.UUID;
 
@@ -28,8 +28,7 @@ public class UserService {
         User user = User.from(request, encodedPassword);
         User savedUser = userRepository.save(user);
 
-        return UserResponse.of(savedUser.getId(), savedUser.getEmail(), savedUser.getNickname(),
-                savedUser.getBirthday(), savedUser.getGender().getValue());
+        return UserResponse.of(savedUser);
     }
 
     @Transactional
@@ -41,8 +40,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponse getUser(UUID userId) {
         User user = findUserById(userId);
-        return UserResponse.of(user.getId(), user.getEmail(), user.getNickname(),
-                user.getBirthday(), user.getGender().getValue());
+        return UserResponse.of(user);
     }
 
     @Transactional

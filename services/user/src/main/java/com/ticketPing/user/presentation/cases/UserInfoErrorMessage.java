@@ -1,4 +1,4 @@
-package com.ticketPing.user.presentation.status;
+package com.ticketPing.user.presentation.cases;
 
 public class UserInfoErrorMessage {
     public static final String EMAIL_REQUIRED = "Email is required";
