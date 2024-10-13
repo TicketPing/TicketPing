@@ -29,8 +29,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<UserResponse>> getUser(@RequestBody LoginRequest request) {
-        UserResponse userResponse = userService.findUserByEmailAndPassword(request);
+    public ResponseEntity<CommonResponse<UserResponse>> getUserByEmailAndPassword(@RequestBody LoginRequest request) {
+        UserResponse userResponse = userService.getUserByEmailAndPassword(request);
         return ResponseEntity
                 .status(200)
                 .body(CommonResponse.success(UserSuccessCase.SUCCESS_GET_USER, userResponse));
