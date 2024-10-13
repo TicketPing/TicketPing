@@ -48,9 +48,3 @@ services:
       context: ./services/queue-manage
       dockerfile: Dockerfile
     image: ticketping/queue-manage-server
-
-  client-channel-server:
-    build:
-      context: ./services/client-channel
-      dockerfile: Dockerfile
-    image: ticketping/client-channel-server

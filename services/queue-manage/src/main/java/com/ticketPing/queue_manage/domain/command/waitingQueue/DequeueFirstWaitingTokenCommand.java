@@ -8,14 +8,14 @@ import lombok.Getter;
 @Builder(access = AccessLevel.PRIVATE)
 public class DequeueFirstWaitingTokenCommand {
 
-    private String performanceName;
+    private String performanceId;
     private String queueName;
 
     public static DequeueFirstWaitingTokenCommand create(String expiredTokenValue) {
-        String performanceName = expiredTokenValue.split("_")[0];
+        String performanceId = expiredTokenValue.split(":")[1];
         return DequeueFirstWaitingTokenCommand.builder()
-                .performanceName(performanceName)
-                .queueName(performanceName + "_Queue")
+                .performanceId(performanceId)
+                .queueName(performanceId + "_Queue")
                 .build();
     }
 
