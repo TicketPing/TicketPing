@@ -30,7 +30,7 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
         int totalSize = sortedSet.size();
         try {
             int position = sortedSet.rank(command.getTokenValue()) + 1;
-            return Optional.of(tokenWithPosition(command.getUserId(), command.getPerformanceName(), command.getTokenValue(), position, totalSize));
+            return Optional.of(tokenWithPosition(command.getUserId(), command.getPerformanceId(), command.getTokenValue(), position, totalSize));
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -44,7 +44,7 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
             return Optional.empty();
         }
         sortedSet.remove(tokenValue);
-        return Optional.of(WaitingQueueToken.valueOf(command.getPerformanceName(), tokenValue));
+        return Optional.of(WaitingQueueToken.valueOf(command.getPerformanceId(), tokenValue));
     }
 
 }

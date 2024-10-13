@@ -13,5 +13,4 @@ public interface WorkingQueueRepository {
     void enqueueWorkingToken(EnqueueWorkingTokenCommand command);
     Optional<WorkingQueueToken> retrieveWorkingToken(RetrieveWorkingTokenCommand command);
     void dequeueWorkingToken(DequeueWorkingTokenCommand command);
-    void decreaseCounter(DequeueWorkingTokenCommand command);
 }

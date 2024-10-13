@@ -25,7 +25,7 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
 
     @Override
     public AvailableSlots countAvailableSlots(CountAvailableSlotsCommand command) {
-        RAtomicLong counter = redissonClient.getAtomicLong(command.getPerformanceName());
+        RAtomicLong counter = redissonClient.getAtomicLong(command.getPerformanceId());
         return AvailableSlots.from(counter.get());
     }
 
@@ -47,7 +47,7 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
     }
 
     private void increaseCounter(EnqueueWorkingTokenCommand command) {
-        redissonClient.getAtomicLong(command.getPerformanceName()).incrementAndGet();
+        redissonClient.getAtomicLong(command.getPerformanceId()).incrementAndGet();
     }
 
     @Override
@@ -58,7 +58,7 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
             return Optional.empty();
         }
         long ttl = bucket.remainTimeToLive();
-        WorkingQueueToken token = tokenWithValidUntil(command.getUserId(), command.getPerformanceName(), command.getTokenValue(), toLocalDateTime(ttl));
+        WorkingQueueToken token = tokenWithValidUntil(command.getUserId(), command.getPerformanceId(), command.getTokenValue(), toLocalDateTime(ttl));
         return Optional.of(token);
     }
 
@@ -72,9 +72,8 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
         redissonClient.getBucket(command.getTokenValue()).delete();
     }
 
-    @Override
-    public void decreaseCounter(DequeueWorkingTokenCommand command) {
-        redissonClient.getAtomicLong(command.getPerformanceName()).decrementAndGet();
+    private void decreaseCounter(DequeueWorkingTokenCommand command) {
+        redissonClient.getAtomicLong(command.getPerformanceId()).decrementAndGet();
     }
 
 }

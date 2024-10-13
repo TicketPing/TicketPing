@@ -13,7 +13,6 @@ import com.ticketPing.queue_manage.domain.repository.WaitingQueueRepository;
 import com.ticketPing.queue_manage.domain.repository.WorkingQueueRepository;
 import common.exception.ApplicationException;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,22 +24,21 @@ public class WorkingQueueApplicationServiceImpl implements WorkingQueueApplicati
     private final WaitingQueueRepository waitingQueueRepository;
 
     @Override
-    public GeneralTokenResponse getWorkingQueueToken(UUID userId, String performanceName) {
-        Optional<WorkingQueueToken> token = workingQueueRepository.retrieveWorkingToken(RetrieveWorkingTokenCommand.create(userId, performanceName));
+    public GeneralTokenResponse getWorkingQueueToken(String userId, String performanceId) {
+        Optional<WorkingQueueToken> token = workingQueueRepository.retrieveWorkingToken(RetrieveWorkingTokenCommand.create(userId, performanceId));
         return GeneralTokenResponse.from(token.orElseThrow(() -> new ApplicationException(INVALID_TOKEN)));
     }
 
     @Override
     public void processQueueTransfer(String expiredTokenValue) {
-        // 작업열 카운터 감소
-        workingQueueRepository.decreaseCounter(DequeueWorkingTokenCommand.create(expiredTokenValue));
+        // 작업열 토큰 삭제 및 카운터 감소
+        workingQueueRepository.dequeueWorkingToken(DequeueWorkingTokenCommand.create(expiredTokenValue));
         // 대기열 첫번째 토큰 조회 및 삭제
-        Optional<WaitingQueueToken> deletedWaitingToken = waitingQueueRepository.dequeueFirstWaitingToken(
-                DequeueFirstWaitingTokenCommand.create(expiredTokenValue));
+        Optional<WaitingQueueToken> deletedWaitingToken = waitingQueueRepository.dequeueFirstWaitingToken(DequeueFirstWaitingTokenCommand.create(expiredTokenValue));
         if (deletedWaitingToken.isEmpty()) {
             return;
         }
-        // 작업열 진입
+        // 작업열 진입 및 카운터 증가
         WorkingQueueToken workingToken = deletedWaitingToken.get().toWorkingQueueToken();
         workingQueueRepository.enqueueWorkingToken(EnqueueWorkingTokenCommand.create(workingToken));
     }
