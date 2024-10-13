@@ -51,7 +51,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponse findUserByEmailAndPassword(LoginRequest request) {
+    public UserResponse getUserByEmailAndPassword(LoginRequest request) {
         User user = findUserByEmail(request.email());
 
         if(!passwordEncoder.matches(request.password(), user.getPassword()))
