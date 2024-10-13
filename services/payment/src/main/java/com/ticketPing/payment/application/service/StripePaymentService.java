@@ -1,5 +1,6 @@
 package com.ticketPing.payment.application.service;
 
+import com.stripe.Stripe;
 import com.stripe.StripeClient;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
@@ -16,6 +17,7 @@ import com.ticketPing.payment.presentation.request.StripeRequestDto;
 import common.exception.ApplicationException;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +34,12 @@ public class StripePaymentService {
     private final StripeClient client;
     private final PaymentJpaRepository repository;
     private final ReservationClient reservationClient;
+    private final StripePaymentConfig config;
 
 
+    @Autowired
     public StripePaymentService(StripePaymentConfig config, PaymentJpaRepository repository, ReservationClient reservationClient) {
+        this.config = config;
         this.client = new StripeClient(config.getSecretKey());
         this.repository = repository;
         this.reservationClient = reservationClient;
