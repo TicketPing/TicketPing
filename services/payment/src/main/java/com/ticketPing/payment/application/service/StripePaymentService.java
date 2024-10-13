@@ -8,6 +8,7 @@ import com.stripe.model.PaymentMethodDomain;
 import com.stripe.net.RequestOptions;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentMethodDomainCreateParams;
+import com.ticketPing.payment.application.dto.StripeCreatePaymentResponse;
 import com.ticketPing.payment.application.dto.StripeResponseDto;
 import com.ticketPing.payment.domain.model.Payment;
 import com.ticketPing.payment.infrastructure.client.ReservationClient;
@@ -45,8 +46,9 @@ public class StripePaymentService {
         this.reservationClient = reservationClient;
     }
 
-    public StripeResponseDto payment(UUID orderId, StripeRequestDto requestDto) {
+    public StripeCreatePaymentResponse payment(UUID orderId, StripeRequestDto requestDto) {
         try {
+            //Todo : orderId로 Order에 requestDto 데이터 요청
             PaymentIntentCreateParams params = getPaymentIntentCreateParams(
                     requestDto.getAmount(), requestDto.getPerformanceName(), requestDto.getPerformanceTime(), requestDto.getSeatInfo(), requestDto.getUserEmail());
             PaymentIntent paymentIntent = client.paymentIntents().create(params);
@@ -58,14 +60,14 @@ public class StripePaymentService {
                     paymentIntent.getClientSecret(),
                     paymentIntent.getDescription(),
                     paymentIntent.getCreated());
-
             //dto -> entity
             Payment payment = new Payment(responseDto);
-            //Todo : 중복 예매 검증 -> 공연명과 공연일자와 자리가 같을 경우?? -> 예매 파트에서? 결제에서도 한번 더?
-
             //db 저장
             repository.save(payment);
-            return responseDto;
+            //Todo : 중복 예매 검증 -> 공연명과 공연일자와 자리가 같을 경우?? -> 예매 파트에서? 결제에서도 한번 더?
+
+            return new StripeCreatePaymentResponse(
+                    paymentIntent.getClientSecret(), paymentIntent.getId());
         } catch (StripeException e) {
             throw new ApplicationException(PAYMENT_INTENT_FAIL);
         }
