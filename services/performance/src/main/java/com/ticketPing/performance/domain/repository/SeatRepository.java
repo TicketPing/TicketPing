@@ -13,4 +13,6 @@ public interface SeatRepository {
     Optional<Seat> findById(UUID id);
 
     List<Seat> findByScheduleJoinSeatCost(Schedule schedule);
+
+    Optional<Seat> findByIdJoinAll(UUID seatId);
 }
