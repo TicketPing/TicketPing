@@ -1,4 +1,4 @@
-package com.ticketPing.performance.presentation.response.exception;
+package com.ticketPing.performance.presentation.cases.exception;
 
 import common.cases.ErrorCase;
 import lombok.Getter;
