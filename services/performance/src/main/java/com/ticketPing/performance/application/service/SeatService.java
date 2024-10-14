@@ -1,5 +1,6 @@
 package com.ticketPing.performance.application.service;
 
+import com.ticketPing.performance.application.dtos.OrderInfoResponse;
 import com.ticketPing.performance.application.dtos.SeatResponse;
 import com.ticketPing.performance.domain.entity.RedisSeat;
 import com.ticketPing.performance.domain.entity.Schedule;
@@ -39,6 +40,13 @@ public class SeatService {
     public Seat findSeatById(UUID id) {
         return seatRepository.findById(id)
                 .orElseThrow(() -> new ApplicationException(SeatExceptionCase.SEAT_NOT_FOUND));
+    }
+
+    @Transactional
+    public OrderInfoResponse getOrderInfo(UUID seatId) {
+        Seat seat = seatRepository.findByIdJoinAll(seatId)
+                .orElseThrow(() -> new ApplicationException(SeatExceptionCase.SEAT_NOT_FOUND));
+        return OrderInfoResponse.of(seat);
     }
 
     @Transactional

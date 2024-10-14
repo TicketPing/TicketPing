@@ -1,5 +1,6 @@
 package com.ticketPing.performance.presentation.controller;
 
+import com.ticketPing.performance.application.dtos.OrderInfoResponse;
 import com.ticketPing.performance.application.dtos.SeatResponse;
 import com.ticketPing.performance.application.service.SeatService;
 import com.ticketPing.performance.presentation.cases.success.SeatSuccessCase;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/seat")
+@RequestMapping("/api/v1/seats")
 @RequiredArgsConstructor
 public class SeatController {
     private final SeatService seatService;
@@ -24,6 +25,15 @@ public class SeatController {
         return ResponseEntity
                 .status(200)
                 .body(CommonResponse.success(SeatSuccessCase.SUCCESS_SEAT, seatResponse));
+    }
+
+    @Operation(summary = "좌석 주문 정보 조회")
+    @GetMapping("/{seatId}/order-info")
+    public ResponseEntity<CommonResponse<OrderInfoResponse>> getOrderInfo(@PathVariable("seatId") UUID seatId) {
+        OrderInfoResponse orderInfoResponse = seatService.getOrderInfo(seatId);
+        return ResponseEntity
+                .status(200)
+                .body(CommonResponse.success(SeatSuccessCase.SUCCESS_SEAT_ORDERINFO, orderInfoResponse));
     }
 
     @Operation(summary = "좌석 상태 수정")
