@@ -1,6 +1,6 @@
 package com.ticketPing.queue_manage.domain.model;
 
-import static com.ticketPing.queue_manage.infrastructure.utils.YmlLoader.workingQueueMaxSize;
+import static com.ticketPing.queue_manage.infrastructure.utils.ConfigHolder.workingQueueMaxSize;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(access = AccessLevel.PRIVATE)
 public class AvailableSlots {
-    
+
     private long count;
 
     public static AvailableSlots from(long currentCount) {
-        return AvailableSlots.builder()
+     return AvailableSlots.builder()
                 .count(workingQueueMaxSize() - currentCount)
                 .build();
     }

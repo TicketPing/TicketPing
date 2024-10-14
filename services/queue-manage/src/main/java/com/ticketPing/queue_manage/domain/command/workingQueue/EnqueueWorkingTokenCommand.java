@@ -1,6 +1,6 @@
 package com.ticketPing.queue_manage.domain.command.workingQueue;
 
-import static com.ticketPing.queue_manage.infrastructure.utils.YmlLoader.workingQueueTokenTTL;
+import static com.ticketPing.queue_manage.infrastructure.utils.ConfigHolder.workingQueueTokenTTL;
 
 import com.ticketPing.queue_manage.domain.model.WorkingQueueToken;
 import lombok.AccessLevel;

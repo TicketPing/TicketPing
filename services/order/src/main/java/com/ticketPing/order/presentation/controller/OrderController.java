@@ -7,7 +7,6 @@ import static com.ticketPing.order.presentation.response.success.OrderSuccessCas
 import com.ticketPing.order.application.dtos.OrderCreateRequestDto;
 import com.ticketPing.order.application.dtos.OrderCreateResponseDto;
 import com.ticketPing.order.application.service.OrderService;
-import dto.OrderPaymentDto;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -65,5 +64,9 @@ public class OrderController {
         orderService.updateOrderStatus(orderId,status);
     }
 
+    @PostMapping("/test")
+    public void test() {
+        orderService.test();
+    }
 
 }

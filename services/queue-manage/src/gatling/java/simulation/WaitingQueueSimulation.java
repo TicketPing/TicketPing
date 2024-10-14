@@ -1,6 +1,5 @@
 package simulation;
 
-import com.ticketPing.queue_manage.infrastructure.utils.YmlLoader;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import io.gatling.javaapi.core.Simulation;
 import io.gatling.javaapi.http.HttpProtocolBuilder;
@@ -8,13 +7,14 @@ import io.gatling.javaapi.http.HttpProtocolBuilder;
 import java.time.Duration;
 import java.util.UUID;
 
+import static com.ticketPing.queue_manage.infrastructure.utils.ConfigHolder.serverPort;
 import static io.gatling.javaapi.core.CoreDsl.rampUsers;
 import static io.gatling.javaapi.core.CoreDsl.scenario;
 import static io.gatling.javaapi.http.HttpDsl.http;
 import static io.gatling.javaapi.http.HttpDsl.status;
 
 public class WaitingQueueSimulation extends Simulation {
-    private static final String BASE_URL = "http://localhost:" + YmlLoader.getConfigMap("server.port") + "/api/waiting-queue";
+    private static final String BASE_URL = "http://localhost:" + serverPort() + "/api/waiting-queue";
 
     private final HttpProtocolBuilder httpProtocolBuilder = http
             .baseUrl(BASE_URL);

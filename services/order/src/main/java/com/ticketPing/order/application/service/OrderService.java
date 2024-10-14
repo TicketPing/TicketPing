@@ -242,4 +242,12 @@ public class OrderService {
             .map(OrderSeatRedis::OrderSeatRedisToDto)
             .collect(Collectors.toList());
     }
+
+    public void test() {
+        // 예매 완료 이벤트 발행
+        String userId = "1";
+        String performanceId = "1";
+        eventApplicationService.publishOrderCompletedEvent(OrderCompletedEvent.create(userId, performanceId));
+    }
+
 }
