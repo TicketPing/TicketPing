@@ -8,6 +8,7 @@ import com.ticketPing.performance.domain.entity.Performance;
 import com.ticketPing.performance.presentation.cases.success.PerformanceSuccessCase;
 import com.ticketPing.performance.presentation.cases.success.ScheduleSuccessCase;
 import common.response.CommonResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ public class PerformanceController {
     private final PerformanceService performanceService;
     private final ScheduleService scheduleService;
 
+    @Operation(summary = "공연 조회")
     @GetMapping("/{performanceId}")
     public ResponseEntity<CommonResponse<PerformanceResponse>> getPerformance(@PathVariable UUID performanceId) {
         PerformanceResponse performanceResponse = performanceService.getPerformance(performanceId);
@@ -34,6 +36,7 @@ public class PerformanceController {
                 .body(CommonResponse.success(PerformanceSuccessCase.PERFORMANCE_DETAIL_SUCCESS, performanceResponse));
     }
 
+    @Operation(summary = "공연 목록 조회")
     @GetMapping
     public ResponseEntity<CommonResponse<Page<PerformanceResponse>>> getAllPerformances(Pageable pageable) {
         Page<PerformanceResponse> performanceResponses = performanceService.getAllPerformances(pageable);
@@ -43,6 +46,7 @@ public class PerformanceController {
     }
 
     // TODO: fetch join으로 변경?
+    @Operation(summary = "공연 스케줄 목록 조회")
     @GetMapping("/{performanceId}/schedules")
     public ResponseEntity<CommonResponse<Page<ScheduleResponse>>> getSchedulesByPerformance(@PathVariable UUID performanceId, Pageable pageable) {
         Performance performance = performanceService.getAndValidatePerformance(performanceId);
