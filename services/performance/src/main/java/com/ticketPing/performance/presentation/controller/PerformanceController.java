@@ -29,7 +29,7 @@ public class PerformanceController {
 
     @Operation(summary = "공연 조회")
     @GetMapping("/{performanceId}")
-    public ResponseEntity<CommonResponse<PerformanceResponse>> getPerformance(@PathVariable UUID performanceId) {
+    public ResponseEntity<CommonResponse<PerformanceResponse>> getPerformance(@PathVariable("performanceId") UUID performanceId) {
         PerformanceResponse performanceResponse = performanceService.getPerformance(performanceId);
         return ResponseEntity
                 .status(200)
@@ -48,7 +48,7 @@ public class PerformanceController {
     // TODO: fetch join으로 변경?
     @Operation(summary = "공연 스케줄 목록 조회")
     @GetMapping("/{performanceId}/schedules")
-    public ResponseEntity<CommonResponse<Page<ScheduleResponse>>> getSchedulesByPerformance(@PathVariable UUID performanceId, Pageable pageable) {
+    public ResponseEntity<CommonResponse<Page<ScheduleResponse>>> getSchedulesByPerformance(@PathVariable("performanceId") UUID performanceId, Pageable pageable) {
         Performance performance = performanceService.getAndValidatePerformance(performanceId);
         Page<ScheduleResponse> scheduleResponses = scheduleService.getSchedulesByPerformance(performance, pageable);
         return ResponseEntity
