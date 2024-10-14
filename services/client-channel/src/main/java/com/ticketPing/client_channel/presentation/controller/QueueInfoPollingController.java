@@ -22,7 +22,7 @@ public class QueueInfoPollingController {
     private final QueueInfoPollingService queueInfoPollingService;
 
     @Operation(summary = "대기열 상태 조회 Polling")
-    @GetMapping("/api/waiting-queue/{userId}")
+    @GetMapping("/api/v1/waiting-queue/{userId}")
     public CommonResponse<GeneralTokenResponse> getWaitingQueueInfo(@Valid @PathVariable("userId") UUID userId,
                                                                     @Valid @RequestParam("performanceName") String performanceName) {
         return success(GET_QUEUE_TOKEN_SUCCESS, queueInfoPollingService.getWaitingQueueInfo(userId, performanceName));
