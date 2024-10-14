@@ -37,4 +37,8 @@ public class Seat {
                 .schedule(schedule)
                 .build();
     }
+
+    public void updateSeatState(Boolean seatState) {
+        this.seatState = seatState;
+    }
 }

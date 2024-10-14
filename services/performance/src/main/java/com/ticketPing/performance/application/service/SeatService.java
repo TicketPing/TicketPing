@@ -23,6 +23,13 @@ public class SeatService {
     }
 
     @Transactional
+    public SeatResponse updateSeatState(UUID seatId, Boolean seatState) {
+        Seat seat = findSeatById(seatId);
+        seat.updateSeatState(seatState);
+        return SeatResponse.of(seat);
+    }
+
+    @Transactional
     public Seat findSeatById(UUID id) {
         return seatRepository.findById(id)
                 .orElseThrow(() -> new ApplicationException(SeatExceptionCase.SEAT_NOT_FOUND));
