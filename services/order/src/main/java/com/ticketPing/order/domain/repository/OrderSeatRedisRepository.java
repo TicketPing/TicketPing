@@ -5,7 +5,9 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.repository.CrudRepository;
 
-public interface OrderSeatRedisRepository extends CrudRepository<OrderSeatRedis, UUID> {
+public interface OrderSeatRedisRepository extends CrudRepository<OrderSeatRedis, String> {
 
+    Optional<OrderSeatRedis> findById(String userSeatId);
 }
+
 
