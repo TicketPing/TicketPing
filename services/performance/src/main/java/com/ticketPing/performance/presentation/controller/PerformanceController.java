@@ -6,7 +6,6 @@ import com.ticketPing.performance.application.service.PerformanceService;
 import com.ticketPing.performance.application.service.ScheduleService;
 import com.ticketPing.performance.domain.entity.Performance;
 import com.ticketPing.performance.presentation.cases.success.PerformanceSuccessCase;
-import com.ticketPing.performance.presentation.cases.success.ScheduleSuccessCase;
 import common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +52,7 @@ public class PerformanceController {
         Page<ScheduleResponse> scheduleResponses = scheduleService.getSchedulesByPerformance(performance, pageable);
         return ResponseEntity
                 .status(200)
-                .body(CommonResponse.success(ScheduleSuccessCase.SCHEDULE_LIST_SUCCESS, scheduleResponses));
+                .body(CommonResponse.success(PerformanceSuccessCase.SCHEDULE_LIST_SUCCESS, scheduleResponses));
     }
 }
 

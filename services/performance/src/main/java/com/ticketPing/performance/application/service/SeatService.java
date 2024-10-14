@@ -10,11 +10,11 @@ import com.ticketPing.performance.infrastructure.repository.RedisSeatRepository;
 import com.ticketPing.performance.presentation.cases.exception.SeatExceptionCase;
 import common.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -22,23 +22,24 @@ public class SeatService {
     private final SeatRepository seatRepository;
     // TODO: domain에 상위 레포지토리 만들기 (saveAll이 오버라이딩이 계속 안됨)
     private final RedisSeatRepository redisSeatRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional(readOnly = true)
     public SeatResponse getSeat(UUID id) {
-        Seat seat = findSeatById(id);
+        Seat seat = findSeatByIdJoinSeatCost(id);
         return SeatResponse.of(seat);
     }
 
     @Transactional
     public SeatResponse updateSeatState(UUID seatId, Boolean seatState) {
-        Seat seat = findSeatById(seatId);
+        Seat seat = findSeatByIdJoinSeatCost(seatId);
         seat.updateSeatState(seatState);
         return SeatResponse.of(seat);
     }
 
     @Transactional
-    public Seat findSeatById(UUID id) {
-        return seatRepository.findById(id)
+    public Seat findSeatByIdJoinSeatCost(UUID id) {
+        return seatRepository.findByIdJoinSeatCost(id)
                 .orElseThrow(() -> new ApplicationException(SeatExceptionCase.SEAT_NOT_FOUND));
     }
 
@@ -50,14 +51,30 @@ public class SeatService {
     }
 
     @Transactional
+    public List<SeatResponse> getAllScheduleSeats(UUID scheduleId) {
+        Set<String> ids = redisTemplate.keys("seat:" + scheduleId + ":*");
+        List<String> redisSeatIds = ids.stream().map(id -> id.substring(5)).toList();
+        Iterable<RedisSeat> redisSeats = redisSeatRepository.findAllById(redisSeatIds);
+
+        List<SeatResponse> seats = new ArrayList<>();
+        redisSeats.forEach(redisSeat -> seats.add(SeatResponse.of(redisSeat)));
+        return seats;
+    }
+
+    @Transactional
     public void createSeatsCache(Schedule schedule) {
-        List<Seat> seats = findSeatsJoinSeatCostBySchedule(schedule);
+        List<Seat> seats = findSeatsByScheduleJoinSeatCost(schedule);
+
+        // counter 생성
+        redisTemplate.opsForValue().set("counter:" + schedule.getId(), seats.size());
+
+        // 좌석 캐싱
         Iterable<RedisSeat> redisSeats = seats.stream().map(RedisSeat::from).toList();
         redisSeatRepository.saveAll(redisSeats);
     }
 
     @Transactional
-    public List<Seat> findSeatsJoinSeatCostBySchedule(Schedule schedule) {
+    public List<Seat> findSeatsByScheduleJoinSeatCost(Schedule schedule) {
         return seatRepository.findByScheduleJoinSeatCost(schedule);
     }
 }
