@@ -9,4 +9,6 @@ import java.util.UUID;
 
 public interface ScheduleRepository {
     Schedule save(Schedule schedule);
+
+    Optional<Schedule> findById(UUID id);
 }

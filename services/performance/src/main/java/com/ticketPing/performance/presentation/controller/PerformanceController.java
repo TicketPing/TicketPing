@@ -36,21 +36,8 @@ public class PerformanceController {
         Page<PerformanceResponse> performanceResponses = performanceService.getAllPerformances(pageable);
         return ResponseEntity
                 .status(200)
-                .body(CommonResponse.success(PerformanceSuccessCase.PERFORMANCE_DETAIL_SUCCESS, performanceResponses));
+                .body(CommonResponse.success(PerformanceSuccessCase.PERFORMANCE_LIST_SUCCESS, performanceResponses));
     }
-
-//
-//    // 공연 일정 단건 조회 (날짜 기준)
-//    @GetMapping("/date/{date}")
-//    public CommonResponse<List<PerformanceScheduleResponseDto>> getSchedulesByDate(
-//        @PathVariable String date) {
-//        LocalDate localDate = LocalDate.parse(date); // 문자열을 LocalDate로 변환
-//        List<PerformanceScheduleResponseDto> performanceScheduleResponseDtoList = performanceService.getAllPerformancesByDate(
-//            localDate);
-//
-//        return CommonResponse.success(PerformanceSuccessCase.PERFORMANCE_SCHEDULE_SUCCESS,
-//            performanceScheduleResponseDtoList);
-//    }
 //
 //    @GetMapping("/hall-seats/{performanceHallId}")
 //    public List<OrderPerformanceDto> getHallSeatsByPerformanceHallId(@PathVariable UUID performanceHallId) {
