@@ -10,10 +10,12 @@ import com.ticketPing.performance.infrastructure.repository.RedisSeatRepository;
 import com.ticketPing.performance.presentation.cases.exception.SeatExceptionCase;
 import common.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -22,6 +24,7 @@ public class SeatService {
     private final SeatRepository seatRepository;
     // TODO: domain에 상위 레포지토리 만들기 (saveAll이 오버라이딩이 계속 안됨)
     private final RedisSeatRepository redisSeatRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional(readOnly = true)
     public SeatResponse getSeat(UUID id) {
@@ -52,6 +55,11 @@ public class SeatService {
     @Transactional
     public void createSeatsCache(Schedule schedule) {
         List<Seat> seats = findSeatsByScheduleJoinSeatCost(schedule);
+
+        // counter 생성
+        redisTemplate.opsForValue().set("counter:" + schedule.getId(), seats.size());
+
+        // 좌석 캐싱
         Iterable<RedisSeat> redisSeats = seats.stream().map(RedisSeat::from).toList();
         redisSeatRepository.saveAll(redisSeats);
     }

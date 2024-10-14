@@ -7,14 +7,13 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-import java.util.UUID;
-
 @Data
 @Builder(access = AccessLevel.PRIVATE)
-@RedisHash("seat")
+@RedisHash(value = "seat:")
 public class RedisSeat {
+    // TODO: id 넣는 다른 방법?
     @Id
-    private UUID seatId;
+    private String id;
     private Integer row;
     private Integer col;
     private Boolean seatState;
@@ -23,7 +22,7 @@ public class RedisSeat {
 
     public static RedisSeat from(Seat seat) {
         return RedisSeat.builder()
-                .seatId(seat.getId())
+                .id(seat.getSchedule().getId() + ":" + seat.getId())
                 .row(seat.getRow())
                 .col(seat.getCol())
                 .seatState(seat.getSeatState())
