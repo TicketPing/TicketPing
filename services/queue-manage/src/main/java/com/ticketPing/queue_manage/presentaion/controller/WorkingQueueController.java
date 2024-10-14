@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/working-queue")
+@RequestMapping("/api/v1/working-queue")
 public class WorkingQueueController {
 
     private final WorkingQueueApplicationService workingQueueService;

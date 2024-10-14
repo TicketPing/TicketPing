@@ -31,14 +31,14 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
 
     @Override
     public void enqueueWorkingToken(EnqueueWorkingTokenCommand command) {
-        if (!isExistToken(command)) {
+        if (!isExistToken(command.getTokenValue())) {
             cacheToken(command);
             increaseCounter(command);
         }
     }
 
-    private boolean isExistToken(EnqueueWorkingTokenCommand command) {
-        return redissonClient.getBucket(command.getTokenValue()).get() != null;
+    private boolean isExistToken(String tokenValue) {
+        return redissonClient.getBucket(tokenValue).get() != null;
     }
 
     private void cacheToken(EnqueueWorkingTokenCommand command) {
@@ -64,8 +64,10 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
 
     @Override
     public void dequeueWorkingToken(DequeueWorkingTokenCommand command) {
-        deleteToken(command);
-        decreaseCounter(command);
+        if (isExistToken(command.getTokenValue())) {
+            deleteToken(command);
+            decreaseCounter(command);
+        }
     }
 
     private void deleteToken(DequeueWorkingTokenCommand command) {

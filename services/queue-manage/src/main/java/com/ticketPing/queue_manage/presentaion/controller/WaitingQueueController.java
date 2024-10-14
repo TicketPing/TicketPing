@@ -19,7 +19,7 @@ import common.response.CommonResponse;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/waiting-queue")
+@RequestMapping("/api/v1/waiting-queue")
 public class WaitingQueueController {
 
     private final WaitingQueueApplicationService waitingQueueService;
