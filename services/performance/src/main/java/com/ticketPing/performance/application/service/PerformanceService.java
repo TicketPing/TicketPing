@@ -6,6 +6,8 @@ import com.ticketPing.performance.domain.repository.PerformanceRepository;
 import com.ticketPing.performance.presentation.cases.exception.PerformanceExceptionCase;
 import common.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +32,11 @@ public class PerformanceService {
                 .orElseThrow(() -> new ApplicationException(PerformanceExceptionCase.PERFORMANCE_NOT_FOUND));
     }
 
-//
-//    public List<PerformanceResponseDto> getAllPerformances() {
-//        List<Performance> performances = performanceRepository.findAll();
-//
-//        return performances.stream().map(
-//            PerformanceResponseDto::of).toList();
-//    }
+    @Transactional
+    public Page<PerformanceResponse> getAllPerformances(Pageable pageable) {
+        Page<Performance> performances = performanceRepository.findAll(pageable);
+        return performances.map(PerformanceResponse::of);
+    }
 //
 //    public List<PerformanceScheduleResponseDto> getAllPerformancesByDate(LocalDate localDate) {
 //        List<Schedule> performanceScheduleList = performanceScheduleRepository.findAllByScheduledDate(

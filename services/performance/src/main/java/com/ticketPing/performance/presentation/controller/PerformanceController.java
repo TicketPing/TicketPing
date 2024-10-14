@@ -5,6 +5,8 @@ import com.ticketPing.performance.application.service.PerformanceService;
 import com.ticketPing.performance.presentation.cases.success.PerformanceSuccessCase;
 import common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,16 +30,15 @@ public class PerformanceController {
                 .status(200)
                 .body(CommonResponse.success(PerformanceSuccessCase.PERFORMANCE_DETAIL_SUCCESS, performanceResponse));
     }
-//
-//    // 공연 전체 조회
-//    @GetMapping
-//    public CommonResponse<List<PerformanceResponseDto>> getAllPerformances() {
-//        List<PerformanceResponseDto> performanceResponseDtoList = performanceService.getAllPerformances();
-//
-//        return CommonResponse.success(PerformanceSuccessCase.PERFORMANCE_LIST_SUCCESS,
-//            performanceResponseDtoList);
-//    }
-//
+
+    @GetMapping
+    public ResponseEntity<CommonResponse<Page<PerformanceResponse>>> getAllPerformances(Pageable pageable) {
+        Page<PerformanceResponse> performanceResponses = performanceService.getAllPerformances(pageable);
+        return ResponseEntity
+                .status(200)
+                .body(CommonResponse.success(PerformanceSuccessCase.PERFORMANCE_DETAIL_SUCCESS, performanceResponses));
+    }
+
 //
 //    // 공연 일정 단건 조회 (날짜 기준)
 //    @GetMapping("/date/{date}")
