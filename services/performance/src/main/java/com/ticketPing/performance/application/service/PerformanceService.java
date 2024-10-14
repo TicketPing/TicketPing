@@ -4,6 +4,7 @@ import com.ticketPing.performance.application.dtos.PerformanceResponse;
 import com.ticketPing.performance.domain.entity.Performance;
 import com.ticketPing.performance.domain.repository.PerformanceRepository;
 import com.ticketPing.performance.presentation.cases.exception.PerformanceExceptionCase;
+import com.ticketPing.performance.presentation.cases.exception.ScheduleExceptionCase;
 import common.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -27,61 +29,28 @@ public class PerformanceService {
     }
 
     @Transactional
-    public Performance findPerformanceById(UUID id) {
-        return performanceRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(PerformanceExceptionCase.PERFORMANCE_NOT_FOUND));
-    }
-
-    @Transactional
     public Page<PerformanceResponse> getAllPerformances(Pageable pageable) {
         Page<Performance> performances = performanceRepository.findAll(pageable);
         return performances.map(PerformanceResponse::of);
     }
-//
-//    public List<PerformanceScheduleResponseDto> getAllPerformancesByDate(LocalDate localDate) {
-//        List<Schedule> performanceScheduleList = performanceScheduleRepository.findAllByScheduledDate(
-//            localDate);
-//
-//        return performanceScheduleList.stream().map(PerformanceScheduleResponseDto::of).toList();
-//    }
-//
-//    public List<OrderPerformanceDto> findByPerformanceHallId(UUID performanceHallId) {
-//        // 공연장에 해당하는 좌석 정보를 가져옴
-//        List<HallSeats> hallSeats = hallSeatsRepository.findByPerformanceHallId(performanceHallId);
-//        PerformanceSchedule performanceSchedule = performanceScheduleRepository.findByPerformanceHallId(
-//                performanceHallId)
-//            .orElseThrow(() -> new RuntimeException(PERFORMANCE_SCHEDULE_NOT_FOUND.getMessage()));
-//
-//        UUID scheduleId = performanceSchedule.getId();
-//        UUID companyId = performanceSchedule.getPerformance().getCompanyId();
-//        String performanceName = performanceSchedule.getPerformance().getName();
-//
-//        // HallSeats 엔티티를 HallSeatsDto로 변환하여 리스트로 반환
-//        return hallSeats.stream()
-//            .map(hallSeat -> convertToDto(hallSeat, scheduleId, companyId, performanceName))
-//            .collect(Collectors.toList());
-//    }
-//
-//    // HallSeats 엔티티를 HallSeatsDto로 변환하는 메서드
-//    private OrderPerformanceDto convertToDto(HallSeats hallSeat, UUID scheduleId, UUID companyId, String performanceName) {
-//        return OrderPerformanceDto.builder()
-//            .seatRow(hallSeat.getSeatRow())
-//            .seatColumn(hallSeat.getSeatColumn())
-//            .price(hallSeat.getPrice())
-//            .seatRate(hallSeat.getSeatRate().name()) // SeatRate를 String으로 변환
-//            .performanceHall(hallSeat.getPerformanceHall())
-//            .startTime(hallSeat.getStartTime())
-//            .endTime(hallSeat.getEndTime())
-//            .performanceDate(hallSeat.getPerformanceDate())
-//            .totalSeats(hallSeat.getTotalSeats())
-//            .performanceHallId(hallSeat.getPerformanceHallId())
-//            .orderCancelled(false)
-//            .reservationDate(null)
-//            .userId(null)
-//            .scheduleId(scheduleId)
-//            .companyId(companyId)
-//            .performanceName(performanceName)
-//            .build();
-//    }
+
+    @Transactional
+    public Performance getAndValidatePerformance(UUID performanceId) {
+        Performance performance = findPerformanceById(performanceId);
+
+        LocalDateTime cur = LocalDateTime.now();
+        if(performance.getReservationStartDate().isAfter(cur)
+                || performance.getReservationEndDate().isBefore(cur)) {
+            throw new ApplicationException(ScheduleExceptionCase.NOT_RESERVATION_DATE);
+        }
+
+        return performance;
+    }
+
+    @Transactional
+    public Performance findPerformanceById(UUID id) {
+        return performanceRepository.findById(id)
+                .orElseThrow(() -> new ApplicationException(PerformanceExceptionCase.PERFORMANCE_NOT_FOUND));
+    }
 }
 

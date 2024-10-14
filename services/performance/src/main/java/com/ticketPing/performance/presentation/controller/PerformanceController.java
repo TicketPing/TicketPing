@@ -1,8 +1,12 @@
 package com.ticketPing.performance.presentation.controller;
 
 import com.ticketPing.performance.application.dtos.PerformanceResponse;
+import com.ticketPing.performance.application.dtos.ScheduleResponse;
 import com.ticketPing.performance.application.service.PerformanceService;
+import com.ticketPing.performance.application.service.ScheduleService;
+import com.ticketPing.performance.domain.entity.Performance;
 import com.ticketPing.performance.presentation.cases.success.PerformanceSuccessCase;
+import com.ticketPing.performance.presentation.cases.success.ScheduleSuccessCase;
 import common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,13 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-
 @RestController
 @RequestMapping("/api/v1/performances")
 @RequiredArgsConstructor
 public class PerformanceController {
-
     private final PerformanceService performanceService;
+    private final ScheduleService scheduleService;
 
     @GetMapping("/{performanceId}")
     public ResponseEntity<CommonResponse<PerformanceResponse>> getPerformance(@PathVariable UUID performanceId) {
@@ -38,12 +41,15 @@ public class PerformanceController {
                 .status(200)
                 .body(CommonResponse.success(PerformanceSuccessCase.PERFORMANCE_LIST_SUCCESS, performanceResponses));
     }
-//
-//    @GetMapping("/hall-seats/{performanceHallId}")
-//    public List<OrderPerformanceDto> getHallSeatsByPerformanceHallId(@PathVariable UUID performanceHallId) {
-//
-//        return performanceService.findByPerformanceHallId(performanceHallId); // 좌석 리스트 반환
-//    }
 
+    // TODO: fetch join으로 변경?
+    @GetMapping("/{performanceId}/schedules")
+    public ResponseEntity<CommonResponse<Page<ScheduleResponse>>> getSchedulesByPerformance(@PathVariable UUID performanceId, Pageable pageable) {
+        Performance performance = performanceService.getAndValidatePerformance(performanceId);
+        Page<ScheduleResponse> scheduleResponses = scheduleService.getSchedulesByPerformance(performance, pageable);
+        return ResponseEntity
+                .status(200)
+                .body(CommonResponse.success(ScheduleSuccessCase.SCHEDULE_LIST_SUCCESS, scheduleResponses));
+    }
 }
 

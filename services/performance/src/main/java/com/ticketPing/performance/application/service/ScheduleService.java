@@ -1,11 +1,14 @@
 package com.ticketPing.performance.application.service;
 
 import com.ticketPing.performance.application.dtos.ScheduleResponse;
+import com.ticketPing.performance.domain.entity.Performance;
 import com.ticketPing.performance.domain.entity.Schedule;
 import com.ticketPing.performance.domain.repository.ScheduleRepository;
 import com.ticketPing.performance.presentation.cases.exception.ScheduleExceptionCase;
 import common.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +24,7 @@ public class ScheduleService {
     public ScheduleResponse getSchedule(UUID id) {
         Schedule schedule = findScheduleById(id);
 
-        LocalDateTime cur = LocalDateTime.now().plusDays(13);
+        LocalDateTime cur = LocalDateTime.now();
         if(schedule.getPerformance().getReservationStartDate().isAfter(cur)
                 || schedule.getPerformance().getReservationEndDate().isBefore(cur)) {
             throw new ApplicationException(ScheduleExceptionCase.NOT_RESERVATION_DATE);
@@ -34,5 +37,11 @@ public class ScheduleService {
     public Schedule findScheduleById(UUID id) {
         return scheduleRepository.findById(id)
                 .orElseThrow(() -> new ApplicationException(ScheduleExceptionCase.SCHEDULE_NOT_FOUND));
+    }
+
+    @Transactional
+    public Page<ScheduleResponse> getSchedulesByPerformance(Performance performance, Pageable pageable) {
+        Page<Schedule> schedules = scheduleRepository.findByPerformance(performance, pageable);
+        return schedules.map(ScheduleResponse::of);
     }
 }

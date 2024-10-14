@@ -10,15 +10,15 @@ import java.util.UUID;
 public record ScheduleResponse (
         UUID id,
         LocalDateTime startTime,
-        String performanceHallName,
-        String performanceName
+        UUID performanceHallId,
+        UUID performanceId
 ){
     public static ScheduleResponse of(Schedule schedule) {
         return ScheduleResponse.builder()
             .id(schedule.getId())
             .startTime(schedule.getStartTime())
-            .performanceHallName(schedule.getPerformanceHall().getName())
-            .performanceName(schedule.getPerformance().getName())
+            .performanceHallId(schedule.getPerformanceHall().getId())
+            .performanceId(schedule.getPerformance().getId())
             .build();
     }
 }
