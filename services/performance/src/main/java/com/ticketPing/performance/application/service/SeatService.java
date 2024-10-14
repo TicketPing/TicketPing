@@ -14,9 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +48,17 @@ public class SeatService {
         Seat seat = seatRepository.findByIdJoinAll(seatId)
                 .orElseThrow(() -> new ApplicationException(SeatExceptionCase.SEAT_NOT_FOUND));
         return OrderInfoResponse.of(seat);
+    }
+
+    @Transactional
+    public List<SeatResponse> getAllScheduleSeats(UUID scheduleId) {
+        Set<String> ids = redisTemplate.keys("seat:" + scheduleId + ":*");
+        List<String> redisSeatIds = ids.stream().map(id -> id.substring(5)).toList();
+        Iterable<RedisSeat> redisSeats = redisSeatRepository.findAllById(redisSeatIds);
+
+        List<SeatResponse> seats = new ArrayList<>();
+        redisSeats.forEach(redisSeat -> seats.add(SeatResponse.of(redisSeat)));
+        return seats;
     }
 
     @Transactional

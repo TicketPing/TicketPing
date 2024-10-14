@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.RedisHash;
 
 @Data
 @Builder(access = AccessLevel.PRIVATE)
-@RedisHash(value = "seat:")
+@RedisHash(value = "seat")
 public class RedisSeat {
     // TODO: id 넣는 다른 방법?
     @Id
