@@ -25,20 +25,20 @@ public class SeatService {
 
     @Transactional(readOnly = true)
     public SeatResponse getSeat(UUID id) {
-        Seat seat = findSeatById(id);
+        Seat seat = findSeatByIdJoinSeatCost(id);
         return SeatResponse.of(seat);
     }
 
     @Transactional
     public SeatResponse updateSeatState(UUID seatId, Boolean seatState) {
-        Seat seat = findSeatById(seatId);
+        Seat seat = findSeatByIdJoinSeatCost(seatId);
         seat.updateSeatState(seatState);
         return SeatResponse.of(seat);
     }
 
     @Transactional
-    public Seat findSeatById(UUID id) {
-        return seatRepository.findById(id)
+    public Seat findSeatByIdJoinSeatCost(UUID id) {
+        return seatRepository.findByIdJoinSeatCost(id)
                 .orElseThrow(() -> new ApplicationException(SeatExceptionCase.SEAT_NOT_FOUND));
     }
 
@@ -51,13 +51,13 @@ public class SeatService {
 
     @Transactional
     public void createSeatsCache(Schedule schedule) {
-        List<Seat> seats = findSeatsJoinSeatCostBySchedule(schedule);
+        List<Seat> seats = findSeatsByScheduleJoinSeatCost(schedule);
         Iterable<RedisSeat> redisSeats = seats.stream().map(RedisSeat::from).toList();
         redisSeatRepository.saveAll(redisSeats);
     }
 
     @Transactional
-    public List<Seat> findSeatsJoinSeatCostBySchedule(Schedule schedule) {
+    public List<Seat> findSeatsByScheduleJoinSeatCost(Schedule schedule) {
         return seatRepository.findByScheduleJoinSeatCost(schedule);
     }
 }

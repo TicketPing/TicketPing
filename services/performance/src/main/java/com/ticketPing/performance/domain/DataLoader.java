@@ -32,7 +32,7 @@ public class DataLoader implements CommandLineRunner {
         }
 
         // 공연장 더미 데이터 생성
-        PerformanceHall hall1 = PerformanceHall.createTestData("국립극장", "서울특별시 남산동 1-1", 800, 30, 30);
+        PerformanceHall hall1 = PerformanceHall.createTestData("국립극장", "서울특별시 남산동 1-1", 800, 10, 5);
         performanceHallRepository.save(hall1);
 
         PerformanceHall hall2 = PerformanceHall.createTestData("세종문화회관", "서울특별시 세종로 81", 1200, 40, 30);
@@ -81,7 +81,7 @@ public class DataLoader implements CommandLineRunner {
     private void createSeats(Schedule schedule) {
         for (int row = 1; row <= schedule.getPerformanceHall().getRows(); row++) {
             for (int column = 1; column <= schedule.getPerformanceHall().getColumns(); column++) {
-                SeatCost seatCost = determineSeatCost(schedule.getPerformance(), row);
+                SeatCost seatCost = determineSeatCost(schedule.getPerformance(), row, schedule.getPerformanceHall().getRows());
                 Seat seat = Seat.createTestData(row, column, false, seatCost,schedule);
                 seatRepository.save(seat);
             }
@@ -89,10 +89,10 @@ public class DataLoader implements CommandLineRunner {
     }
 
     // 좌석 등급을 결정하는 로직
-    private SeatCost determineSeatCost(Performance performance, int row) {
-        if (row <= 2) {
+    private SeatCost determineSeatCost(Performance performance, int row, int max) {
+        if (row <= ((max*2)/10)) {
             return performance.getSeatCosts().get(0);
-        } else if (row <= 5) {
+        } else if (row <= ((max*4)/10)) {
             return performance.getSeatCosts().get(1);
         } else {
             return performance.getSeatCosts().get(2);

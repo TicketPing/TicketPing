@@ -21,8 +21,8 @@ public record SeatResponse (
                 .row(seat.getRow())
                 .col(seat.getCol())
                 .seatState(seat.getSeatState())
-                .seatRate(seat.getSeatCosts().getSeatRate().getValue())
-                .cost(seat.getSeatCosts().getCost())
+                .seatRate(seat.getSeatCost().getSeatRate().getValue())
+                .cost(seat.getSeatCost().getCost())
                 .build();
     }
 }

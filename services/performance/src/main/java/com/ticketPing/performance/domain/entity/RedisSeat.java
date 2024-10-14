@@ -27,8 +27,8 @@ public class RedisSeat {
                 .row(seat.getRow())
                 .col(seat.getCol())
                 .seatState(seat.getSeatState())
-                .seatRate(seat.getSeatCosts().getSeatRate())
-                .cost(seat.getSeatCosts().getCost())
+                .seatRate(seat.getSeatCost().getSeatRate())
+                .cost(seat.getSeatCost().getCost())
                 .build();
     }
 }

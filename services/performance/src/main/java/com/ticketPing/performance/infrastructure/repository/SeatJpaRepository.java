@@ -12,12 +12,17 @@ import java.util.UUID;
 
 public interface SeatJpaRepository extends SeatRepository, JpaRepository<Seat, UUID> {
     @Query(value = "select s from Seat s " +
-            "join fetch s.seatCosts sc " +
+            "join fetch s.seatCost sc " +
+            "where s.id=:seatId")
+    Optional<Seat> findByIdJoinSeatCost(UUID seatId);
+
+    @Query(value = "select s from Seat s " +
+            "join fetch s.seatCost sc " +
             "where s.schedule=:schedule")
     List<Seat> findByScheduleJoinSeatCost(Schedule schedule);
 
     @Query(value = "select s from Seat s " +
-            "join fetch s.seatCosts sc " +
+            "join fetch s.seatCost sc " +
             "join fetch s.schedule sd " +
             "join fetch sd.performance p " +
             "join fetch sd.performanceHall ph " +

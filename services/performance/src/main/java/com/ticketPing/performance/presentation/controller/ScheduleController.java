@@ -10,11 +10,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/schedule")
+@RequestMapping("/api/v1/schedules")
 @RequiredArgsConstructor
 public class ScheduleController {
     private final ScheduleService scheduleService;
@@ -29,8 +28,8 @@ public class ScheduleController {
                 .body(CommonResponse.success(ScheduleSuccessCase.SCHEDULE_SUCCESS, scheduleResponse));
     }
 
-    @Operation(summary = "전체 좌석 캐싱 생성")
-    @PostMapping("/{scheduleId}")
+    @Operation(summary = "스케줄 전체 좌석 캐싱 생성")
+    @PostMapping("/{scheduleId}/seats")
     public ResponseEntity<CommonResponse<Object>> createSeatsCache(@PathVariable("scheduleId") UUID scheduleId) {
         Schedule schedule = scheduleService.findScheduleById(scheduleId);
         seatService.createSeatsCache(schedule);

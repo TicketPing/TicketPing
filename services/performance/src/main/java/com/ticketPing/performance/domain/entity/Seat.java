@@ -22,7 +22,7 @@ public class Seat {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seat_cost_id")
-    private SeatCost seatCosts;
+    private SeatCost seatCost;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
@@ -33,7 +33,7 @@ public class Seat {
                 .row(row)
                 .col(col)
                 .seatState(seatSate)
-                .seatCosts(seatCosts)
+                .seatCost(seatCosts)
                 .schedule(schedule)
                 .build();
     }
