@@ -8,11 +8,11 @@ import lombok.Getter;
 @Builder(access = AccessLevel.PRIVATE)
 public class CountAvailableSlotsCommand {
 
-    private String performanceName;
+    private String performanceId;
 
-    public static CountAvailableSlotsCommand create(String performanceName) {
+    public static CountAvailableSlotsCommand create(String performanceId) {
         return CountAvailableSlotsCommand.builder()
-                .performanceName(performanceName)
+                .performanceId(performanceId)
                 .build();
     }
 

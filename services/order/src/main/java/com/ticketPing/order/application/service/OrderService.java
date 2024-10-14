@@ -1,12 +1,10 @@
 package com.ticketPing.order.application.service;
 
 import static com.ticketPing.order.presentation.response.exception.OrderExceptionCase.ORDER_ALREADY_EXIST;
-import static com.ticketPing.order.presentation.response.exception.OrderExceptionCase.ORDER_EACH_USER_NOT_MATCHED;
 import static com.ticketPing.order.presentation.response.exception.OrderExceptionCase.ORDER_NOT_FOUND;
 import static com.ticketPing.order.presentation.response.exception.OrderExceptionCase.ORDER_NOT_FOUND_AT_REDIS;
 import static com.ticketPing.order.presentation.response.exception.OrderExceptionCase.ORDER_SEATS_NOT_OCCUPIED;
 import static com.ticketPing.order.presentation.response.exception.OrderExceptionCase.ORDER_STATUS_NOT_PENDING;
-import static com.ticketPing.order.presentation.response.exception.OrderExceptionCase.USER_ID_WITH_SEATS_NOT_MATCHED;
 
 import com.ticketPing.order.application.dtos.OrderCreateRequestDto;
 import com.ticketPing.order.application.dtos.OrderCreateResponseDto;
@@ -14,10 +12,10 @@ import com.ticketPing.order.client.PerformanceClient;
 import com.ticketPing.order.domain.entity.Order;
 import com.ticketPing.order.domain.entity.OrderSeatRedis;
 import com.ticketPing.order.domain.entity.OrderStatus;
+import com.ticketPing.order.domain.events.OrderCompletedEvent;
 import com.ticketPing.order.domain.repository.OrderRepository;
 import com.ticketPing.order.domain.repository.OrderSeatRedisRepository;
 import com.ticketPing.order.presentation.response.exception.OrderExceptionCase;
-import dto.OrderPaymentDto;
 import dto.OrderPerformanceDto;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,6 +37,8 @@ public class OrderService {
     private final OrderSeatRedisRepository orderSeatRedisRepository; // Redis 리포지토리
     private final PerformanceClient performanceClient;
     private final RedissonClient redissonClient;
+
+    private final EventApplicationService eventApplicationService;
 
     public void saveOrderSeat(Order order) {
         orderRepository.save(order);
@@ -213,6 +213,11 @@ public class OrderService {
 //        }
 
         changeOrderStatusInRedisAndDb(orderSeatRedis, order, OrderStatus.RESERVATION);
+
+        // 예매 완료 이벤트 발행
+        String userId = "1";
+        String performanceId = "1";
+        eventApplicationService.publishOrderCompletedEvent(OrderCompletedEvent.create(userId, performanceId));
     }
 
 
@@ -237,4 +242,12 @@ public class OrderService {
             .map(OrderSeatRedis::OrderSeatRedisToDto)
             .collect(Collectors.toList());
     }
+
+    public void test() {
+        // 예매 완료 이벤트 발행
+        String userId = "1";
+        String performanceId = "1";
+        eventApplicationService.publishOrderCompletedEvent(OrderCompletedEvent.create(userId, performanceId));
+    }
+
 }
