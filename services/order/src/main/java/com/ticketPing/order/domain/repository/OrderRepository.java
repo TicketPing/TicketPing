@@ -7,7 +7,5 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderRepository extends JpaRepository<Order, UUID> {
-    Optional<Order> findByRowNumberAndSeatNumber(int rowNumber, int seatNumber);
 
-    List<Order> findAllByPerformanceHall(String performanceHall);
 }

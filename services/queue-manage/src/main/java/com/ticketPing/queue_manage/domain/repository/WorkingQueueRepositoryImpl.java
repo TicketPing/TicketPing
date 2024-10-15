@@ -25,20 +25,20 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
 
     @Override
     public AvailableSlots countAvailableSlots(CountAvailableSlotsCommand command) {
-        RAtomicLong counter = redissonClient.getAtomicLong(command.getPerformanceName());
+        RAtomicLong counter = redissonClient.getAtomicLong(command.getPerformanceId());
         return AvailableSlots.from(counter.get());
     }
 
     @Override
     public void enqueueWorkingToken(EnqueueWorkingTokenCommand command) {
-        if (!isExistToken(command)) {
+        if (!isExistToken(command.getTokenValue())) {
             cacheToken(command);
             increaseCounter(command);
         }
     }
 
-    private boolean isExistToken(EnqueueWorkingTokenCommand command) {
-        return redissonClient.getBucket(command.getTokenValue()).get() != null;
+    private boolean isExistToken(String tokenValue) {
+        return redissonClient.getBucket(tokenValue).get() != null;
     }
 
     private void cacheToken(EnqueueWorkingTokenCommand command) {
@@ -47,7 +47,7 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
     }
 
     private void increaseCounter(EnqueueWorkingTokenCommand command) {
-        redissonClient.getAtomicLong(command.getPerformanceName()).incrementAndGet();
+        redissonClient.getAtomicLong(command.getPerformanceId()).incrementAndGet();
     }
 
     @Override
@@ -58,23 +58,24 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
             return Optional.empty();
         }
         long ttl = bucket.remainTimeToLive();
-        WorkingQueueToken token = tokenWithValidUntil(command.getUserId(), command.getPerformanceName(), command.getTokenValue(), toLocalDateTime(ttl));
+        WorkingQueueToken token = tokenWithValidUntil(command.getUserId(), command.getPerformanceId(), command.getTokenValue(), toLocalDateTime(ttl));
         return Optional.of(token);
     }
 
     @Override
     public void dequeueWorkingToken(DequeueWorkingTokenCommand command) {
-        deleteToken(command);
-        decreaseCounter(command);
+        if (isExistToken(command.getTokenValue())) {
+            deleteToken(command);
+            decreaseCounter(command);
+        }
     }
 
     private void deleteToken(DequeueWorkingTokenCommand command) {
         redissonClient.getBucket(command.getTokenValue()).delete();
     }
 
-    @Override
-    public void decreaseCounter(DequeueWorkingTokenCommand command) {
-        redissonClient.getAtomicLong(command.getPerformanceName()).decrementAndGet();
+    private void decreaseCounter(DequeueWorkingTokenCommand command) {
+        redissonClient.getAtomicLong(command.getPerformanceId()).decrementAndGet();
     }
 
 }

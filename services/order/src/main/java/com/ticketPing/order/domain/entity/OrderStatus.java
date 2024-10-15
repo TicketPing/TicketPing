@@ -2,8 +2,7 @@ package com.ticketPing.order.domain.entity;
 
 public enum OrderStatus {
 
-    RESERVATION,
+    OCCUPIED,
     NO_RESERVATION,
-    PENDING;
 
 }
