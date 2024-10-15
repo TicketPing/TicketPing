@@ -24,6 +24,7 @@ public class Payment extends BaseEntity {
     //Stripe intent id
     private String paymentIntentId;
     //private String currency;
+    private UUID userId;
     private String status;
     private String userEmail;
     private String clientSecret;
@@ -39,6 +40,7 @@ public class Payment extends BaseEntity {
         this.status = responseDto.getStatus();
         this.clientSecret = responseDto.getClientSecret();
         this.userEmail = responseDto.getUserEmail();
+        this.userId = responseDto.getUserId();
         if(this.orderInfo == null) {
             this.orderInfo = new OrderInfo();
         }
