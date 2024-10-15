@@ -2,11 +2,15 @@ package com.ticketPing.order.domain.entity;
 
 
 import audit.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -20,7 +24,6 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "p_orders")
 public class Order extends BaseEntity {
@@ -31,8 +34,7 @@ public class Order extends BaseEntity {
 
     @Setter
     @Column
-    @Builder.Default
-    private OrderStatus orderStatus = OrderStatus.NO_RESERVATION;
+    private Boolean orderStatus;
 
     @Column
     private LocalDateTime reservationDate; // 예매 생성 시간
@@ -46,18 +48,29 @@ public class Order extends BaseEntity {
     @Column
     private UUID companyId; // 회사명
 
-    public static Order from(OrderStatus orderStatus,
+    @Column
+    private String performanceName;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Setter
+    @JoinColumn(name = "order_seat_id")
+    private OrderSeat orderSeat;
+
+
+    @Builder
+    private Order(Boolean orderStatus,
         LocalDateTime reservationDate,
         UUID userId,
         UUID scheduleId,
+        String performanceName,
         UUID companyId) {
-        return Order.builder()
-            .orderStatus(orderStatus)
-            .reservationDate(reservationDate)
-            .userId(userId)
-            .scheduleId(scheduleId)
-            .companyId(companyId)
-            .build();
+        this.orderStatus = orderStatus;
+        this.reservationDate = reservationDate;
+        this.userId = userId;
+        this.scheduleId = scheduleId;
+        this.performanceName = performanceName;
+        this.companyId = companyId;
     }
+
 
 }
