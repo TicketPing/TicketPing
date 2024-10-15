@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StripePaymentServiceTest {
     private StripePaymentService stripePaymentService;
     private PaymentJpaRepository repository;
-    private ReservationClient reservationClient;
+   // private ReservationClient reservationClient;
     private StripePaymentConfig config;
     private StripeClient client;
 
