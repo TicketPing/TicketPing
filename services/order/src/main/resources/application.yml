@@ -3,7 +3,7 @@ spring:
     name: order
 
   datasource:
-    url: jdbc:postgresql://localhost:5002/postgres
+    url: jdbc:postgresql://order-db:5432/postgres
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -24,7 +24,7 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 redis:
-  host: localhost
+  host: redis
   port: 6379
 
 
@@ -34,4 +34,4 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:10000/eureka/
+      defaultZone: http://eureka-server:10000/eureka/

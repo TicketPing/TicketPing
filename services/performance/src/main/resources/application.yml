@@ -2,8 +2,8 @@ spring:
   application:
     name: performance
   datasource:
-    url: jdbc:postgresql://performance-db:5432/postgres
-#    url: jdbc:postgresql://localhost:5432/ticketping-performance
+#    url: jdbc:postgresql://performance-db:5432/postgres
+    url: jdbc:postgresql://localhost:5432/ticketping-performance
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -11,7 +11,7 @@ spring:
     import: "classpath:application-jpa.yml"
   data:
     redis:
-      host: redis
+      host: localhost
       port: 6379
 
 server:
