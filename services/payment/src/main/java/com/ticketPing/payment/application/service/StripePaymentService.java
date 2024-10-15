@@ -35,17 +35,17 @@ public class StripePaymentService {
     public final String CURRENCY = "krw";
     private final StripeClient client;
     private final PaymentJpaRepository repository;
-    private final ReservationClient reservationClient;
+    //private final ReservationClient reservationClient;
     private final StripePaymentConfig config;
     private final RedisLockService redisLockService;
 
 
     @Autowired
-    public StripePaymentService(StripePaymentConfig config, PaymentJpaRepository repository, ReservationClient reservationClient, RedisLockService redisLockService) {
+    public StripePaymentService(StripePaymentConfig config, PaymentJpaRepository repository, RedisLockService redisLockService) {
         this.config = config;
         this.client = new StripeClient(config.getSecretKey());
         this.repository = repository;
-        this.reservationClient = reservationClient;
+        //this.reservationClient = reservationClient;
         this.redisLockService = redisLockService;
     }
 
@@ -101,24 +101,24 @@ public class StripePaymentService {
         // Todo : paymentIntentId로 paymentIntent 찾아오기
         PaymentIntent paymentIntent = client.paymentIntents().retrieve(paymentIntentId);
         payment.setStatus(paymentIntent.getStatus());
-        //status = succeeded 일 경우 예매 호출
-        if(payment.getStatus().equals("succeeded")) {
-            try {
-                reservationClient.updateOrderStatus(orderId, "success");
-            } catch (FeignException fe) {
-                System.err.println("FeignClient success call failed = paymentIntentId : " + paymentIntentId);
-                fe.printStackTrace();
-                throw new ApplicationException(FEIGN_CLIENT_FAIL);
-            }
-        } else {
-            try {
-                reservationClient.updateOrderStatus(orderId, "fail");
-            } catch (FeignException fe) {
-                System.err.println("FeignClient fail call failed = paymentIntentId : " + paymentIntentId);
-                fe.printStackTrace();
-                throw new ApplicationException(FEIGN_CLIENT_FAIL);
-            }
-        }
+        // Todo : status = succeeded 일 경우 예매 호출
+//        if(payment.getStatus().equals("succeeded")) {
+//            try {
+//                reservationClient.updateOrderStatus(orderId, "success");
+//            } catch (FeignException fe) {
+//                System.err.println("FeignClient success call failed = paymentIntentId : " + paymentIntentId);
+//                fe.printStackTrace();
+//                throw new ApplicationException(FEIGN_CLIENT_FAIL);
+//            }
+//        } else {
+//            try {
+//                reservationClient.updateOrderStatus(orderId, "fail");
+//            } catch (FeignException fe) {
+//                System.err.println("FeignClient fail call failed = paymentIntentId : " + paymentIntentId);
+//                fe.printStackTrace();
+//                throw new ApplicationException(FEIGN_CLIENT_FAIL);
+//            }
+//        }
         repository.save(payment);
         return paymentIntent.getStatus();
         } catch (Exception e) {
