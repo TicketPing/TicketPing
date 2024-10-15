@@ -2,15 +2,13 @@ package com.ticketPing.performance.application.service;
 
 import com.ticketPing.performance.application.dtos.OrderInfoResponse;
 import com.ticketPing.performance.application.dtos.SeatResponse;
-import com.ticketPing.performance.domain.entity.RedisSeat;
 import com.ticketPing.performance.domain.entity.Schedule;
 import com.ticketPing.performance.domain.entity.Seat;
 import com.ticketPing.performance.domain.repository.SeatRepository;
-import com.ticketPing.performance.infrastructure.repository.RedisSeatRepository;
+import com.ticketPing.performance.infrastructure.service.RedisService;
 import com.ticketPing.performance.presentation.cases.exception.SeatExceptionCase;
 import common.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +18,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SeatService {
     private final SeatRepository seatRepository;
-    // TODO: domain에 상위 레포지토리 만들기 (saveAll이 오버라이딩이 계속 안됨)
-    private final RedisSeatRepository redisSeatRepository;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisService redisService;  // TODO: 상위 서비스 만들어서 불러오기
 
     @Transactional(readOnly = true)
     public SeatResponse getSeat(UUID id) {
@@ -52,13 +48,8 @@ public class SeatService {
 
     @Transactional
     public List<SeatResponse> getAllScheduleSeats(UUID scheduleId) {
-        Set<String> ids = redisTemplate.keys("seat:" + scheduleId + ":*");
-        List<String> redisSeatIds = ids.stream().map(id -> id.substring(5)).toList();
-        Iterable<RedisSeat> redisSeats = redisSeatRepository.findAllById(redisSeatIds);
-
-        List<SeatResponse> seats = new ArrayList<>();
-        redisSeats.forEach(redisSeat -> seats.add(SeatResponse.of(redisSeat)));
-        return seats;
+        Set<String> ids = redisService.getKeys("seat:" + scheduleId + ":*");
+        return redisService.getValuesAsClass(ids.stream().toList(), SeatResponse.class);
     }
 
     @Transactional
@@ -66,11 +57,13 @@ public class SeatService {
         List<Seat> seats = findSeatsByScheduleJoinSeatCost(schedule);
 
         // counter 생성
-        redisTemplate.opsForValue().set("counter:" + schedule.getId(), seats.size());
+        redisService.setValue("counter:" + schedule.getId(), String.valueOf(seats.size()));
 
         // 좌석 캐싱
-        Iterable<RedisSeat> redisSeats = seats.stream().map(RedisSeat::from).toList();
-        redisSeatRepository.saveAll(redisSeats);
+        String prefix = "seat:" + schedule.getId() + ":";
+        Map<String, Object> seatMap = new HashMap<>();
+        seats.forEach(seat -> {seatMap.put(prefix+seat.getId(), SeatResponse.of(seat));});
+        redisService.setValues(seatMap);
     }
 
     @Transactional
