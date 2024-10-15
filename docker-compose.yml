@@ -203,6 +203,7 @@ services:
       - SECRET_KEY=${SECRET_KEY}
     ports:
       - "10024:10024"
+      - "5005:5005"
     depends_on:
       payment-db:
         condition: service_healthy

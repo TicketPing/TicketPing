@@ -1,17 +1,13 @@
 package com.ticketPing.payment.presentation.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class StripeRequestDto {
 
     private String performanceName;
@@ -22,5 +18,11 @@ public class StripeRequestDto {
     private Long amount;
     private String userEmail;
 
-
+    public StripeRequestDto(UUID id) {
+        this.performanceName = "test";
+        this.performanceTime = "09.08.05:00";
+        this.seatInfo = "11";
+        this.amount = 10000L;
+        this.userEmail = "test@gmail.com";
+    }
 }
