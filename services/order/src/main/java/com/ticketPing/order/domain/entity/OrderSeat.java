@@ -2,8 +2,6 @@ package com.ticketPing.order.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,13 +12,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder(access = AccessLevel.PRIVATE)
 @Table(name = "p_seats")
 @Entity
 public class OrderSeat {
@@ -41,13 +37,16 @@ public class OrderSeat {
     @Column
     private int price; // 가격
 
-    public static OrderSeat from(int rowNumber, int columnNumber, String seatGrade, int price) {
-        return OrderSeat.builder()
-            .rowNumber(rowNumber)
-            .columnNumber(columnNumber)
-            .seatGrade(seatGrade)
-            .price(price)
-            .build();
+    @Builder
+    private OrderSeat(int rowNumber,
+        int columnNumber,
+        String seatGrade,
+        int price
+    ) {
+        this.rowNumber = rowNumber;
+        this.columnNumber = columnNumber;
+        this.seatGrade = seatGrade;
+        this.price = price;
     }
 
 }
