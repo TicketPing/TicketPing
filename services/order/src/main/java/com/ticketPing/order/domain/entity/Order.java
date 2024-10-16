@@ -25,6 +25,7 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 @Table(name = "p_orders")
 public class Order extends BaseEntity {
 
@@ -38,6 +39,11 @@ public class Order extends BaseEntity {
 
     @Column
     private LocalDateTime reservationDate; // 예매 생성 시간
+
+    @Column
+    @Builder.Default
+    @Setter
+    private Boolean isCancelled = false;//예매 취소 여부
 
     @Column
     private UUID userId; // 사용자 아이디
@@ -57,7 +63,6 @@ public class Order extends BaseEntity {
     private OrderSeat orderSeat;
 
 
-    @Builder
     private Order(Boolean orderStatus,
         LocalDateTime reservationDate,
         UUID userId,

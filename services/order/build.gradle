@@ -39,8 +39,6 @@ dependencies {
 	implementation project(':dtos:performance-dto')
 	implementation project(':dtos:order-dto')
 
-	// redisson
-	implementation 'org.redisson:redisson-spring-boot-starter:3.33.0'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'

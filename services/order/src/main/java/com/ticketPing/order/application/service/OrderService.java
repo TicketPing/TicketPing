@@ -4,36 +4,31 @@ import static com.ticketPing.order.presentation.response.exception.OrderExceptio
 import static com.ticketPing.order.presentation.response.exception.OrderExceptionCase.ORDER_FOR_PERFORMANCE_CACHE_NOT_FOUND;
 import static com.ticketPing.order.presentation.response.exception.OrderExceptionCase.ORDER_NOT_FOUND;
 import static com.ticketPing.order.presentation.response.exception.OrderExceptionCase.ORDER_NOT_FOUND_AT_REDIS;
-import static com.ticketPing.order.presentation.response.exception.OrderExceptionCase.ORDER_STATUS_UNKNOWN;
 import static com.ticketPing.order.presentation.response.exception.OrderExceptionCase.TTL_ALREADY_EXISTS;
 import static com.ticketPing.order.presentation.response.success.OrderSuccessCase.ORDER_OCCUPYING_SEAT_SUCCESS;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ticketPing.order.application.dtos.OrderCreateDto;
 import com.ticketPing.order.application.dtos.OrderResponse;
 import com.ticketPing.order.application.dtos.temp.OrderInfoResponse;
 import com.ticketPing.order.application.dtos.temp.SeatResponse;
-import com.ticketPing.order.client.PaymentClient;
 import com.ticketPing.order.client.PerformanceClient;
-import com.ticketPing.order.client.UserClient;
 import com.ticketPing.order.domain.entity.Order;
 import com.ticketPing.order.domain.entity.OrderSeat;
-import com.ticketPing.order.domain.entity.OrderStatus;
 import com.ticketPing.order.domain.entity.RedisSeat;
 import com.ticketPing.order.domain.events.OrderCompletedEvent;
 import com.ticketPing.order.domain.repository.OrderRepository;
 import com.ticketPing.order.domain.repository.OrderSeatRepository;
 import com.ticketPing.order.domain.repository.RedisSeatRepository;
-import com.ticketPing.order.presentation.response.exception.OrderExceptionCase;
 import common.exception.ApplicationException;
 import common.response.CommonResponse;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,14 +39,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService {
 
     private final OrderRepository orderRepository; // RDB에 대한 리포지토리
-    private final RedisSeatRepository orderSeatRedisRepository; // Redis 리포지토리
     private final OrderSeatRepository orderSeatRepository;
     private final PerformanceClient performanceClient;
-    private final PaymentClient paymentClient;
-    private final UserClient userClient;
-    private final RedissonClient redissonClient;
-    private final RedisOperator redisOperator;
     private final EventApplicationService eventApplicationService;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final ObjectMapper objectMapper;
 
     private final static int SEAT_LOCK_CACHE_EXPIRE_SECONDS = 330;
     private final RedisSeatRepository redisSeatRepository;
@@ -60,94 +52,78 @@ public class OrderService {
         "3f1b7f0a-7c8a-4b2e-bb5d-986f9c7c8b45"); // TODO : 실제 userId 값으로 변경
 
     @Transactional
-    public CommonResponse<OrderResponse> orderOccupyingSeats(OrderCreateDto orderCreateRequestDto) {
+    public CommonResponse<OrderResponse> orderOccupyingSeats(OrderCreateDto orderCreateRequestDto)
+        throws JsonProcessingException {
 
-        Optional<RedisSeat> redisSeat = redisSeatRepository.findBySeatId(
-            String.valueOf(orderCreateRequestDto.seatId()));
-
+        String scheduleId = orderCreateRequestDto.scheduleId().toString();
         String seatId = orderCreateRequestDto.seatId().toString();
+        String scheduleSeatId = scheduleId + seatId;
         String userSeatId = tempUserId + ":" + seatId;
+        String redisKey = "seat:" + scheduleId + ":" + seatId;
 
-        if (!redisOperator.exists(seatId)) {
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(redisKey))) {
             return CommonResponse.error(ORDER_FOR_PERFORMANCE_CACHE_NOT_FOUND);
         }
 
-        // Redis에서 값을 가져와서 OrderStatus로 변환
-        OrderStatus currentStatus = getOrderStatusFromRedis(seatId);
-        if (currentStatus == OrderStatus.OCCUPIED) {
+        RedisSeat redisSeat = getRedisSeat(redisKey);
+
+        if(redisSeat.getSeatState()) {
             return CommonResponse.error(ORDER_ALREADY_OCCUPIED);
         }
 
-        if (redisSeat.isPresent()) {
-            return CommonResponse.error(ORDER_ALREADY_OCCUPIED);
-        }
-
-        // 분산 락 설정
-        return redLockForSeat(String.valueOf(tempUserId), seatId, redisSeat.get());
+        return redLockForSeat(String.valueOf(tempUserId), seatId, redisSeat, scheduleId);
     }
 
-    public CommonResponse<OrderResponse> redLockForSeat(String userId, String seatId,
-        RedisSeat redisSeat) {
-        String lockKey = "lock:" + seatId;
-        RLock lock = redissonClient.getLock(lockKey);
-        try {
-            // 락 시도
-            if (lock.tryLock(1, 10, TimeUnit.SECONDS)) { // 1초 대기 후 10초 동안 락 유지
-                try {
 
-                    Order order = orderWithOrderSeatSave(
-                        UUID.fromString(seatId));
-
-                    String SeatIdWithTTL = seatId + ":" + order.getId();//orderId:seatId
-
-                    if (redisOperator.exists(SeatIdWithTTL)) {
-                        throw new ApplicationException(TTL_ALREADY_EXISTS);//exceptionCase
-                    }
-                    redisOperator.setIfAbsentWithTTL(SeatIdWithTTL, userId,
-                        SEAT_LOCK_CACHE_EXPIRE_SECONDS);
-
-                    redisSeat.setSeatState(true);
-                    redisSeatRepository.save(redisSeat);
-
-                    OrderResponse orderResponse = OrderResponse.builder()
-                        .id(order.getId())
-                        .rowNumber(order.getOrderSeat().getRowNumber())
-                        .columnNumber(order.getOrderSeat().getColumnNumber())
-                        .price(order.getOrderSeat().getPrice())
-                        .userId(order.getUserId())
-                        .performanceName(order.getPerformanceName())
-                        .companyId(order.getCompanyId())
-                        .orderStatus(order.getOrderStatus())
-                        .reservationDate(order.getReservationDate())
-                        .scheduleId(order.getScheduleId())
-                        .seatGrade(order.getOrderSeat().getSeatGrade())
-                        .build();
-
-                    return CommonResponse.success(ORDER_OCCUPYING_SEAT_SUCCESS, orderResponse);
-
-                } finally {
-                    lock.unlock(); // 락 해제
-                }
-            } else {
-                throw new RuntimeException(ORDER_ALREADY_OCCUPIED.getMessage());
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // 스레드 인터럽트 상태 복원
-            throw new RuntimeException(
-                OrderExceptionCase.LOCK_ACQUISITION_INTERRUPTED.getMessage());
-        }
-    }
-
-    private OrderStatus getOrderStatusFromRedis(String key) {
-        String value = redisOperator.get(key);
+    private RedisSeat getRedisSeat(String redisKey) {
+        String value = redisTemplate.opsForValue().get(redisKey);
         if (value == null) {
-            return OrderStatus.NO_RESERVATION;
+            throw new ApplicationException(ORDER_FOR_PERFORMANCE_CACHE_NOT_FOUND);
         }
+
         try {
-            return OrderStatus.valueOf(value);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(ORDER_STATUS_UNKNOWN.getMessage());
+            return objectMapper.readValue(value, RedisSeat.class);
+        } catch (JsonProcessingException e) {
+            log.error("JSON 역직렬화 오류: {}", e.getMessage());
+            throw new RuntimeException("Redis 값 역직렬화에 실패했습니다.");
         }
+    }
+
+    public CommonResponse<OrderResponse> redLockForSeat(String userId, String seatId, RedisSeat redisSeat, String scheduleId)
+        throws JsonProcessingException {
+        String userValueId = String.valueOf(tempUserId);
+        Order order = orderWithOrderSeatSave(UUID.fromString(seatId));
+        String SeatIdWithTTL = seatId + ":" + order.getId();
+
+        if (redisTemplate.opsForValue().get(SeatIdWithTTL) != null) {
+            throw new ApplicationException(TTL_ALREADY_EXISTS);
+        }
+
+        redisTemplate.opsForValue().set(SeatIdWithTTL, scheduleId , SEAT_LOCK_CACHE_EXPIRE_SECONDS,
+            TimeUnit.SECONDS);
+
+        // RedisSeat의 상태를 true로 설정하고 Redis에 저장
+        redisSeat.setSeatState(true);
+
+        // RedisSeat 객체를 JSON으로 직렬화하여 Redis에 저장
+        String updatedRedisSeatJson = objectMapper.writeValueAsString(redisSeat);
+        redisTemplate.opsForValue().set("seat:" + scheduleId + ":" + redisSeat.getSeatId(), updatedRedisSeatJson);
+
+        OrderResponse orderResponse = OrderResponse.builder()
+            .id(order.getId())
+            .rowNumber(order.getOrderSeat().getRowNumber())
+            .columnNumber(order.getOrderSeat().getColumnNumber())
+            .price(order.getOrderSeat().getPrice())
+            .userId(order.getUserId())
+            .performanceName(order.getPerformanceName())
+            .companyId(order.getCompanyId())
+            .orderStatus(redisSeat.getSeatState())
+            .reservationDate(order.getReservationDate())
+            .scheduleId(order.getScheduleId())
+            .seatGrade(order.getOrderSeat().getSeatGrade())
+            .build();
+
+        return CommonResponse.success(ORDER_OCCUPYING_SEAT_SUCCESS, orderResponse);
     }
 
 //    @Transactional
@@ -186,7 +162,7 @@ public class OrderService {
 
     public Order orderWithOrderSeatSave(UUID seatId) {
         ResponseEntity<CommonResponse<OrderInfoResponse>> orderInfo = performanceClient.getOrderInfo(
-            seatId);
+            String.valueOf(seatId));
         // 주문 데이터를 생성하고 저장
         Order order = Order.builder()
             .companyId(orderInfo.getBody().getData().companyId())
@@ -214,7 +190,7 @@ public class OrderService {
 
     public OrderInfoResponse findOrder(UUID seatId) {
         ResponseEntity<CommonResponse<OrderInfoResponse>> orderInfo = performanceClient.getOrderInfo(
-            seatId);
+            String.valueOf(seatId));
         return orderInfo.getBody().getData();
     }
 
@@ -224,8 +200,8 @@ public class OrderService {
 //            throw new ApplicationException();//상태
 //        }
 
-        RedisSeat orderSeatRedis = orderSeatRedisRepository.findById(
-                orderId)
+        RedisSeat orderSeatRedis = redisSeatRepository.findById(
+                String.valueOf(orderId))
             .orElseThrow(() -> new RuntimeException(ORDER_NOT_FOUND_AT_REDIS.getMessage()));
 
         Order order = orderRepository.findById(orderId)
@@ -244,7 +220,7 @@ public class OrderService {
         // TODO : performance API 호출
 
         ResponseEntity<CommonResponse<SeatResponse>> savedPerformanceToDb
-            = performanceClient.updateSeatState(orderSeatRedis.getSeatId(),
+            = performanceClient.updateSeatState(UUID.fromString(orderSeatRedis.getSeatId()),
             orderSeatRedis.getSeatState());
 
         String performanceId = "1";
