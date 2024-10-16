@@ -32,8 +32,7 @@ public class WorkingQueueToken {
                 .build();
     }
 
-    public static WorkingQueueToken tokenWithValidUntil(String userId, String performanceId, String tokenValue, LocalDateTime validUntil
-    ) {
+    public static WorkingQueueToken withValidUntil(String userId, String performanceId, String tokenValue, LocalDateTime validUntil) {
         return WorkingQueueToken.builder()
                 .userId(userId)
                 .performanceId(performanceId)

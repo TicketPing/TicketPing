@@ -8,15 +8,15 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class RetrieveWaitingTokenCommand {
+public class FindWaitingTokenCommand {
 
     private String userId;
     private String performanceId;
     private String tokenValue;
     private String queueName;
 
-    public static RetrieveWaitingTokenCommand create(String userId, String performanceId) {
-        return RetrieveWaitingTokenCommand.builder()
+    public static FindWaitingTokenCommand create(String userId, String performanceId) {
+        return FindWaitingTokenCommand.builder()
                 .userId(userId)
                 .performanceId(performanceId)
                 .tokenValue(generateTokenValue(userId, performanceId))
