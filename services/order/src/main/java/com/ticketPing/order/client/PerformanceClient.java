@@ -17,7 +17,7 @@ public interface PerformanceClient extends PerformanceService {
 
     @GetMapping("/api/v1/seats/{seatId}/order-info")
     ResponseEntity<CommonResponse<OrderInfoResponse>> getOrderInfo(
-        @PathVariable("seatId") UUID seatId);
+        @PathVariable("seatId") String seatId);
 
     @PatchMapping("/api/v1/seats/{seatId}")
     ResponseEntity<CommonResponse<SeatResponse>> updateSeatState(

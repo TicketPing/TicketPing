@@ -2,5 +2,12 @@ POST http://localhost:10023/api/v1/orders
 Content-Type: application/json
 
 {
-  "seatId": "7cbdf319-a752-43bd-8137-246a8accd720"
+
+  "scheduleId": "869df884-454c-4b67-a8e5-4572a3803a5d",
+  "seatId": "eb17a2cd-c053-450c-961d-e27d1b468872"
+
 }
+
+### performance 좌석 주문 정보 조회 요청
+GET http://localhost:10022/api/v1/seats/0c617eaf-6993-4820-9fea-0be4843e3154/order-info
+Content-Type: application/json

@@ -1,5 +1,6 @@
 package com.ticketPing.order.presentation.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ticketPing.order.application.dtos.OrderCreateDto;
 import com.ticketPing.order.application.dtos.OrderResponse;
 import com.ticketPing.order.application.service.OrderService;
@@ -25,7 +26,7 @@ public class OrderController {
     @Operation(summary = "예매 좌석 선점", description = "레디스에서 캐싱된 공연정보를 바탕으로 TTL 좌석 선점 5분간 진행")
     @PostMapping
     public CommonResponse<OrderResponse> orderPerformanceSeats(
-        @RequestBody OrderCreateDto requestDto) {
+        @RequestBody OrderCreateDto requestDto) throws JsonProcessingException {
 
         return orderService.orderOccupyingSeats(requestDto);
     }
