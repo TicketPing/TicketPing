@@ -64,10 +64,8 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
 
     @Override
     public void dequeueWorkingToken(DequeueWorkingTokenCommand command) {
-        if (isExistToken(command.getTokenValue())) {
-            deleteToken(command);
-            decreaseCounter(command);
-        }
+        deleteToken(command);
+        decreaseCounter(command);
     }
 
     private void deleteToken(DequeueWorkingTokenCommand command) {
