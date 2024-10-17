@@ -2,14 +2,15 @@ package com.ticketPing.order.presentation.controller;
 
 import static com.ticketPing.order.presentation.cases.success.OrderSuccessCase.ORDER_OCCUPYING_SEAT_SUCCESS;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ticketPing.order.application.dtos.OrderCreateDto;
 import com.ticketPing.order.application.dtos.OrderResponse;
 import com.ticketPing.order.application.service.OrderService;
 import common.response.CommonResponse;
+import dto.PaymentResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,7 +30,7 @@ public class OrderController {
     @Operation(summary = "예매 좌석 선점", description = "레디스에서 캐싱된 공연정보를 바탕으로 TTL 좌석 선점 5분간 진행")
     @PostMapping
     public CommonResponse<OrderResponse> orderPerformanceSeats(@RequestBody OrderCreateDto requestDto, @RequestHeader("X_USER_ID") UUID userId
-    ) throws JsonProcessingException {
+    ) {
         OrderResponse orderResponse = orderService.orderOccupyingSeats(requestDto,userId);
         return CommonResponse.success(ORDER_OCCUPYING_SEAT_SUCCESS, orderResponse);
     }
@@ -45,6 +46,14 @@ public class OrderController {
     @PostMapping("/test")
     public void test() {
         orderService.test();
+    }
+
+    @Operation(summary = "결제 도메인에서 주문 정보를 가져옴",
+        description = "주문정보를 가져옵니다."
+    )
+    @GetMapping("/{orderId}/info")
+    PaymentResponseDto getOrderInfo(@PathVariable("orderId") UUID orderId){
+        return orderService.orderResponseToPayment(orderId);
     }
 
 }

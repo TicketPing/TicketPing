@@ -26,6 +26,9 @@ public class OrderSeat {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @Column
+    private UUID seatId;
+
     @Column(name = "row_number")
     private int row; // 행번호
 
@@ -38,8 +41,9 @@ public class OrderSeat {
     @Column
     private int cost; // 가격
 
-    public static OrderSeat create(int row,int col,String seatGrade,int cost) {
+    public static OrderSeat create(UUID seatId, int row,int col,String seatGrade,int cost) {
         return OrderSeat.builder()
+            .seatId(seatId)
             .col(col)
             .seatGrade(seatGrade)
             .cost(cost)
