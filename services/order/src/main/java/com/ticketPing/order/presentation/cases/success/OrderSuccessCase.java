@@ -1,4 +1,4 @@
-package com.ticketPing.order.presentation.response.success;
+package com.ticketPing.order.presentation.cases.success;
 
 import common.cases.SuccessCase;
 import lombok.Getter;

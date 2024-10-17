@@ -1,4 +1,4 @@
-package com.ticketPing.order.domain.entity;
+package com.ticketPing.order.domain.model.enums;
 
 public enum OrderStatus {
 

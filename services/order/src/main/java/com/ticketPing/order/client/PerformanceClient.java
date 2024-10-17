@@ -1,7 +1,7 @@
 package com.ticketPing.order.client;
 
 
-import com.ticketPing.order.application.dtos.temp.OrderInfoResponse;
+import com.ticketPing.order.application.dtos.OrderInfoResponse;
 import com.ticketPing.order.application.dtos.temp.SeatResponse;
 import common.response.CommonResponse;
 import java.util.UUID;
@@ -17,7 +17,7 @@ public interface PerformanceClient extends PerformanceService {
 
     @GetMapping("/api/v1/seats/{seatId}/order-info")
     ResponseEntity<CommonResponse<OrderInfoResponse>> getOrderInfo(
-        @PathVariable("seatId") UUID seatId);
+        @PathVariable("seatId") String seatId);
 
     @PatchMapping("/api/v1/seats/{seatId}")
     ResponseEntity<CommonResponse<SeatResponse>> updateSeatState(

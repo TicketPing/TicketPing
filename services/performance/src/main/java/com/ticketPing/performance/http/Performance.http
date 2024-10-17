@@ -22,3 +22,19 @@ Accept: application/json
 ### 공연장 좌석
 GET http://localhost:10022/api/v1/performances/hall-seats/2bd363d3-88f6-4b5f-a39b-66786a5cd119
 Accept: application/json
+
+###
+GET http://localhost:10022/api/v1/performances
+
+### 공연 상세 정보 조회
+
+GET http://localhost:10022/api/v1/performances/d495abf5-1207-4a42-a9c8-3111a22a0d7e
+
+### 공연 스케줄 조회
+
+GET http://localhost:10022/api/v1/performances/d495abf5-1207-4a42-a9c8-3111a22a0d7e/schedules
+
+
+### 공연 좌석 캐싱
+
+POST http://localhost:10022/api/v1/schedules/869df884-454c-4b67-a8e5-4572a3803a5d/seats

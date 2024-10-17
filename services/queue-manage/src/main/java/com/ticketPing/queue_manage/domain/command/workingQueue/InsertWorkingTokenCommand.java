@@ -9,15 +9,15 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class EnqueueWorkingTokenCommand {
+public class InsertWorkingTokenCommand {
 
     private String performanceId;
     private String tokenValue;
     private String value;
     private long ttl;
 
-    public static EnqueueWorkingTokenCommand create(WorkingQueueToken token) {
-        return EnqueueWorkingTokenCommand.builder()
+    public static InsertWorkingTokenCommand create(WorkingQueueToken token) {
+        return InsertWorkingTokenCommand.builder()
                 .performanceId(token.getPerformanceId())
                 .tokenValue(token.getTokenValue())
                 .value("NA")

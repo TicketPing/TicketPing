@@ -8,14 +8,14 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class RetrieveWorkingTokenCommand {
+public class FindWorkingTokenCommand {
 
     private String userId;
     private String performanceId;
     private String tokenValue;
 
-    public static RetrieveWorkingTokenCommand create(String userId, String performanceId) {
-        return RetrieveWorkingTokenCommand.builder()
+    public static FindWorkingTokenCommand create(String userId, String performanceId) {
+        return FindWorkingTokenCommand.builder()
                 .userId(userId)
                 .performanceId(performanceId)
                 .tokenValue(generateTokenValue(userId, performanceId))

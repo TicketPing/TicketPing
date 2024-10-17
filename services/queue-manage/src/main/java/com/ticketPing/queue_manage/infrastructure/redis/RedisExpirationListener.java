@@ -1,6 +1,7 @@
 package com.ticketPing.queue_manage.infrastructure.redis;
 
 import com.ticketPing.queue_manage.application.service.WorkingQueueApplicationService;
+import com.ticketPing.queue_manage.domain.model.enums.DeleteWorkingTokenCase;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ public class RedisExpirationListener implements MessageListener {
                 try {
                     // 리더로 선출된 인스턴스만 작업 수행
                     log.info("This instance is the leader, processing job..");
-                    workingQueueService.processQueueTransfer(tokenValue.toString());
+                    workingQueueService.processQueueTransfer(DeleteWorkingTokenCase.TokenExpired, tokenValue.toString());
                 } finally {
                     if (leaderLock.isHeldByCurrentThread()) {
                         leaderLock.unlock();
