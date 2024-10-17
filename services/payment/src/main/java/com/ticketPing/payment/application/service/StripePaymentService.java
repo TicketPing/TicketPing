@@ -1,33 +1,24 @@
 package com.ticketPing.payment.application.service;
 
-import com.stripe.Stripe;
 import com.stripe.StripeClient;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
-import com.stripe.model.PaymentMethodDomain;
-import com.stripe.net.RequestOptions;
 import com.stripe.param.PaymentIntentCreateParams;
-import com.stripe.param.PaymentMethodDomainCreateParams;
-import com.ticketPing.payment.application.dto.StripeCreatePaymentResponse;
+import com.ticketPing.payment.application.dto.StripeForClientResponseDto;
 import com.ticketPing.payment.application.dto.StripeResponseDto;
-import com.ticketPing.payment.domain.model.Payment;
-import com.ticketPing.payment.infrastructure.client.ReservationClient;
+import com.ticketPing.payment.domain.model.entity.Payment;
+import com.ticketPing.payment.infrastructure.client.OrderClient;
 import com.ticketPing.payment.infrastructure.configuration.StripePaymentConfig;
-import com.ticketPing.payment.infrastructure.redis.RedisLockService;
 import com.ticketPing.payment.infrastructure.repository.PaymentJpaRepository;
-import com.ticketPing.payment.presentation.request.StripeRequestDto;
+import com.ticketPing.payment.presentation.request.PaymentStripeRequestDto;
 import common.exception.ApplicationException;
-import feign.FeignException;
-import lombok.RequiredArgsConstructor;
+import dto.PaymentRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
-import java.util.Arrays;
 import java.util.UUID;
 
-import static com.ticketPing.payment.cases.PaymentErrorCase.*;
+import static com.ticketPing.payment.presentation.cases.PaymentErrorCase.*;
 
 @Service
 public class StripePaymentService {
@@ -35,46 +26,62 @@ public class StripePaymentService {
     public final String CURRENCY = "krw";
     private final StripeClient client;
     private final PaymentJpaRepository repository;
-    //private final ReservationClient reservationClient;
-    private final StripePaymentConfig config;
-    private final RedisLockService redisLockService;
-
+    private final OrderClient orderClient;
 
     @Autowired
-    public StripePaymentService(StripePaymentConfig config, PaymentJpaRepository repository, RedisLockService redisLockService) {
-        this.config = config;
+    public StripePaymentService(StripePaymentConfig config, PaymentJpaRepository repository, OrderClient orderClient) {
         this.client = new StripeClient(config.getSecretKey());
         this.repository = repository;
-        //this.reservationClient = reservationClient;
-        this.redisLockService = redisLockService;
+        this.orderClient = orderClient;
     }
 
-    public StripeCreatePaymentResponse payment(UUID orderId, StripeRequestDto requestDto) {
-        try {
-            //Todo : orderId로 Order에 requestDto 데이터 요청
-            PaymentIntentCreateParams params = getPaymentIntentCreateParams(
-                    requestDto.getAmount(), requestDto.getPerformanceName(), requestDto.getPerformanceTime(), requestDto.getSeatInfo(), requestDto.getUserEmail());
-            PaymentIntent paymentIntent = client.paymentIntents().create(params);
+    //결제 요청
+    public StripeForClientResponseDto payment(UUID orderId) {
+            PaymentStripeRequestDto requestDto = getOrderInfo(orderId);
+            verifyOrder(requestDto);
+            PaymentIntent paymentIntent = createPi(requestDto);
             StripeResponseDto responseDto = new StripeResponseDto(paymentIntent, orderId);
-            //dto -> entity
             Payment payment = new Payment(responseDto);
-            //db 저장
             repository.save(payment);
-            //Todo : 중복 예매 검증 -> 공연명과 공연일자와 자리가 같을 경우?? -> 예매 파트에서? 결제에서도 한번 더?
+            return new StripeForClientResponseDto(paymentIntent.getClientSecret(), paymentIntent.getId());
+    }
 
-            return new StripeCreatePaymentResponse(
-                    paymentIntent.getClientSecret(), paymentIntent.getId());
+    // 중복 예매 검증 (공연명, 스케쥴, 자리)
+    private void verifyOrder(PaymentStripeRequestDto requestDto) {
+        PaymentRequestDto request = PaymentRequestDto.field(
+                requestDto.getPerformanceName(),
+                requestDto.getPerformanceScheduleId(),
+                requestDto.getSeatInfo());
+        if(!orderClient.verifyOrder(request)) throw new ApplicationException(ORDER_VERIFY_FAIL);
+    }
+
+    //orderId로 Order에 orderInfo 데이터 요청
+    private PaymentStripeRequestDto getOrderInfo (UUID orderId) {
+        return PaymentStripeRequestDto.get(orderClient.getOrderInfo(orderId));
+    }
+
+    //create paymentIntent
+    private PaymentIntent createPi (PaymentStripeRequestDto requestDto) {
+        try {
+            PaymentIntentCreateParams params = getPaymentIntentCreateParams(
+                    requestDto.getAmount(),
+                    requestDto.getPerformanceName(),
+                    requestDto.getPerformanceScheduleId(),
+                    requestDto.getSeatInfo(),
+                    requestDto.getUserId()
+            );
+            return client.paymentIntents().create(params);
         } catch (StripeException e) {
-            throw new ApplicationException(PAYMENT_INTENT_FAIL);
+            throw new ApplicationException(PI_CREATE_FAIL);
         }
     }
 
-    private PaymentIntentCreateParams getPaymentIntentCreateParams(Long amount, String performanceName, String performanceTime, String seatInfo, String email) {
+
+    private PaymentIntentCreateParams getPaymentIntentCreateParams(Long amount, String performanceName, UUID performanceScheduleId, String seatInfo, UUID userId) {
         return PaymentIntentCreateParams.builder()
                 .setCurrency(CURRENCY)
                 .setAmount(amount)
-                .setDescription(performanceName + " , " + performanceTime + " , " + seatInfo)
-                .setReceiptEmail(email)
+                .setDescription(performanceName + ":" + performanceScheduleId + ":" + seatInfo + ":" + userId)
                 .setSetupFutureUsage(PaymentIntentCreateParams.SetupFutureUsage.OFF_SESSION)
                 .build();
     }

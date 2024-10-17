@@ -1,4 +1,4 @@
-package com.ticketPing.payment.config;
+package com.ticketPing.payment.infrastructure.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

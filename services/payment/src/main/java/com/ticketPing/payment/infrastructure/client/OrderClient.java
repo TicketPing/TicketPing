@@ -1,5 +1,6 @@
 package com.ticketPing.payment.infrastructure.client;
 
+import dto.PaymentRequestDto;
 import dto.PaymentResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,9 @@ public interface OrderClient {
 
     @GetMapping("/{orderId}/info")
     PaymentResponseDto getOrderInfo(@PathVariable("orderId") UUID orderId);
+
+    @GetMapping("/verify")
+    boolean verifyOrder(@RequestBody PaymentRequestDto requestDto);
 
 
     @PutMapping("/{orderId}/status")
