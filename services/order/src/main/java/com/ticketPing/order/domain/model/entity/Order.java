@@ -1,4 +1,4 @@
-package com.ticketPing.order.domain.entity;
+package com.ticketPing.order.domain.model.entity;
 
 
 import audit.BaseEntity;
@@ -25,7 +25,7 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @Table(name = "p_orders")
 public class Order extends BaseEntity {
 
@@ -35,7 +35,7 @@ public class Order extends BaseEntity {
 
     @Setter
     @Column
-    private Boolean orderStatus;
+    private Boolean orderStatus;//주문 상태
 
     @Column
     private LocalDateTime reservationDate; // 예매 생성 시간
@@ -43,7 +43,7 @@ public class Order extends BaseEntity {
     @Column
     @Builder.Default
     @Setter
-    private Boolean isCancelled = false;//예매 취소 여부
+    private Boolean isOrderCancelled = false;//예매 취소 여부
 
     @Column
     private UUID userId; // 사용자 아이디
@@ -62,20 +62,17 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "order_seat_id")
     private OrderSeat orderSeat;
 
-
-    private Order(Boolean orderStatus,
-        LocalDateTime reservationDate,
-        UUID userId,
-        UUID scheduleId,
-        String performanceName,
-        UUID companyId) {
-        this.orderStatus = orderStatus;
-        this.reservationDate = reservationDate;
-        this.userId = userId;
-        this.scheduleId = scheduleId;
-        this.performanceName = performanceName;
-        this.companyId = companyId;
+    public static Order create(UUID userId, UUID companyId, String performanceName,
+        LocalDateTime reservationDate, Boolean orderStatus, UUID scheduleId) {
+        return Order.builder()
+            .companyId(companyId)
+            .performanceName(performanceName)
+            .orderStatus(orderStatus)
+            .userId(userId)
+            .scheduleId(scheduleId)
+            .reservationDate(LocalDateTime.now())
+            .reservationDate(reservationDate)
+            .build();
     }
-
 
 }

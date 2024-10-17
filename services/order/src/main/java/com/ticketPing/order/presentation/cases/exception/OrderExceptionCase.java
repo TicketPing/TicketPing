@@ -1,4 +1,4 @@
-package com.ticketPing.order.presentation.response.exception;
+package com.ticketPing.order.presentation.cases.exception;
 
 
 import common.cases.ErrorCase;
@@ -26,6 +26,7 @@ public enum OrderExceptionCase implements ErrorCase {
     NOT_FOUND_SEAT_ID_IN_TTL(HttpStatus.NOT_FOUND,"TTL 정보에서 seat_id를 찾을 수 없습니다."),
     NOT_FOUND_SCHEDULE_ID_IN_TTL(HttpStatus.NOT_FOUND,"TTL 정보에서 schedule_id를 찾을 수 없습니다."),
     NOT_FOUND_ORDER_ID_IN_TTL(HttpStatus.NOT_FOUND,"TTL 정보에서 order_id를 찾을 수 없습니다."),
+    JSON_PROCESSING_EXCEPTION(HttpStatus.UNPROCESSABLE_ENTITY, "Redis 값 역직렬화에 실패했습니다."),
     ORDER_STATUS_UNKNOWN(HttpStatus.CONFLICT,"저장된 enum 상태값을 사용해야 합니다.");
 
     private final HttpStatus httpStatus;
