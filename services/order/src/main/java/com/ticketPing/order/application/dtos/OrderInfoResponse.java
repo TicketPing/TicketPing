@@ -1,4 +1,4 @@
-package com.ticketPing.order.application.dtos.temp;
+package com.ticketPing.order.application.dtos;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

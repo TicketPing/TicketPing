@@ -1,7 +1,7 @@
 package com.ticketPing.order.client;
 
 
-import com.ticketPing.order.application.dtos.temp.OrderInfoResponse;
+import com.ticketPing.order.application.dtos.OrderInfoResponse;
 import com.ticketPing.order.application.dtos.temp.SeatResponse;
 import common.response.CommonResponse;
 import java.util.UUID;

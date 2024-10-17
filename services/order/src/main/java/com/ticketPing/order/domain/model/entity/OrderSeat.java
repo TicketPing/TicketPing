@@ -1,4 +1,4 @@
-package com.ticketPing.order.domain.entity;
+package com.ticketPing.order.domain.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "p_seats")
+@Builder(access = AccessLevel.PRIVATE)
 @Entity
 public class OrderSeat {
 
@@ -26,27 +27,24 @@ public class OrderSeat {
     private UUID id;
 
     @Column(name = "row_number")
-    private int rowNumber; // 행번호
+    private int row; // 행번호
 
     @Column(name = "column_number")
-    private int columnNumber; // 열번호
+    private int col; // 열번호
 
     @Column(name = "seat_grade")
     private String seatGrade; // 좌석등급
 
     @Column
-    private int price; // 가격
+    private int cost; // 가격
 
-    @Builder
-    private OrderSeat(int rowNumber,
-        int columnNumber,
-        String seatGrade,
-        int price
-    ) {
-        this.rowNumber = rowNumber;
-        this.columnNumber = columnNumber;
-        this.seatGrade = seatGrade;
-        this.price = price;
+    public static OrderSeat create(int row,int col,String seatGrade,int cost) {
+        return OrderSeat.builder()
+            .col(col)
+            .seatGrade(seatGrade)
+            .cost(cost)
+            .row(row)
+            .build();
     }
 
 }

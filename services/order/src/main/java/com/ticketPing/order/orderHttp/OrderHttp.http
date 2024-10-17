@@ -1,11 +1,11 @@
+### Order 생성 요청
 POST http://localhost:10023/api/v1/orders
 Content-Type: application/json
+X_USER_ID: f47ac10b-58cc-4372-a567-0e02b2c3d479
 
 {
-
   "scheduleId": "869df884-454c-4b67-a8e5-4572a3803a5d",
-  "seatId": "eb17a2cd-c053-450c-961d-e27d1b468872"
-
+  "seatId": "6a861199-c928-42e4-aeb0-82d8dcef1866"
 }
 
 ### performance 좌석 주문 정보 조회 요청
