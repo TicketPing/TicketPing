@@ -7,15 +7,15 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class EnqueueWaitingTokenCommand {
+public class InsertWaitingTokenCommand {
 
     private String performanceId;
     private String tokenValue;
     private String queueName;
     private double score;
 
-    public static EnqueueWaitingTokenCommand create(WaitingQueueToken token) {
-        return EnqueueWaitingTokenCommand.builder()
+    public static InsertWaitingTokenCommand create(WaitingQueueToken token) {
+        return InsertWaitingTokenCommand.builder()
                 .performanceId(token.getPerformanceId())
                 .tokenValue(token.getTokenValue())
                 .queueName(token.getPerformanceId() + "_Queue")

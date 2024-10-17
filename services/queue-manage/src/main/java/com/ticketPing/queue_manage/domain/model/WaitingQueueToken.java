@@ -33,7 +33,7 @@ public class WaitingQueueToken {
                 .build();
     }
 
-    public static WaitingQueueToken tokenWithPosition(String userId, String performanceId, String tokenValue, long position, long totalUsers) {
+    public static WaitingQueueToken withPosition(String userId, String performanceId, String tokenValue, long position, long totalUsers) {
         return WaitingQueueToken.builder()
                 .userId(userId)
                 .performanceId(performanceId)

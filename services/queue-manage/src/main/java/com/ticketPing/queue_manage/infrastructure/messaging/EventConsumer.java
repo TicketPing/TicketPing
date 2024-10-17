@@ -4,6 +4,7 @@ import static com.ticketPing.queue_manage.domain.utils.QueueTokenValueGenerator.
 
 import com.ticketPing.queue_manage.application.service.WorkingQueueApplicationService;
 import com.ticketPing.queue_manage.domain.events.OrderCompletedEvent;
+import com.ticketPing.queue_manage.domain.model.enums.DeleteWorkingTokenCase;
 import common.utils.EventSerializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,8 @@ public class EventConsumer {
     public void handleOrderCompletedEvent(String message) {
         log.info("Received message from kafka: {}", message);
         OrderCompletedEvent event = EventSerializer.deserialize(message, OrderCompletedEvent.class);
-        workingQueueService.processQueueTransfer(generateTokenValue(event.userId(), event.performanceId()));
+        String tokenValue = generateTokenValue(event.userId(), event.performanceId());
+        workingQueueService.processQueueTransfer(DeleteWorkingTokenCase.OrderCompleted, tokenValue);
     }
 
 }
