@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record OrderInfoResponse(
-    UUID ,
+    UUID seatId,
     Integer row,
     Integer col,
     Boolean seatState,

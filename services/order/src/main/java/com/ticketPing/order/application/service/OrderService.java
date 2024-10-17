@@ -6,6 +6,7 @@ import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCa
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.ORDER_FOR_PERFORMANCE_CACHE_NOT_FOUND;
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.ORDER_NOT_FOUND;
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.ORDER_NOT_FOUND_AT_REDIS;
+import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.REQUEST_ORDER_INFORMATION_BY_PAYMENT_NOT_FOUND;
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.TTL_ALREADY_EXISTS;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,6 +26,7 @@ import com.ticketPing.order.domain.repository.RedisSeatRepository;
 import com.ticketPing.order.infrastructure.service.RedisService;
 import common.exception.ApplicationException;
 import common.response.CommonResponse;
+import dto.PaymentResponseDto;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +55,7 @@ public class OrderService {
     private final RedisSeatRepository redisSeatRepository;
 
     @Transactional
-    public OrderResponse orderOccupyingSeats(OrderCreateDto orderCreateRequestDto, UUID userId) throws JsonProcessingException {
+    public OrderResponse orderOccupyingSeats(OrderCreateDto orderCreateRequestDto, UUID userId) {
 
         String scheduleId = orderCreateRequestDto.scheduleId().toString();
         String seatId = orderCreateRequestDto.seatId().toString();
@@ -89,7 +91,7 @@ public class OrderService {
     }
 
 
-    private OrderResponse redLockForSeat(UUID userId, String seatId, RedisSeat redisSeat, String scheduleId) throws JsonProcessingException {
+    private OrderResponse redLockForSeat(UUID userId, String seatId, RedisSeat redisSeat, String scheduleId) {
 
         String lockKey = "lock:" + seatId;
         RLock lock = redissonClient.getLock(lockKey);
@@ -124,6 +126,8 @@ public class OrderService {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new ApplicationException(LOCK_ACQUISITION_FAIL);
+        } catch (JsonProcessingException e) {
+            throw new ApplicationException(JSON_PROCESSING_EXCEPTION);
         }
     }
 
@@ -160,6 +164,7 @@ public class OrderService {
 
         // 좌석 정보 설정
         OrderSeat orderSeat = OrderSeat.create(
+            orderData.seatId(),
             orderData.row(),
             orderData.col(),
             orderData.seatRate(),
@@ -214,6 +219,14 @@ public class OrderService {
         String performanceId = "1";
         eventApplicationService.publishOrderCompletedEvent(
             OrderCompletedEvent.create(userId, performanceId));
+    }
+
+    public PaymentResponseDto orderResponseToPayment(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new ApplicationException(REQUEST_ORDER_INFORMATION_BY_PAYMENT_NOT_FOUND));
+
+        return new PaymentResponseDto(order.getPerformanceName(),order.getScheduleId(),
+            order.getOrderSeat().getSeatId(), (long) order.getOrderSeat().getCost(),order.getUserId());
     }
 
 }

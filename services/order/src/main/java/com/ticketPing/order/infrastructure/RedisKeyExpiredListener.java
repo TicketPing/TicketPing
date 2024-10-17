@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ticketPing.order.domain.model.entity.Order;
 import com.ticketPing.order.domain.model.entity.RedisSeat;
 import com.ticketPing.order.domain.repository.OrderRepository;
-import com.ticketPing.order.domain.repository.RedisSeatRepository;
 import com.ticketPing.order.infrastructure.service.RedisService;
 import common.exception.ApplicationException;
 import java.util.UUID;
@@ -30,7 +29,6 @@ import org.springframework.stereotype.Component;
 public class RedisKeyExpiredListener implements MessageListener {
 
     private final RedisService redisService;
-    private final RedisSeatRepository redisSeatRepository; // RedisSeat 저장소
     private final OrderRepository orderRepository;
     private final ObjectMapper objectMapper;
 
@@ -45,7 +43,6 @@ public class RedisKeyExpiredListener implements MessageListener {
             String scheduleId = parts[0];
             String seatId = parts[1]; // seatId
             String orderId = parts[2]; // orderId
-            RedisSeat redisSeat;
 
             // 현재 Order 객체 가져오기
             Order order = orderRepository.findById(UUID.fromString(orderId))
