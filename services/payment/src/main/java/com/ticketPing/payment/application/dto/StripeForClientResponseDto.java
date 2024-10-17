@@ -5,11 +5,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class StripeCreatePaymentResponse {
+public class StripeForClientResponseDto {
 
     private String clientSecret;
     private String dpmCheckerLink;
-    public StripeCreatePaymentResponse(String clientSecret, String transactionId) {
+    public StripeForClientResponseDto(String clientSecret, String transactionId) {
         this.clientSecret = clientSecret;
         // [DEV]: For demo purposes only, you should avoid exposing the PaymentIntent ID in the client-side code.
         this.dpmCheckerLink = "https://dashboard.stripe.com/settings/payment_methods/review?transaction_id="+transactionId;

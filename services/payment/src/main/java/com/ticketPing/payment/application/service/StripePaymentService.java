@@ -1,94 +1,110 @@
 package com.ticketPing.payment.application.service;
 
-import com.stripe.Stripe;
 import com.stripe.StripeClient;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
-import com.stripe.model.PaymentMethodDomain;
-import com.stripe.net.RequestOptions;
 import com.stripe.param.PaymentIntentCreateParams;
-import com.stripe.param.PaymentMethodDomainCreateParams;
-import com.ticketPing.payment.application.dto.StripeCreatePaymentResponse;
+import com.ticketPing.payment.application.dto.StripeForClientResponseDto;
 import com.ticketPing.payment.application.dto.StripeResponseDto;
-import com.ticketPing.payment.domain.model.Payment;
-import com.ticketPing.payment.infrastructure.client.ReservationClient;
+import com.ticketPing.payment.domain.model.entity.Payment;
+import com.ticketPing.payment.infrastructure.client.OrderClient;
 import com.ticketPing.payment.infrastructure.configuration.StripePaymentConfig;
-import com.ticketPing.payment.infrastructure.redis.RedisLockService;
-import com.ticketPing.payment.infrastructure.repository.PaymentJpaRepository;
-import com.ticketPing.payment.presentation.request.StripeRequestDto;
+import com.ticketPing.payment.infrastructure.redis.RedisService;
+import com.ticketPing.payment.infrastructure.repository.PaymentRepository;
+import com.ticketPing.payment.presentation.request.PaymentStripeRequestDto;
 import common.exception.ApplicationException;
-import feign.FeignException;
-import lombok.RequiredArgsConstructor;
+import dto.PaymentRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
-import java.util.Arrays;
 import java.util.UUID;
 
-import static com.ticketPing.payment.cases.PaymentErrorCase.*;
+import static com.ticketPing.payment.presentation.cases.PaymentErrorCase.*;
 
 @Service
 public class StripePaymentService {
 
     public final String CURRENCY = "krw";
     private final StripeClient client;
-    private final PaymentJpaRepository repository;
-    //private final ReservationClient reservationClient;
-    private final StripePaymentConfig config;
-    private final RedisLockService redisLockService;
-
+    private final PaymentRepository repository;
+    private final OrderClient orderClient;
+    private final RedisService redisService;
 
     @Autowired
-    public StripePaymentService(StripePaymentConfig config, PaymentJpaRepository repository, RedisLockService redisLockService) {
-        this.config = config;
+    public StripePaymentService(StripePaymentConfig config, PaymentRepository repository, OrderClient orderClient, RedisService redisService) {
         this.client = new StripeClient(config.getSecretKey());
         this.repository = repository;
-        //this.reservationClient = reservationClient;
-        this.redisLockService = redisLockService;
+        this.orderClient = orderClient;
+        this.redisService = redisService;
     }
 
-    public StripeCreatePaymentResponse payment(UUID orderId, StripeRequestDto requestDto) {
-        try {
-            //Todo : orderId로 Order에 requestDto 데이터 요청
-            PaymentIntentCreateParams params = getPaymentIntentCreateParams(
-                    requestDto.getAmount(), requestDto.getPerformanceName(), requestDto.getPerformanceTime(), requestDto.getSeatInfo(), requestDto.getUserEmail());
-            PaymentIntent paymentIntent = client.paymentIntents().create(params);
+    //결제 요청
+    public StripeForClientResponseDto payment(UUID orderId) {
+            PaymentStripeRequestDto requestDto = getOrderInfo(orderId);
+            verifyOrder(requestDto);
+            PaymentIntent paymentIntent = createPi(requestDto);
             StripeResponseDto responseDto = new StripeResponseDto(paymentIntent, orderId);
-            //dto -> entity
             Payment payment = new Payment(responseDto);
-            //db 저장
             repository.save(payment);
-            //Todo : 중복 예매 검증 -> 공연명과 공연일자와 자리가 같을 경우?? -> 예매 파트에서? 결제에서도 한번 더?
+            return new StripeForClientResponseDto(paymentIntent.getClientSecret(), paymentIntent.getId());
+    }
 
-            return new StripeCreatePaymentResponse(
-                    paymentIntent.getClientSecret(), paymentIntent.getId());
+    // 중복 예매 검증 (공연명, 스케쥴, 자리)
+    private void verifyOrder(PaymentStripeRequestDto requestDto) {
+        PaymentRequestDto request = PaymentRequestDto.field(
+                requestDto.getPerformanceName(),
+                requestDto.getPerformanceScheduleId(),
+                requestDto.getSeatId());
+        if(!orderClient.verifyOrder(request)) throw new ApplicationException(ORDER_VERIFY_FAIL);
+    }
+
+    //orderId로 Order에 orderInfo 데이터 요청
+    private PaymentStripeRequestDto getOrderInfo (UUID orderId) {
+        return PaymentStripeRequestDto.get(orderClient.getOrderInfo(orderId));
+    }
+
+    //create paymentIntent
+    private PaymentIntent createPi (PaymentStripeRequestDto requestDto) {
+        try {
+            PaymentIntentCreateParams params = getPaymentIntentCreateParams(
+                    requestDto.getAmount(),
+                    requestDto.getPerformanceName(),
+                    requestDto.getPerformanceScheduleId(),
+                    requestDto.getSeatId(),
+                    requestDto.getUserId()
+            );
+            return client.paymentIntents().create(params);
         } catch (StripeException e) {
-            throw new ApplicationException(PAYMENT_INTENT_FAIL);
+            throw new ApplicationException(PI_CREATE_FAIL);
         }
     }
 
-    private PaymentIntentCreateParams getPaymentIntentCreateParams(Long amount, String performanceName, String performanceTime, String seatInfo, String email) {
+    private PaymentIntentCreateParams getPaymentIntentCreateParams(Long amount, String performanceName, UUID performanceScheduleId, UUID seatId, UUID userId) {
         return PaymentIntentCreateParams.builder()
                 .setCurrency(CURRENCY)
                 .setAmount(amount)
-                .setDescription(performanceName + " , " + performanceTime + " , " + seatInfo)
-                .setReceiptEmail(email)
+                .setDescription(performanceName + ":" + performanceScheduleId + ":" + seatId + ":" + userId)
                 .setSetupFutureUsage(PaymentIntentCreateParams.SetupFutureUsage.OFF_SESSION)
                 .build();
     }
 
     // TTL 확인
-    public boolean verifyTtl(UUID orderId) {
-        // Todo : Redis에 orderId로 TTL 확인
-        // Todo : Redis 조회하는 그 순간에 ttl이 만료될 수도 있으니, ttl을 +30s 더 주고 확인할 때는 30초 빼고 계산해서 확인
-        // Todo : orderId로 seatId 찾아오기
-        //UUID seatId = reservationClient.getSeatId(orderId);
-
-//        return redisLockService.verifyTtl(orderId, seatId);
-        return true;
+    public void verifyTtl(UUID orderId) {
+        // Todo : Redis에 orderId로 TTL 확인 (key = scheduleId:seatId:orderId)
+        Payment payment = repository.findByOrderId(orderId)
+                .orElseThrow(() -> new ApplicationException(PAYMENT_NOT_FOUND));
+        String redisKey = payment.getOrderInfo().getPerformanceScheduleId() + ":" + payment.getOrderInfo().getSeatId() + ":" + orderId;
+        redisCheckTTL(redisKey);
     }
+
+    private void redisCheckTTL(String redisKey) {
+        Long ttl = redisService.getTTL(redisKey);
+        if(ttl <= 30L) {
+            // 30s보다 작거나, -1(ttl 설정X), -2(존재하지 않는 키) -> fail
+            throw new ApplicationException(TTL_VERIFY_FAIL);
+        }
+    }
+
 
     public String updateStatus(String paymentIntentId) {
 

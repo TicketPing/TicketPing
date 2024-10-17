@@ -1,4 +1,4 @@
-package com.ticketPing.payment.domain.model;
+package com.ticketPing.payment.domain.model.entity;
 
 import audit.BaseEntity;
 import com.ticketPing.payment.application.dto.StripeResponseDto;
@@ -26,7 +26,6 @@ public class Payment extends BaseEntity {
     //private String currency;
     private UUID userId;
     private String status;
-    private String userEmail;
     private String clientSecret;
     @Embedded
     private OrderInfo orderInfo;
@@ -39,16 +38,15 @@ public class Payment extends BaseEntity {
         this.paymentIntentId = responseDto.getPaymentIntentId();
         this.status = responseDto.getStatus();
         this.clientSecret = responseDto.getClientSecret();
-        this.userEmail = responseDto.getUserEmail();
         this.userId = responseDto.getUserId();
         if(this.orderInfo == null) {
             this.orderInfo = new OrderInfo();
         }
         this.orderInfo.setOrderId(responseDto.getOrderId());
         this.orderInfo.setAmount(responseDto.getAmount());
-        this.orderInfo.setSeatInfo(responseDto.getSeatInfo());
+        this.orderInfo.setSeatId(responseDto.getSeatId());
         this.orderInfo.setPerformanceName(responseDto.getPerformanceName());
-        this.orderInfo.setPerformanceTime(responseDto.getPerformanceTime());
+        this.orderInfo.setPerformanceScheduleId(responseDto.getPerformanceScheduleId());
         this.paymentIntentTime = responseDto.getPaymentIntentTime();
     }
 

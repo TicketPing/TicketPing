@@ -1,4 +1,4 @@
-package com.ticketPing.payment.domain.enums;
+package com.ticketPing.payment.domain.model.enums;
 
 import lombok.Getter;
 

@@ -1,24 +1,16 @@
 package com.ticketPing.payment.application.service;
 
 import com.stripe.StripeClient;
-import com.stripe.model.PaymentIntent;
-import com.ticketPing.payment.application.dto.StripeResponseDto;
-import com.ticketPing.payment.infrastructure.client.ReservationClient;
 import com.ticketPing.payment.infrastructure.configuration.StripePaymentConfig;
-import com.ticketPing.payment.infrastructure.repository.PaymentJpaRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
+import com.ticketPing.payment.infrastructure.repository.PaymentRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 class StripePaymentServiceTest {
     private StripePaymentService stripePaymentService;
-    private PaymentJpaRepository repository;
-   // private ReservationClient reservationClient;
+    private PaymentRepository repository;
+   // private OrderClient reservationClient;
     private StripePaymentConfig config;
     private StripeClient client;
 

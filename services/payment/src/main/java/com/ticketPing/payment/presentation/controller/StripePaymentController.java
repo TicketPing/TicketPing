@@ -1,9 +1,8 @@
 package com.ticketPing.payment.presentation.controller;
 
-import com.ticketPing.payment.application.dto.StripeCreatePaymentResponse;
+import com.ticketPing.payment.application.dto.StripeForClientResponseDto;
 import com.ticketPing.payment.application.dto.StripeResponseDto;
 import com.ticketPing.payment.application.service.StripePaymentService;
-import com.ticketPing.payment.presentation.request.StripeRequestDto;
 import common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import static com.ticketPing.payment.cases.PaymentErrorCase.TTL_VERIFY_FAIL;
-import static com.ticketPing.payment.cases.PaymentSuccessCase.*;
+import static com.ticketPing.payment.presentation.cases.PaymentSuccessCase.*;
 
 @RestController
 @RequestMapping("/api/v1/payments")
@@ -29,13 +27,8 @@ public class StripePaymentController {
 
     @Operation(summary = "결제 요청", description = "실제 결제 전 pi, secretClient 받기 위한 api")
     @PostMapping("/{orderId}")
-    public CommonResponse<StripeCreatePaymentResponse> paymentIntent(
-            @PathVariable("orderId") UUID orderId
-    ) {
-        // Todo : orderId @RequestParam으로 받아오기
-        //UUID orderId = UUID.randomUUID();
-        var requestDto = new StripeRequestDto(orderId);
-        StripeCreatePaymentResponse responseDto = paymentService.payment(orderId, requestDto);
+    public CommonResponse<StripeForClientResponseDto> paymentIntent(@PathVariable("orderId") UUID orderId) {
+        StripeForClientResponseDto responseDto = paymentService.payment(orderId);
         //시크릿 키, dpmCheckerLink
         return CommonResponse.success(PAYMENT_INTENT_SUCCESS, responseDto);
     }
@@ -44,11 +37,8 @@ public class StripePaymentController {
     @Operation(summary = "결제 전 TTL 확인", description = "결제 전 TTL 확인 api")
     @PostMapping("/verify-ttl/{orderId}")
     public ResponseEntity verifyTtl(@PathVariable("orderId") UUID orderId) {
-        if(paymentService.verifyTtl(orderId)){
-            return ResponseEntity.status(TTL_VERIFY_SUCCESS.getHttpStatus()).body(CommonResponse.success(TTL_VERIFY_SUCCESS));
-        } else {
-            return ResponseEntity.status(TTL_VERIFY_FAIL.getHttpStatus()).body(CommonResponse.error(TTL_VERIFY_FAIL));
-        }
+        paymentService.verifyTtl(orderId);
+        return ResponseEntity.status(TTL_VERIFY_SUCCESS.getHttpStatus()).body(CommonResponse.success(TTL_VERIFY_SUCCESS));
     }
 
 

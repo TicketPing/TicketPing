@@ -1,4 +1,4 @@
-package com.ticketPing.payment.cases;
+package com.ticketPing.payment.presentation.cases;
 
 import common.cases.SuccessCase;
 import lombok.Getter;
