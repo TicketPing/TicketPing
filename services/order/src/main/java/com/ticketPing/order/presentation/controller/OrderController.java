@@ -6,6 +6,7 @@ import com.ticketPing.order.application.dtos.OrderCreateDto;
 import com.ticketPing.order.application.dtos.OrderResponse;
 import com.ticketPing.order.application.service.OrderService;
 import common.response.CommonResponse;
+import dto.PaymentRequestDto;
 import dto.PaymentResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.UUID;
@@ -52,8 +53,13 @@ public class OrderController {
         description = "주문정보를 가져옵니다."
     )
     @GetMapping("/{orderId}/info")
-    PaymentResponseDto getOrderInfo(@PathVariable("orderId") UUID orderId){
+    public PaymentResponseDto getOrderInfo(@PathVariable("orderId") UUID orderId){
         return orderService.orderResponseToPayment(orderId);
+    }
+
+    @GetMapping("/verify")
+    public boolean verifyOrder(@RequestBody PaymentRequestDto requestDto) {
+        return orderService.verifyOrder(requestDto);
     }
 
 }

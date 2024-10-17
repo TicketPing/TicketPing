@@ -28,7 +28,7 @@ public class RedisService {
         redisTemplate.opsForValue().set(key,value,time,unit);
     }
 
-    public boolean keysStartingWith(String prefix) {
+    public Boolean keysStartingWith(String prefix) {
         ScanOptions options = ScanOptions.scanOptions().match(prefix + "*").count(100).build();
         Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(redisConnection -> {
             return redisConnection.scan(options);
