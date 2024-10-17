@@ -1,4 +1,5 @@
 package com.ticketPing.payment.domain.repository;
 
-public interface PaymentRepository {
+
+public interface PaymentRepositoryCustom {
 }
