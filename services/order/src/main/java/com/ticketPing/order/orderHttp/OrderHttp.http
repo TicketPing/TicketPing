@@ -5,8 +5,9 @@ X_USER_ID: f47ac10b-58cc-4372-a567-0e02b2c3d479
 
 {
   "scheduleId": "869df884-454c-4b67-a8e5-4572a3803a5d",
-  "seatId": "6a861199-c928-42e4-aeb0-82d8dcef1866"
+  "seatId": "6d91966a-1c27-4c07-bd11-7059cb2f5793"
 }
+
 
 ### performance 좌석 주문 정보 조회 요청
 GET http://localhost:10022/api/v1/seats/0c617eaf-6993-4820-9fea-0be4843e3154/order-info
