@@ -5,8 +5,9 @@ X_USER_ID: f47ac10b-58cc-4372-a567-0e02b2c3d479
 
 {
   "scheduleId": "869df884-454c-4b67-a8e5-4572a3803a5d",
-  "seatId": "8c6a7378-8a8b-4763-b957-f61dc613d2a7"
+  "seatId": "5a81411a-e1db-4762-a924-3a3734bf92f4"
 }
+
 
 ### performance 좌석 주문 정보 조회 요청
 GET http://localhost:10022/api/v1/seats/0c617eaf-6993-4820-9fea-0be4843e3154/order-info
@@ -14,3 +15,13 @@ Content-Type: application/json
 
 ### 주문 정보 조회 요청
 GET http://localhost:10023/api/v1/orders/8c6ee761-dc39-4b5b-9f0e-035ff3100481/info
+
+### 주문 검증 요청
+GET http://localhost:10023/api/v1/orders/verify
+Content-Type: application/json
+
+{
+  "performanceName": "Concert",
+  "scheduleId": "869df884-454c-4b67-a8e5-4572a3803a5d",
+  "seatId": "5a81411a-e1db-4762-a924-3a3734bf92f4"
+}
