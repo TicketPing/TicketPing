@@ -44,7 +44,7 @@ public class Payment extends BaseEntity {
         }
         this.orderInfo.setOrderId(responseDto.getOrderId());
         this.orderInfo.setAmount(responseDto.getAmount());
-        this.orderInfo.setSeatInfo(responseDto.getSeatInfo());
+        this.orderInfo.setSeatId(responseDto.getSeatId());
         this.orderInfo.setPerformanceName(responseDto.getPerformanceName());
         this.orderInfo.setPerformanceScheduleId(responseDto.getPerformanceScheduleId());
         this.paymentIntentTime = responseDto.getPaymentIntentTime();

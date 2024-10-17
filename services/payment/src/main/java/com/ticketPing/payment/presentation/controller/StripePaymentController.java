@@ -3,7 +3,6 @@ package com.ticketPing.payment.presentation.controller;
 import com.ticketPing.payment.application.dto.StripeForClientResponseDto;
 import com.ticketPing.payment.application.dto.StripeResponseDto;
 import com.ticketPing.payment.application.service.StripePaymentService;
-import com.ticketPing.payment.infrastructure.client.OrderClient;
 import common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import static com.ticketPing.payment.presentation.cases.PaymentErrorCase.TTL_VERIFY_FAIL;
 import static com.ticketPing.payment.presentation.cases.PaymentSuccessCase.*;
 
 @RestController
@@ -39,11 +37,8 @@ public class StripePaymentController {
     @Operation(summary = "결제 전 TTL 확인", description = "결제 전 TTL 확인 api")
     @PostMapping("/verify-ttl/{orderId}")
     public ResponseEntity verifyTtl(@PathVariable("orderId") UUID orderId) {
-        if(paymentService.verifyTtl(orderId)){
-            return ResponseEntity.status(TTL_VERIFY_SUCCESS.getHttpStatus()).body(CommonResponse.success(TTL_VERIFY_SUCCESS));
-        } else {
-            return ResponseEntity.status(TTL_VERIFY_FAIL.getHttpStatus()).body(CommonResponse.error(TTL_VERIFY_FAIL));
-        }
+        paymentService.verifyTtl(orderId);
+        return ResponseEntity.status(TTL_VERIFY_SUCCESS.getHttpStatus()).body(CommonResponse.success(TTL_VERIFY_SUCCESS));
     }
 
 

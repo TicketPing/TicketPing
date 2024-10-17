@@ -14,7 +14,7 @@ import java.util.UUID;
 public class PaymentResponseDto {
     private String performanceName;
     private UUID performanceScheduleId;
-    private String seatInfo;
+    private UUID seatId;
     private Long amount;
     private UUID userId;
 }

@@ -12,13 +12,13 @@ public class PaymentRequestDto {
 
     private String performanceName;
     private UUID scheduleId;
-    private String seatInfo;
+    private UUID seatId;
 
-    public static PaymentRequestDto field(String performanceName, UUID scheduleId, String seatInfo) {
+    public static PaymentRequestDto field(String performanceName, UUID scheduleId, UUID seatId) {
         return PaymentRequestDto.builder()
                 .performanceName(performanceName)
                 .scheduleId(scheduleId)
-                .seatInfo(seatInfo)
+                .seatId(seatId)
                 .build();
     }
 }

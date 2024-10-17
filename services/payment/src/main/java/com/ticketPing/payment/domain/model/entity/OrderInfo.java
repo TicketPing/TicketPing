@@ -16,5 +16,5 @@ public class OrderInfo {
     private String performanceName;
     private UUID performanceScheduleId;
     private Long amount;
-    private String seatInfo;
+    private UUID seatId;
 }

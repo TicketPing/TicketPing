@@ -9,7 +9,8 @@ import com.ticketPing.payment.application.dto.StripeResponseDto;
 import com.ticketPing.payment.domain.model.entity.Payment;
 import com.ticketPing.payment.infrastructure.client.OrderClient;
 import com.ticketPing.payment.infrastructure.configuration.StripePaymentConfig;
-import com.ticketPing.payment.infrastructure.repository.PaymentJpaRepository;
+import com.ticketPing.payment.infrastructure.redis.RedisService;
+import com.ticketPing.payment.infrastructure.repository.PaymentRepository;
 import com.ticketPing.payment.presentation.request.PaymentStripeRequestDto;
 import common.exception.ApplicationException;
 import dto.PaymentRequestDto;
@@ -25,14 +26,16 @@ public class StripePaymentService {
 
     public final String CURRENCY = "krw";
     private final StripeClient client;
-    private final PaymentJpaRepository repository;
+    private final PaymentRepository repository;
     private final OrderClient orderClient;
+    private final RedisService redisService;
 
     @Autowired
-    public StripePaymentService(StripePaymentConfig config, PaymentJpaRepository repository, OrderClient orderClient) {
+    public StripePaymentService(StripePaymentConfig config, PaymentRepository repository, OrderClient orderClient, RedisService redisService) {
         this.client = new StripeClient(config.getSecretKey());
         this.repository = repository;
         this.orderClient = orderClient;
+        this.redisService = redisService;
     }
 
     //결제 요청
@@ -51,7 +54,7 @@ public class StripePaymentService {
         PaymentRequestDto request = PaymentRequestDto.field(
                 requestDto.getPerformanceName(),
                 requestDto.getPerformanceScheduleId(),
-                requestDto.getSeatInfo());
+                requestDto.getSeatId());
         if(!orderClient.verifyOrder(request)) throw new ApplicationException(ORDER_VERIFY_FAIL);
     }
 
@@ -67,7 +70,7 @@ public class StripePaymentService {
                     requestDto.getAmount(),
                     requestDto.getPerformanceName(),
                     requestDto.getPerformanceScheduleId(),
-                    requestDto.getSeatInfo(),
+                    requestDto.getSeatId(),
                     requestDto.getUserId()
             );
             return client.paymentIntents().create(params);
@@ -76,26 +79,32 @@ public class StripePaymentService {
         }
     }
 
-
-    private PaymentIntentCreateParams getPaymentIntentCreateParams(Long amount, String performanceName, UUID performanceScheduleId, String seatInfo, UUID userId) {
+    private PaymentIntentCreateParams getPaymentIntentCreateParams(Long amount, String performanceName, UUID performanceScheduleId, UUID seatId, UUID userId) {
         return PaymentIntentCreateParams.builder()
                 .setCurrency(CURRENCY)
                 .setAmount(amount)
-                .setDescription(performanceName + ":" + performanceScheduleId + ":" + seatInfo + ":" + userId)
+                .setDescription(performanceName + ":" + performanceScheduleId + ":" + seatId + ":" + userId)
                 .setSetupFutureUsage(PaymentIntentCreateParams.SetupFutureUsage.OFF_SESSION)
                 .build();
     }
 
     // TTL 확인
-    public boolean verifyTtl(UUID orderId) {
-        // Todo : Redis에 orderId로 TTL 확인
-        // Todo : Redis 조회하는 그 순간에 ttl이 만료될 수도 있으니, ttl을 +30s 더 주고 확인할 때는 30초 빼고 계산해서 확인
-        // Todo : orderId로 seatId 찾아오기
-        //UUID seatId = reservationClient.getSeatId(orderId);
-
-//        return redisLockService.verifyTtl(orderId, seatId);
-        return true;
+    public void verifyTtl(UUID orderId) {
+        // Todo : Redis에 orderId로 TTL 확인 (key = scheduleId:seatId:orderId)
+        Payment payment = repository.findByOrderId(orderId)
+                .orElseThrow(() -> new ApplicationException(PAYMENT_NOT_FOUND));
+        String redisKey = payment.getOrderInfo().getPerformanceScheduleId() + ":" + payment.getOrderInfo().getSeatId() + ":" + orderId;
+        redisCheckTTL(redisKey);
     }
+
+    private void redisCheckTTL(String redisKey) {
+        Long ttl = redisService.getTTL(redisKey);
+        if(ttl <= 30L) {
+            // 30s보다 작거나, -1(ttl 설정X), -2(존재하지 않는 키) -> fail
+            throw new ApplicationException(TTL_VERIFY_FAIL);
+        }
+    }
+
 
     public String updateStatus(String paymentIntentId) {
 

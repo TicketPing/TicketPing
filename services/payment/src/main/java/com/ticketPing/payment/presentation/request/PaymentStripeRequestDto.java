@@ -1,6 +1,5 @@
 package com.ticketPing.payment.presentation.request;
 
-import dto.PaymentRequestDto;
 import dto.PaymentResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -16,7 +15,7 @@ public class PaymentStripeRequestDto {
     private String performanceName;
     @Schema(description = "Time of the performance", example = "2024-12-24T20:00:00")
     private UUID performanceScheduleId;
-    private String seatInfo;
+    private UUID seatId;
     @Schema(description = "price")
     private Long amount;
     private UUID userId;
@@ -33,7 +32,7 @@ public class PaymentStripeRequestDto {
         return PaymentStripeRequestDto.builder()
                 .performanceName(paymentResponseDto.getPerformanceName())
                 .performanceScheduleId(paymentResponseDto.getPerformanceScheduleId())
-                .seatInfo(paymentResponseDto.getSeatInfo())
+                .seatId(paymentResponseDto.getSeatId())
                 .amount(paymentResponseDto.getAmount())
                 .userId(paymentResponseDto.getUserId())
                 .build();

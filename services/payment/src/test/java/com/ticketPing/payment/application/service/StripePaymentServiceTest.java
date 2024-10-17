@@ -2,14 +2,14 @@ package com.ticketPing.payment.application.service;
 
 import com.stripe.StripeClient;
 import com.ticketPing.payment.infrastructure.configuration.StripePaymentConfig;
-import com.ticketPing.payment.infrastructure.repository.PaymentJpaRepository;
+import com.ticketPing.payment.infrastructure.repository.PaymentRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 class StripePaymentServiceTest {
     private StripePaymentService stripePaymentService;
-    private PaymentJpaRepository repository;
+    private PaymentRepository repository;
    // private OrderClient reservationClient;
     private StripePaymentConfig config;
     private StripeClient client;

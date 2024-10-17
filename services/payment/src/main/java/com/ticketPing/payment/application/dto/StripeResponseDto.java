@@ -21,7 +21,7 @@ public class StripeResponseDto {
     private String clientSecret;
     private String performanceName;
     private UUID performanceScheduleId;
-    private String seatInfo;
+    private UUID seatId;
     @Schema(description = "payment Intent Time _ unix timestamp", example = "1680800504")
     private Long paymentIntentTime;
 
@@ -35,7 +35,7 @@ public class StripeResponseDto {
         String[] parts = paymentIntent.getDescription().split(":");
         this.performanceName = parts[0];
         this.performanceScheduleId = UUID.fromString(parts[1]);
-        this.seatInfo = parts[2];
+        this.seatId = UUID.fromString(parts[2]);
         this.userId = UUID.fromString(parts[3]);
         this.paymentIntentTime = paymentIntent.getCreated();
     }
