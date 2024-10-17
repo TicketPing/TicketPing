@@ -4,6 +4,7 @@ import static com.ticketPing.order.presentation.cases.success.OrderSuccessCase.O
 
 import com.ticketPing.order.application.dtos.OrderCreateDto;
 import com.ticketPing.order.application.dtos.OrderResponse;
+import com.ticketPing.order.application.dtos.temp.SeatResponse;
 import com.ticketPing.order.application.service.OrderService;
 import common.response.CommonResponse;
 import dto.PaymentRequestDto;
@@ -11,7 +12,9 @@ import dto.PaymentResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -54,12 +57,19 @@ public class OrderController {
     )
     @GetMapping("/{orderId}/info")
     public PaymentResponseDto getOrderInfo(@PathVariable("orderId") UUID orderId){
-        return orderService.orderResponseToPayment(orderId);
+        return orderService.orderInfoResponseToPayment(orderId);
     }
 
     @GetMapping("/verify")
     public boolean verifyOrder(@RequestBody PaymentRequestDto requestDto) {
         return orderService.verifyOrder(requestDto);
+    }
+
+    @PutMapping("/seats/{seatId}")
+    public ResponseEntity<CommonResponse<SeatResponse>> updateSeatState(
+        @PathVariable("seatId") UUID seatId,
+        @RequestParam("seatState") Boolean seatState) {
+        return orderService.updateSeatState(seatId, seatState);
     }
 
 }

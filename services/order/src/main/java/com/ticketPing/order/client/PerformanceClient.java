@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "performance") // FeignClient 이름과 기본 경로 설정
@@ -19,7 +20,7 @@ public interface PerformanceClient extends PerformanceService {
     ResponseEntity<CommonResponse<OrderInfoResponse>> getOrderInfo(
         @PathVariable("seatId") String seatId);
 
-    @PatchMapping("/api/v1/seats/{seatId}")
+    @PutMapping("/api/v1/seats/{seatId}")
     ResponseEntity<CommonResponse<SeatResponse>> updateSeatState(
         @PathVariable("seatId") UUID seatId,
         @RequestParam("seatState") Boolean seatState);

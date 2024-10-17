@@ -191,34 +191,44 @@ public class OrderService {
     @Transactional
     public void updateOrderStatus(UUID orderId, String status) {
         // TODO: 로직을 status success/fail 상태에 따라 분리하기
-        RedisSeat orderSeatRedis = redisSeatRepository.findById(
-                String.valueOf(orderId))
-            .orElseThrow(() -> new RuntimeException(ORDER_NOT_FOUND_AT_REDIS.getMessage()));
 
         Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new RuntimeException(ORDER_NOT_FOUND.getMessage()));
 
-        updateOrderAndSeatStatus(orderSeatRedis,order);
+        UUID scheduleId = order.getScheduleId();
+        UUID seatId = order.getOrderSeat().getSeatId();
+        String redisKey = "seat:"+scheduleId+":"+seatId;
 
-        String performanceId = "1";
-        eventApplicationService.publishOrderCompletedEvent(
-            OrderCompletedEvent.create(String.valueOf(order.getUserId()), performanceId));
+        RedisSeat redisSeat = getRedisSeat(redisKey);
+
+        updateOrderAndSeatStatus(redisSeat,order,redisKey);
+
+//        String performanceId = "1";
+//        eventApplicationService.publishOrderCompletedEvent(
+//            OrderCompletedEvent.create(String.valueOf(order.getUserId()), performanceId));
 
     }
 
-    private void updateOrderAndSeatStatus(RedisSeat redisSeat, Order order) {
+    private void updateOrderAndSeatStatus(RedisSeat redisSeat, Order order, String redisKey) {
 
         order.setOrderStatus(false);
         orderRepository.save(order);
 
         redisSeat.setSeatState(false);
-        redisSeatRepository.save(redisSeat);
-
+        try {
+            String updatedRedisSeatJson = objectMapper.writeValueAsString(redisSeat);
+            redisService.setValue(redisKey, updatedRedisSeatJson);
+        } catch (JsonProcessingException e) {
+            throw new ApplicationException(JSON_PROCESSING_EXCEPTION);
+        }
+        
         //TODO : 결제 취소 구현시 redis or performanceDB 저장 실패 및 결제 취소 구현
 
         ResponseEntity<CommonResponse<SeatResponse>> savedPerformanceToDb
             = performanceClient.updateSeatState(UUID.fromString(redisSeat.getSeatId()),
             redisSeat.getSeatState());
+
+        System.out.println("savedPerformanceToDb.getBody().getData().seatId() = " + savedPerformanceToDb.getBody().getData().seatId());
     }
 
     public void test() {
@@ -229,7 +239,7 @@ public class OrderService {
             OrderCompletedEvent.create(userId, performanceId));
     }
 
-    public PaymentResponseDto orderResponseToPayment(UUID orderId) {
+    public PaymentResponseDto orderInfoResponseToPayment(UUID orderId) {
         Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new ApplicationException(REQUEST_ORDER_INFORMATION_BY_PAYMENT_NOT_FOUND));
 
@@ -262,5 +272,10 @@ public class OrderService {
 
         //TODO : 4. order entity에서 주문상태 확인
         return true;
+    }
+
+    public ResponseEntity<CommonResponse<SeatResponse>> updateSeatState(UUID seatId, Boolean seatState) {
+        // PerformanceClient를 통해 좌석 상태를 업데이트
+        return performanceClient.updateSeatState(seatId, seatState);
     }
 }
