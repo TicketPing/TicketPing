@@ -35,7 +35,6 @@ dependencyManagement {
 
 dependencies {
 	implementation project(':common')
-	implementation project(':common-jpa')
 	implementation project(':dtos:user-dto')
 
 	// JWT

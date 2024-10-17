@@ -1,17 +1,16 @@
 package com.ticketPing.auth.presentation.controller;
 
-import com.ticketPing.auth.presentation.request.AuthLoginRequest;
 import com.ticketPing.auth.application.dto.LoginResponse;
+import com.ticketPing.auth.application.dto.ValidateTokenResponse;
 import com.ticketPing.auth.application.service.AuthService;
 import com.ticketPing.auth.presentation.cases.AuthSuccessCase;
+import com.ticketPing.auth.presentation.request.AuthLoginRequest;
+import common.response.CommonResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import common.response.CommonResponse;
-
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,11 +27,11 @@ public class AuthController {
                 .body(CommonResponse.success(AuthSuccessCase.SUCCESS_LOGIN, loginResponse));
     }
 
-    @GetMapping("/verify")
-    public ResponseEntity<CommonResponse<Object>> verifyUser(@RequestParam(value = "userId") final UUID userId) {
-        authService.verifyUser(userId);
+    @GetMapping("/validate")
+    public ResponseEntity<CommonResponse<ValidateTokenResponse>> validateToken(String token) {
+        ValidateTokenResponse response = authService.validateToken(token);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.success(AuthSuccessCase.USER_EXISTS));
+                .body(CommonResponse.success(AuthSuccessCase.USER_EXISTS, response));
     }
 
 }

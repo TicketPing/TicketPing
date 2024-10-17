@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableFeignClients
-@ComponentScan(basePackages = {"com.ticketPing.auth", "audit", "common"})
+@ComponentScan(basePackages = {"com.ticketPing.auth", "common"})
 public class AuthApplication {
 
 	public static void main(String[] args) {
