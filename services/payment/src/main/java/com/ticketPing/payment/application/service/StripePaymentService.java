@@ -52,7 +52,6 @@ public class StripePaymentService {
     // 중복 예매 검증 (공연명, 스케쥴, 자리)
     private void verifyOrder(PaymentStripeRequestDto requestDto) {
         PaymentRequestDto request = PaymentRequestDto.field(
-                requestDto.getPerformanceName(),
                 requestDto.getPerformanceScheduleId(),
                 requestDto.getSeatId());
         if(!orderClient.verifyOrder(request)) throw new ApplicationException(ORDER_VERIFY_FAIL);
