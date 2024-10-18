@@ -156,6 +156,8 @@ services:
         condition: service_started
       queue-manage-server:
         condition: service_started
+      redis:
+        condition: service_healthy
 #
 #  user-server:
 #    container_name: user-server
