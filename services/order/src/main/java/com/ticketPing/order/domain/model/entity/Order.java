@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,6 +28,7 @@ import lombok.Setter;
 @Entity
 @Builder(access = AccessLevel.PRIVATE)
 @Table(name = "p_orders")
+@Where(clause = "is_deleted = false")
 public class Order extends BaseEntity {
 
     @Id

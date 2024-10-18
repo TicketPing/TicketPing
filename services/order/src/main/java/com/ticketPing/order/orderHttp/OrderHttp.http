@@ -5,16 +5,11 @@ X_USER_ID: f47ac10b-58cc-4372-a567-0e02b2c3d479
 
 {
   "scheduleId": "869df884-454c-4b67-a8e5-4572a3803a5d",
-  "seatId": "fd634d4b-712e-4a6e-b2c0-846829ecd7d9"
+  "seatId": "6fbea3b2-f6f8-4de4-b054-5561cf8950f2"
 }
 
-
-### performance 좌석 주문 정보 조회 요청
-GET http://localhost:10022/api/v1/seats/fd634d4b-712e-4a6e-b2c0-846829ecd7d9/order-info
-Content-Type: application/json
-
 ### 주문 정보 조회 요청
-GET http://localhost:10023/api/v1/orders/4a9b3822-a4fa-4fd1-81f7-eb86a93d860e/info
+GET http://localhost:10023/api/v1/orders/21f32cc4-9d9e-4110-8e5f-02cf24ff89e4/info
 
 ### 주문 검증 요청
 GET http://localhost:10023/api/v1/orders/verify
@@ -23,19 +18,8 @@ Content-Type: application/json
 {
   "performanceName": "Concert",
   "scheduleId": "869df884-454c-4b67-a8e5-4572a3803a5d",
-  "seatId": "fd634d4b-712e-4a6e-b2c0-846829ecd7d9"
+  "seatId": "6fbea3b2-f6f8-4de4-b054-5561cf8950f2"
 }
 
 ### 주문 상태 업데이트 요청 seatId = fd634d4b-712e-4a6e-b2c0-846829ecd7d9
-PUT http://localhost:10023/api/v1/orders/4a9b3822-a4fa-4fd1-81f7-eb86a93d860e/status?status=success
-
-### 좌석 상태 업데이트 요청
-PUT http://localhost:10022/api/v1/seats/fd634d4b-712e-4a6e-b2c0-846829ecd7d9?seatState=true
-
-orderId : 4a9b3822-a4fa-4fd1-81f7-eb86a93d860e
-scheduleId : 869df884-454c-4b67-a8e5-4572a3803a5d
-orderSeatId : 7a47e7df-2211-4f12-8a7f-aa10ec77b77b
-seatId : fd634d4b-712e-4a6e-b2c0-846829ecd7d9
-
-### 좌석 상태 수정 요청
-PUT http://localhost:10023/api/v1/orders/seats/fd634d4b-712e-4a6e-b2c0-846829ecd7d9?seatState=true
+PUT http://localhost:10023/api/v1/orders/21f32cc4-9d9e-4110-8e5f-02cf24ff89e4/status?status=success

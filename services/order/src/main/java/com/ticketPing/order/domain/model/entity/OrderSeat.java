@@ -1,5 +1,6 @@
 package com.ticketPing.order.domain.model.entity;
 
+import audit.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 
 @Getter
@@ -20,7 +22,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "p_seats")
 @Builder(access = AccessLevel.PRIVATE)
 @Entity
-public class OrderSeat {
+@Where(clause = "is_deleted = false")
+public class OrderSeat extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

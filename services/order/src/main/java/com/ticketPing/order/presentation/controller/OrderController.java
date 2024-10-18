@@ -10,6 +10,7 @@ import common.response.CommonResponse;
 import dto.PaymentRequestDto;
 import dto.PaymentResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -65,11 +66,11 @@ public class OrderController {
         return orderService.verifyOrder(requestDto);
     }
 
-    @PutMapping("/seats/{seatId}")
-    public ResponseEntity<CommonResponse<SeatResponse>> updateSeatState(
-        @PathVariable("seatId") UUID seatId,
-        @RequestParam("seatState") Boolean seatState) {
-        return orderService.updateSeatState(seatId, seatState);
+    @GetMapping("/seat-list")
+    public ResponseEntity<List<String>> getAllSeatKeys() {
+        List<String> keys = orderService.getAllSeatKeys();
+        return ResponseEntity.ok(keys);
     }
+
 
 }

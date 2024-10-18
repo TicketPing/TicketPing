@@ -4,6 +4,7 @@ package com.ticketPing.order.client;
 import com.ticketPing.order.application.dtos.OrderInfoResponse;
 import com.ticketPing.order.application.dtos.temp.SeatResponse;
 import common.response.CommonResponse;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -24,5 +25,9 @@ public interface PerformanceClient extends PerformanceService {
     ResponseEntity<CommonResponse<SeatResponse>> updateSeatState(
         @PathVariable("seatId") UUID seatId,
         @RequestParam("seatState") Boolean seatState);
+
+    @GetMapping("/api/v1/schedules/{scheduleId}/seats")
+    ResponseEntity<CommonResponse<List<SeatResponse>>> getAllScheduleSeats(
+        @PathVariable("scheduleId") UUID scheduleId);
 }
 
