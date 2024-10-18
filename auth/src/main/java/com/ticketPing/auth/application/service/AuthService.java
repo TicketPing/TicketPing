@@ -1,55 +1,67 @@
 package com.ticketPing.auth.application.service;
 
-import com.ticketPing.auth.presentation.request.LoginRequest;
+import com.ticketPing.auth.application.client.UserClient;
 import com.ticketPing.auth.application.dto.LoginResponse;
-import com.ticketPing.auth.domain.entity.User;
-import com.ticketPing.auth.domain.repository.UserRepository;
+import com.ticketPing.auth.application.dto.UserCacheDto;
+import com.ticketPing.auth.infrastructure.security.JwtUtil;
+import com.ticketPing.auth.infrastructure.security.Role;
+import com.ticketPing.auth.infrastructure.service.RedisService;
 import com.ticketPing.auth.presentation.cases.AuthErrorCase;
-import com.ticketPing.auth.security.JwtUtil;
-import com.ticketPing.auth.security.Role;
+import com.ticketPing.auth.presentation.request.AuthLoginRequest;
 import common.exception.ApplicationException;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import request.LoginRequest;
+import response.UserResponse;
 
+import java.time.Duration;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final UserClient userClient;
+    private final RedisService redisService;
 
-    @Transactional
-    public LoginResponse login(LoginRequest loginRequest) {
-        User user = findUserByEmail(loginRequest.email());
+    public LoginResponse login(AuthLoginRequest authLoginRequest) {
+        LoginRequest loginRequest = new LoginRequest(authLoginRequest.email(), authLoginRequest.password());
+        UserResponse userResponse = userClient.getUserByEmailAndPassword(loginRequest).getData();
 
-        if(!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
-            throw new ApplicationException(AuthErrorCase.PASSWORD_NOT_EQUAL);
-        }
+        cacheUser(new UserCacheDto(userResponse.userId(), Role.USER.getValue()), Duration.ofSeconds(3600));
 
-        String jwtToken =  jwtUtil.createToken(user.getEmail(), Role.USER);
+        String jwtToken = jwtUtil.createToken(userResponse.userId().toString(), Role.USER);
+
         return new LoginResponse(jwtToken);
     }
 
-    @Transactional
-    public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ApplicationException(AuthErrorCase.USER_NOT_FOUND));
+    public UserCacheDto validateToken(String jwtToken) {
+        jwtUtil.validateToken(jwtToken);
+        Claims claims = jwtUtil.getClaimsFromToken(jwtToken);
+        UUID userId = UUID.fromString(claims.getSubject());
+        String role = claims.get("auth", String.class);
+
+        validateUser(userId, role);
+
+        UserCacheDto userCacheDto = new UserCacheDto(userId, role);
+        cacheUser(userCacheDto, Duration.ofSeconds((claims.getExpiration().getTime() - new Date().getTime()) / 1000));
+
+        return userCacheDto;
     }
 
-    @Transactional
-    public void verifyUser(UUID userId) {
-        User user = findUserById(userId);
-        // TODO: 레디스에 회원 정보 넣기
+    public void validateUser(UUID userId, String role) {
+        Role enumRole = Role.valueOf(role);
+
+        if(enumRole.equals(Role.USER)) {
+            userClient.getUser(userId);
+        } else {
+            throw new ApplicationException(AuthErrorCase.INVALID_ROLE);
+        }
     }
 
-    @Transactional
-    public User findUserById(UUID userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new ApplicationException(AuthErrorCase.USER_NOT_FOUND));
+    public void cacheUser(UserCacheDto userCacheDto, Duration duration) {
+        redisService.setValueWithTTL(userCacheDto.userId().toString(), userCacheDto, duration);
     }
 }
