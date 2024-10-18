@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<CommonResponse<UserResponse>> getUser(@RequestParam("userId") UUID userId) {
+    public ResponseEntity<CommonResponse<UserResponse>> getUser(@PathVariable("userId") UUID userId) {
         UserResponse userResponse = userService.getUser(userId);
         return ResponseEntity
                 .status(200)

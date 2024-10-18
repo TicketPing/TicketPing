@@ -2,7 +2,7 @@ spring:
   application:
     name: queue-manage
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:29092
     consumer:
       group-id: ${spring.application.name}-group
       auto-offset-reset: earliest
@@ -26,4 +26,6 @@ redis:
   host: redis
   port: 6379
 
-
+working-queue:
+  max-size: 1000
+  token-ttl: 30

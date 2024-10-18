@@ -31,7 +31,9 @@ dependencies {
 	implementation project(':common')
 	implementation project(':common-jpa')
 	implementation project(':dtos:payment-dto')
+	implementation project(':dtos:order-dto')
 
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

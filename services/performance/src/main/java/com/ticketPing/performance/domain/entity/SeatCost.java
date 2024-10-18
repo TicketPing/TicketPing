@@ -1,6 +1,7 @@
 package com.ticketPing.performance.domain.entity;
 
 import audit.BaseEntity;
+import com.ticketPing.performance.domain.entity.enums.SeatRate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,37 +14,35 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "p_seat_cost")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SeatCost extends BaseEntity {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "seat_cost_id")
     private UUID id;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING) // Enum을 문자열로 저장
-    private SeatRate seatRate; // 좌석 등급
-
-    @Column(nullable = false)
-    private Integer cost; // 좌석 가격
+    @Enumerated(EnumType.STRING)
+    private SeatRate seatRate;
+    private Integer cost;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", nullable = false)
-    private Performance performance; // 공연 참조
+    private Performance performance;
 
-    @Builder
-    public SeatCost(SeatRate seatRate, Integer cost, Performance performance) {
-        this.seatRate = seatRate;
-        this.cost = cost;
-        this.performance = performance;
+    public static SeatCost createTestData(SeatRate seatRate, Integer cost, Performance performance) {
+        return SeatCost.builder()
+                .seatRate(seatRate)
+                .cost(cost)
+                .performance(performance)
+                .build();
     }
 }
 

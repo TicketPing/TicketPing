@@ -1,23 +1,16 @@
-### 공연 정보 예매 RDB와 Redis에 저장하기
-GET http://localhost:10023/api/v1/orders/performance-halls/9f5e5c85-605e-4609-b6f3-224b0bbfdb84/seats/redis
-
-### 좌석선점 - 공연 정보 예매 RDB와 Redis에 저장하기 먼저 실행 후 이 API를 실행해 주세요.
+### Order 생성 요청
 POST http://localhost:10023/api/v1/orders
 Content-Type: application/json
+X_USER_ID: f47ac10b-58cc-4372-a567-0e02b2c3d479
 
 {
-  "orderId": "2e0119f8-c11d-4536-8f11-56ec482735b5"
+  "scheduleId": "869df884-454c-4b67-a8e5-4572a3803a5d",
+  "seatId": "8c6a7378-8a8b-4763-b957-f61dc613d2a7"
 }
 
-### 결제 성공 API 호출
-PUT http://localhost:10023/api/v1/orders/payment/success
+### performance 좌석 주문 정보 조회 요청
+GET http://localhost:10022/api/v1/seats/0c617eaf-6993-4820-9fea-0be4843e3154/order-info
 Content-Type: application/json
 
-{
-  "userId": "3f1b7f0a-7c8a-4b2e-bb5d-986f9c7c8b45",
-  "orderId": "2e0119f8-c11d-4536-8f11-56ec482735b5"
-}
-
-### 좌석 정보 리스트 조회 API 호출
-GET http://localhost:10023/api/v1/orders/seat-list
-Accept: application/json
+### 주문 정보 조회 요청
+GET http://localhost:10023/api/v1/orders/8c6ee761-dc39-4b5b-9f0e-035ff3100481/info

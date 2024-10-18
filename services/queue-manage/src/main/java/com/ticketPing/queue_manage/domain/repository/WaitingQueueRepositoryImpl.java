@@ -1,10 +1,8 @@
 package com.ticketPing.queue_manage.domain.repository;
 
-import static com.ticketPing.queue_manage.domain.model.WaitingQueueToken.tokenWithPosition;
-
-import com.ticketPing.queue_manage.domain.command.waitingQueue.EnqueueWaitingTokenCommand;
-import com.ticketPing.queue_manage.domain.command.waitingQueue.DequeueFirstWaitingTokenCommand;
-import com.ticketPing.queue_manage.domain.command.waitingQueue.RetrieveWaitingTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.InsertWaitingTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.DeleteFirstWaitingTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.FindWaitingTokenCommand;
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -19,32 +17,34 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
     private final RedissonClient redissonClient;
 
     @Override
-    public boolean enqueueWaitingToken(EnqueueWaitingTokenCommand command) {
+    public boolean insertWaitingToken(InsertWaitingTokenCommand command) {
         RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(command.getQueueName());
         return sortedSet.add(command.getScore(), command.getTokenValue());
     }
 
     @Override
-    public Optional<WaitingQueueToken> retrieveWaitingToken(RetrieveWaitingTokenCommand command) {
+    public Optional<WaitingQueueToken> findWaitingToken(FindWaitingTokenCommand command) {
         RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(command.getQueueName());
-        int totalSize = sortedSet.size();
         try {
             int position = sortedSet.rank(command.getTokenValue()) + 1;
-            return Optional.of(tokenWithPosition(command.getUserId(), command.getPerformanceName(), command.getTokenValue(), position, totalSize));
+            int totalSize = sortedSet.size();
+            WaitingQueueToken token = WaitingQueueToken.withPosition(command.getUserId(), command.getPerformanceId(), command.getTokenValue(), position, totalSize);
+            return Optional.of(token);
         } catch (Exception e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public Optional<WaitingQueueToken> dequeueFirstWaitingToken(DequeueFirstWaitingTokenCommand command) {
+    public Optional<WaitingQueueToken> deleteFirstWaitingToken(DeleteFirstWaitingTokenCommand command) {
         RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(command.getQueueName());
         String tokenValue = sortedSet.first();
-        if (tokenValue == null) {
+        if (sortedSet.first() == null) {
             return Optional.empty();
         }
         sortedSet.remove(tokenValue);
-        return Optional.of(WaitingQueueToken.valueOf(command.getPerformanceName(), tokenValue));
+        WaitingQueueToken deletedToken = WaitingQueueToken.valueOf(command.getPerformanceId(), tokenValue);
+        return Optional.of(deletedToken);
     }
 
 }

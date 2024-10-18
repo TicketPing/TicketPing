@@ -7,16 +7,18 @@ spring:
     username: postgres
     password: 1234
     driver-class-name: org.postgresql.Driver
-  config:
-    import: "classpath:application-jpa.yml"
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
 
 server:
   port: 8080
-
-#eureka:
-#  client:
-#    service-url:
-#      defaultZone: http://eureka-server:10000/eureka/
 
 stripe:
   secret-key: ${secret-key}

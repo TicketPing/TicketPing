@@ -4,7 +4,6 @@ import static com.ticketPing.queue_manage.domain.utils.QueueTokenValueGenerator.
 
 import com.ticketPing.queue_manage.domain.model.enums.TokenStatus;
 import common.dto.mapper.ObjectMapperBasedVoMapper;
-import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,27 +16,27 @@ import lombok.NoArgsConstructor;
 @Builder(access = AccessLevel.PRIVATE)
 public class WaitingQueueToken {
 
-    private UUID userId;
-    private String performanceName;
+    private String userId;
+    private String performanceId;
     private String tokenValue;
     private TokenStatus tokenStatus;
 
     private long position;
     private long totalUsers;
 
-    public static WaitingQueueToken create(UUID userId, String performanceName) {
+    public static WaitingQueueToken create(String userId, String performanceId) {
         return WaitingQueueToken.builder()
                 .userId(userId)
-                .performanceName(performanceName)
-                .tokenValue(generateTokenValue(userId, performanceName))
+                .performanceId(performanceId)
+                .tokenValue(generateTokenValue(userId, performanceId))
                 .tokenStatus(TokenStatus.WAITING)
                 .build();
     }
 
-    public static WaitingQueueToken tokenWithPosition(UUID userId, String performanceName, String tokenValue, long position, long totalUsers) {
+    public static WaitingQueueToken withPosition(String userId, String performanceId, String tokenValue, long position, long totalUsers) {
         return WaitingQueueToken.builder()
                 .userId(userId)
-                .performanceName(performanceName)
+                .performanceId(performanceId)
                 .tokenValue(tokenValue)
                 .tokenStatus(TokenStatus.WAITING)
                 .position(position)
@@ -45,9 +44,9 @@ public class WaitingQueueToken {
                 .build();
     }
 
-    public static WaitingQueueToken valueOf(String performanceName, String tokenValue) {
+    public static WaitingQueueToken valueOf(String performanceId, String tokenValue) {
         return WaitingQueueToken.builder()
-                .performanceName(performanceName)
+                .performanceId(performanceId)
                 .tokenValue(tokenValue)
                 .build();
     }

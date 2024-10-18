@@ -18,7 +18,7 @@ public class RouteConfig {
                         .uri("lb://user"))
 
                 .route("performance-service", r -> r.path(
-                        "/api/v1/performances/**", "api/v1/performance-halls/**")
+                        "/api/v1/performances/**", "/api/v1/schedules/**", "/api/v1/seats/**")
                         .uri("lb://performance"))
 
                 .route("order-service", r -> r.path("/api/v1/orders/**")
@@ -28,11 +28,9 @@ public class RouteConfig {
                         .uri("lb://payment"))
 
                 .route("queue-manage-service", r -> r.path(
-                        "/api/waiting-queue", "/api/working-queue")
+                        "/api/v1/waiting-queue/**", "/api/v1/working-queue/**")
                         .uri("lb://queue-manage"))
 
-                .route("client-channel-service", r -> r.path("/api/waiting-queue")
-                        .uri("lb://client-channel"))
                 .build();
     }
 

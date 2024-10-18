@@ -1,9 +1,9 @@
 package com.ticketPing.queue_manage.application.service;
 
 import com.ticketPing.queue_manage.application.dto.GeneralTokenResponse;
-import java.util.UUID;
+import com.ticketPing.queue_manage.domain.model.enums.DeleteWorkingTokenCase;
 
 public interface WorkingQueueApplicationService {
-    GeneralTokenResponse getWorkingQueueToken(UUID userId, String performanceName);
-    void processQueueTransfer(String tokenValue);
+    GeneralTokenResponse getWorkingQueueToken(String userId, String performanceId);
+    void processQueueTransfer(DeleteWorkingTokenCase deleteCase, String tokenValue);
 }
