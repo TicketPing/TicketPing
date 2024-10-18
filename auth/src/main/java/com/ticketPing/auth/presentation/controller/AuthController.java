@@ -1,7 +1,7 @@
 package com.ticketPing.auth.presentation.controller;
 
 import com.ticketPing.auth.application.dto.LoginResponse;
-import com.ticketPing.auth.application.dto.ValidateTokenResponse;
+import com.ticketPing.auth.application.dto.UserCacheDto;
 import com.ticketPing.auth.application.service.AuthService;
 import com.ticketPing.auth.presentation.cases.AuthSuccessCase;
 import com.ticketPing.auth.presentation.request.AuthLoginRequest;
@@ -28,8 +28,8 @@ public class AuthController {
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<CommonResponse<ValidateTokenResponse>> validateToken(String token) {
-        ValidateTokenResponse response = authService.validateToken(token);
+    public ResponseEntity<CommonResponse<UserCacheDto>> validateToken(String token) {
+        UserCacheDto response = authService.validateToken(token);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.success(AuthSuccessCase.USER_EXISTS, response));
     }

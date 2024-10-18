@@ -2,9 +2,10 @@ package com.ticketPing.auth.application.service;
 
 import com.ticketPing.auth.application.client.UserClient;
 import com.ticketPing.auth.application.dto.LoginResponse;
-import com.ticketPing.auth.application.dto.ValidateTokenResponse;
+import com.ticketPing.auth.application.dto.UserCacheDto;
 import com.ticketPing.auth.infrastructure.security.JwtUtil;
 import com.ticketPing.auth.infrastructure.security.Role;
+import com.ticketPing.auth.infrastructure.service.RedisService;
 import com.ticketPing.auth.presentation.cases.AuthErrorCase;
 import com.ticketPing.auth.presentation.request.AuthLoginRequest;
 import common.exception.ApplicationException;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import request.LoginRequest;
 import response.UserResponse;
 
+import java.time.Duration;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -21,19 +24,20 @@ import java.util.UUID;
 public class AuthService {
     private final JwtUtil jwtUtil;
     private final UserClient userClient;
+    private final RedisService redisService;
 
     public LoginResponse login(AuthLoginRequest authLoginRequest) {
         LoginRequest loginRequest = new LoginRequest(authLoginRequest.email(), authLoginRequest.password());
         UserResponse userResponse = userClient.getUserByEmailAndPassword(loginRequest).getData();
 
-        String jwtToken = jwtUtil.createToken(userResponse.userId().toString(), Role.USER);
+        cacheUser(new UserCacheDto(userResponse.userId(), Role.USER.getValue()), Duration.ofSeconds(3600));
 
-        // TODO: 레디스에 회원 정보 캐싱
+        String jwtToken = jwtUtil.createToken(userResponse.userId().toString(), Role.USER);
 
         return new LoginResponse(jwtToken);
     }
 
-    public ValidateTokenResponse validateToken(String jwtToken) {
+    public UserCacheDto validateToken(String jwtToken) {
         jwtUtil.validateToken(jwtToken);
         Claims claims = jwtUtil.getClaimsFromToken(jwtToken);
         UUID userId = UUID.fromString(claims.getSubject());
@@ -41,9 +45,10 @@ public class AuthService {
 
         validateUser(userId, role);
 
-        // TODO: 레디스에 회원 정보 캐싱
+        UserCacheDto userCacheDto = new UserCacheDto(userId, role);
+        cacheUser(userCacheDto, Duration.ofSeconds((claims.getExpiration().getTime() - new Date().getTime()) / 1000));
 
-        return new ValidateTokenResponse(userId, role);
+        return userCacheDto;
     }
 
     public void validateUser(UUID userId, String role) {
@@ -54,5 +59,9 @@ public class AuthService {
         } else {
             throw new ApplicationException(AuthErrorCase.INVALID_ROLE);
         }
+    }
+
+    public void cacheUser(UserCacheDto userCacheDto, Duration duration) {
+        redisService.setValueWithTTL(userCacheDto.userId().toString(), userCacheDto, duration);
     }
 }
