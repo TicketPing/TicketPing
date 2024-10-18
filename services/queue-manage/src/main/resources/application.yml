@@ -26,6 +26,9 @@ redis:
   host: redis
   port: 6379
 
+token-value:
+  secret-key: secret-key
+
 working-queue:
   max-size: 1000
   token-ttl: 30
