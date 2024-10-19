@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 public enum OrderExceptionCase implements ErrorCase {
 
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "예매정보를 찾을 수 없습니다."),
+    ORDER_OF_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저의 예매정보를 찾을 수 없습니다."),
     ORDER_NOT_FOUND_AT_REDIS(HttpStatus.NOT_FOUND, "레디스에서 예매정보를 찾을 수 없습니다."),
     ORDER_FOR_PERFORMANCE_CACHE_NOT_FOUND(HttpStatus.NOT_FOUND, "레디스에 공연관련 정보가 캐싱되어 있지 않습니다!"),
     ORDER_ALREADY_OCCUPIED(HttpStatus.CONFLICT, "예매좌석이 이미 점유되어 있습니다."),

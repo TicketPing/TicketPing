@@ -5,6 +5,7 @@ import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCa
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.ORDER_ALREADY_OCCUPIED;
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.ORDER_FOR_PERFORMANCE_CACHE_NOT_FOUND;
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.ORDER_NOT_FOUND;
+import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.ORDER_OF_USER_NOT_FOUND;
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.REQUEST_ORDER_INFORMATION_BY_PAYMENT_NOT_FOUND;
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.TTL_ALREADY_EXISTS;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,6 +15,7 @@ import com.ticketPing.order.application.dtos.OrderPerformanceDetails;
 import com.ticketPing.order.application.dtos.OrderResponse;
 import com.ticketPing.order.application.dtos.OrderInfoResponse;
 import com.ticketPing.order.application.dtos.OrderSeatInfo;
+import com.ticketPing.order.application.dtos.UserReservationDto;
 import com.ticketPing.order.application.dtos.temp.SeatResponse;
 import com.ticketPing.order.client.PerformanceClient;
 import com.ticketPing.order.domain.model.entity.Order;
@@ -29,6 +31,7 @@ import common.response.CommonResponse;
 import dto.PaymentRequestDto;
 import dto.PaymentResponseDto;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +59,6 @@ public class OrderService {
     private final RedissonClient redissonClient;
 
     private final static int SEAT_LOCK_CACHE_EXPIRE_SECONDS = 330;
-    private final RedisSeatRepository redisSeatRepository;
 
     @Transactional
     public OrderResponse orderOccupyingSeats(OrderCreateDto orderCreateRequestDto, UUID userId) {
@@ -254,7 +256,7 @@ public class OrderService {
         return true;
     }
 
-    public OrderPerformanceDetails getAllSeatKeys() {
+    public OrderPerformanceDetails getAllSeats() {
         List<String> redisSeatKeyList = redisService.getKeysStartingWith("seat:");
         // 첫 번째 키를 기준으로 seatId와 scheduleId 추출
         String input = redisSeatKeyList.get(0);
@@ -307,6 +309,30 @@ public class OrderService {
             }
         }
         return orderPerformanceDetails;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserReservationDto> getUserReservation(UUID userId) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+
+        if (orders.isEmpty()) {
+            throw new ApplicationException(ORDER_OF_USER_NOT_FOUND);
+        }
+
+        List<UserReservationDto> userReservationDtos = new ArrayList<>();
+
+        for (Order order : orders) {
+            // OrderSeat 객체를 가져옵니다.
+            OrderSeat orderSeat = order.getOrderSeat();
+
+            // OrderSeat이 null이 아닐 경우 DTO로 매핑
+            if (orderSeat != null) {
+                UserReservationDto dto = UserReservationDto.from(order, orderSeat);
+                userReservationDtos.add(dto);
+            }
+        }
+
+        return userReservationDtos; // UserReservationDto 리스트 반환
     }
 
 

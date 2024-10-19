@@ -2,15 +2,18 @@ package com.ticketPing.order.presentation.controller;
 
 import static com.ticketPing.order.presentation.cases.success.OrderSuccessCase.ORDER_OCCUPYING_SEAT_SUCCESS;
 import static com.ticketPing.order.presentation.cases.success.OrderSuccessCase.ORDER_SEATS_RETURN_SUCCESS;
+import static com.ticketPing.order.presentation.cases.success.OrderSuccessCase.ORDER_USER_RESERVATION_LIST_RETURN_SUCCESS;
 
 import com.ticketPing.order.application.dtos.OrderCreateDto;
 import com.ticketPing.order.application.dtos.OrderPerformanceDetails;
 import com.ticketPing.order.application.dtos.OrderResponse;
+import com.ticketPing.order.application.dtos.UserReservationDto;
 import com.ticketPing.order.application.service.OrderService;
 import common.response.CommonResponse;
 import dto.PaymentRequestDto;
 import dto.PaymentResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,10 +68,15 @@ public class OrderController {
     }
 
     @GetMapping("/seat-list")
-    public CommonResponse<OrderPerformanceDetails> getAllSeatKeys() {
-        OrderPerformanceDetails orderPerformanceDetails = orderService.getAllSeatKeys();
+    public CommonResponse<OrderPerformanceDetails> getAllSeats() {
+        OrderPerformanceDetails orderPerformanceDetails = orderService.getAllSeats();
         return CommonResponse.success(ORDER_SEATS_RETURN_SUCCESS,orderPerformanceDetails);
     }
 
+    @GetMapping("/user/reservations")
+    public CommonResponse<List<UserReservationDto>> getUserReservation(@RequestHeader("X_USER_ID") UUID userId) {
+        List<UserReservationDto> userReservationDto = orderService.getUserReservation(userId);
+        return CommonResponse.success(ORDER_USER_RESERVATION_LIST_RETURN_SUCCESS, userReservationDto);
+    }
 
 }

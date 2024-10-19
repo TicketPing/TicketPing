@@ -28,3 +28,7 @@ PUT http://localhost:10023/api/v1/orders/21f32cc4-9d9e-4110-8e5f-02cf24ff89e4/st
 GET http://localhost:10023/api/v1/orders/seat-list
 Accept: application/json
 
+### GET 요청 - 유저 예매리스트 가져오기
+GET http://localhost:10023/api/v1/orders/user/reservations
+X_USER_ID: 21f32cc4-9d9e-4110-8e5f-02cf24ff89e4
+
