@@ -142,9 +142,9 @@ services:
 #      eureka-server:
 #        condition: service_started
 
-  gateway-server:
-    container_name: gateway-server
-    image: ticketping/gateway-server:latest
+  user-bff-server:
+    container_name: user-bff-server
+    image: ticketping/user-bff-server:latest
     ports:
       - "10020:10020"
     depends_on:
