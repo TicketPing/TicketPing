@@ -6,15 +6,14 @@ import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCa
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.ORDER_FOR_PERFORMANCE_CACHE_NOT_FOUND;
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.ORDER_NOT_FOUND;
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.REQUEST_ORDER_INFORMATION_BY_PAYMENT_NOT_FOUND;
-import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.THE_SEAT_ALREADY_PAID_BY_SOMEONE;
 import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.TTL_ALREADY_EXISTS;
-import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.TTL_NOT_FOUND;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ticketPing.order.application.dtos.OrderCreateDto;
+import com.ticketPing.order.application.dtos.OrderPerformanceDetails;
 import com.ticketPing.order.application.dtos.OrderResponse;
 import com.ticketPing.order.application.dtos.OrderInfoResponse;
+import com.ticketPing.order.application.dtos.OrderSeatInfo;
 import com.ticketPing.order.application.dtos.temp.SeatResponse;
 import com.ticketPing.order.client.PerformanceClient;
 import com.ticketPing.order.domain.model.entity.Order;
@@ -33,6 +32,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -253,11 +254,59 @@ public class OrderService {
         return true;
     }
 
-    public List<String> getAllSeatKeys() {
-        List<String> redisSeatList = redisService.getKeysStartingWith("seat:");
-        System.out.println("redisSeatList = " + redisSeatList);
+    public OrderPerformanceDetails getAllSeatKeys() {
+        List<String> redisSeatKeyList = redisService.getKeysStartingWith("seat:");
+        // 첫 번째 키를 기준으로 seatId와 scheduleId 추출
+        String input = redisSeatKeyList.get(0);
+        String regex = "seat:([0-9a-fA-F-]+):([0-9a-fA-F-]+)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+        String scheduleId = null;
+        String seatId = null;
+        if (matcher.find()) {
+            seatId = matcher.group(2); // 첫 번째 그룹: seatId
+            scheduleId = matcher.group(1); // 두 번째 그룹: scheduleId
+        }
 
-        return redisSeatList;
+        ResponseEntity<CommonResponse<OrderInfoResponse>> orderInfo = performanceClient.getOrderInfo(
+            String.valueOf(seatId)
+        );
+        OrderInfoResponse orderData = orderInfo.getBody().getData();
+        // OrderPerformanceDetails 생성
+
+        return initializeOrderPerformanceDetails(orderData, scheduleId, redisSeatKeyList);
+    }
+
+    private OrderPerformanceDetails initializeOrderPerformanceDetails(OrderInfoResponse orderData,
+        String scheduleId, List<String> redisSeatKeyList) {
+        OrderPerformanceDetails orderPerformanceDetails = OrderPerformanceDetails.create(
+            orderData.performanceHallName(),
+            orderData.performanceName(),
+            orderData.startTime()
+        );
+        ResponseEntity<CommonResponse<List<SeatResponse>>> seatResponseList = performanceClient.getAllScheduleSeats(
+            UUID.fromString(scheduleId)
+        );
+        List<SeatResponse> seatResponse = seatResponseList.getBody().getData();
+
+        for (String seatKey : redisSeatKeyList) {
+            String redisSeatJson = redisService.getValue(seatKey);
+
+            if (redisSeatJson != null) {
+                RedisSeat redisSeat = getRedisSeat(seatKey);
+                OrderSeatInfo orderSeatInfo = OrderSeatInfo.from(redisSeat);
+                // RedisSeat의 상태와 SeatResponse의 상태 비교
+                for (SeatResponse seatRes : seatResponse) {
+                    if (redisSeat.getSeatState() || seatRes.seatState()) {
+                        orderSeatInfo.updateSeatState(true);
+                    } else {
+                        orderSeatInfo.updateSeatState(false);
+                    }
+                }
+                orderPerformanceDetails.addList(orderSeatInfo);
+            }
+        }
+        return orderPerformanceDetails;
     }
 
 

@@ -1,21 +1,19 @@
 package com.ticketPing.order.presentation.controller;
 
 import static com.ticketPing.order.presentation.cases.success.OrderSuccessCase.ORDER_OCCUPYING_SEAT_SUCCESS;
+import static com.ticketPing.order.presentation.cases.success.OrderSuccessCase.ORDER_SEATS_RETURN_SUCCESS;
 
 import com.ticketPing.order.application.dtos.OrderCreateDto;
+import com.ticketPing.order.application.dtos.OrderPerformanceDetails;
 import com.ticketPing.order.application.dtos.OrderResponse;
-import com.ticketPing.order.application.dtos.temp.SeatResponse;
 import com.ticketPing.order.application.service.OrderService;
 import common.response.CommonResponse;
 import dto.PaymentRequestDto;
 import dto.PaymentResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -67,9 +65,9 @@ public class OrderController {
     }
 
     @GetMapping("/seat-list")
-    public ResponseEntity<List<String>> getAllSeatKeys() {
-        List<String> keys = orderService.getAllSeatKeys();
-        return ResponseEntity.ok(keys);
+    public CommonResponse<OrderPerformanceDetails> getAllSeatKeys() {
+        OrderPerformanceDetails orderPerformanceDetails = orderService.getAllSeatKeys();
+        return CommonResponse.success(ORDER_SEATS_RETURN_SUCCESS,orderPerformanceDetails);
     }
 
 
