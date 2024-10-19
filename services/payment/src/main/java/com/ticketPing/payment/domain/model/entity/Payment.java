@@ -3,7 +3,9 @@ package com.ticketPing.payment.domain.model.entity;
 import audit.BaseEntity;
 import com.ticketPing.payment.application.dto.StripeResponseDto;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -12,9 +14,6 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "P_PAYMENTS")
 public class Payment extends BaseEntity {
@@ -34,14 +33,13 @@ public class Payment extends BaseEntity {
     @Transient //db 저장 X
     private String previousPaymentStatus;
 
+    @Builder
     public Payment(StripeResponseDto responseDto) {
         this.paymentIntentId = responseDto.getPaymentIntentId();
         this.status = responseDto.getStatus();
         this.clientSecret = responseDto.getClientSecret();
         this.userId = responseDto.getUserId();
-        if(this.orderInfo == null) {
-            this.orderInfo = new OrderInfo();
-        }
+        this.orderInfo = new OrderInfo();
         this.orderInfo.setOrderId(responseDto.getOrderId());
         this.orderInfo.setAmount(responseDto.getAmount());
         this.orderInfo.setSeatId(responseDto.getSeatId());
@@ -51,11 +49,11 @@ public class Payment extends BaseEntity {
     }
 
     @PrePersist
-    protected void onPrePersist(){
-        if(paymentId == null) paymentId = UUID.randomUUID();
-        if(paymentIntentTime != null){
-        Instant instant = Instant.ofEpochSecond(paymentIntentTime);
-        this.updateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+    protected void onPrePersist() {
+        if (paymentId == null) paymentId = UUID.randomUUID();
+        if (paymentIntentTime != null) {
+            Instant instant = Instant.ofEpochSecond(paymentIntentTime);
+            this.updateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
         }
         this.previousPaymentStatus = this.status;
     }
