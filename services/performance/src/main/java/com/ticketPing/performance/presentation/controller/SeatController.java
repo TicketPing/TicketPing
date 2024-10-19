@@ -37,7 +37,7 @@ public class SeatController {
     }
 
     @Operation(summary = "좌석 상태 수정")
-    @PatchMapping("/{seatId}")
+    @PutMapping("/{seatId}")
     public ResponseEntity<CommonResponse<SeatResponse>> updateSeatState(@PathVariable("seatId") UUID seatId,
                                                                         @RequestParam("seatState") Boolean seatState) {
         SeatResponse seatResponse = seatService.updateSeatState(seatId, seatState);

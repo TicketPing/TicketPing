@@ -5,12 +5,30 @@ X_USER_ID: f47ac10b-58cc-4372-a567-0e02b2c3d479
 
 {
   "scheduleId": "869df884-454c-4b67-a8e5-4572a3803a5d",
-  "seatId": "8c6a7378-8a8b-4763-b957-f61dc613d2a7"
+  "seatId": "6fbea3b2-f6f8-4de4-b054-5561cf8950f2"
 }
 
-### performance 좌석 주문 정보 조회 요청
-GET http://localhost:10022/api/v1/seats/0c617eaf-6993-4820-9fea-0be4843e3154/order-info
+### 주문 정보 조회 요청
+GET http://localhost:10023/api/v1/orders/21f32cc4-9d9e-4110-8e5f-02cf24ff89e4/info
+
+### 주문 검증 요청
+GET http://localhost:10023/api/v1/orders/verify
 Content-Type: application/json
 
-### 주문 정보 조회 요청
-GET http://localhost:10023/api/v1/orders/8c6ee761-dc39-4b5b-9f0e-035ff3100481/info
+{
+  "performanceName": "Concert",
+  "scheduleId": "869df884-454c-4b67-a8e5-4572a3803a5d",
+  "seatId": "6fbea3b2-f6f8-4de4-b054-5561cf8950f2"
+}
+
+### 주문 상태 업데이트 요청 seatId = fd634d4b-712e-4a6e-b2c0-846829ecd7d9
+PUT http://localhost:10023/api/v1/orders/21f32cc4-9d9e-4110-8e5f-02cf24ff89e4/status?status=success
+
+### GET 요청 - 모든 좌석 키 가져오기
+GET http://localhost:10023/api/v1/orders/seat-list
+Accept: application/json
+
+### GET 요청 - 유저 예매리스트 가져오기
+GET http://localhost:10023/api/v1/orders/user/reservations
+X_USER_ID: 21f32cc4-9d9e-4110-8e5f-02cf24ff89e4
+

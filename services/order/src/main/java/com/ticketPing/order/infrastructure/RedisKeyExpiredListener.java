@@ -68,12 +68,9 @@ public class RedisKeyExpiredListener implements MessageListener {
         if (redisSeatJson != null) {
 
             redisSeat = getRedisSeat(key);
-
             // seatState를 false로 설정
             redisSeat.setSeatState(false);
-
             // 변경된 RedisSeat 객체를 JSON으로 직렬화하여 Redis에 저장
-
             String updatedRedisSeatJson = getRedisWriteSeat(redisSeat);
 
             redisService.setValue("seat:" + scheduleId + ":" + seatId, updatedRedisSeatJson);
