@@ -38,6 +38,7 @@ subprojects {
 	if (project.path in [
 			':eureka-server',
 			':gateway',
+			':user-bff',
 			':auth',
 			':services:user',
 			':services:order',

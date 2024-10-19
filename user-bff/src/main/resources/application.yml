@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: user-bff
+
+server:
+  port: 10020
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:10000/eureka/
