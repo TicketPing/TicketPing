@@ -44,7 +44,6 @@ subprojects {
 			':services:payment',
 			':services:performance',
 			':services:queue-manage',
-			':services:client-channel',
 	]) {
 		apply plugin: 'org.springframework.boot'
 	}
