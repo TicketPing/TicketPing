@@ -15,7 +15,8 @@ public class OrderSeatInfo {
     private String seatId;
     private int row;
     private int col;
-    private boolean seatState;
+    @Builder.Default
+    private boolean seatState = false;
     private String seatRate;
     private int cost;
 

@@ -24,7 +24,6 @@ import com.ticketPing.order.domain.model.entity.RedisSeat;
 import com.ticketPing.order.domain.events.OrderCompletedEvent;
 import com.ticketPing.order.domain.repository.OrderRepository;
 import com.ticketPing.order.domain.repository.OrderSeatRepository;
-import com.ticketPing.order.domain.repository.RedisSeatRepository;
 import com.ticketPing.order.infrastructure.service.RedisService;
 import common.exception.ApplicationException;
 import common.response.CommonResponse;
@@ -281,35 +280,51 @@ public class OrderService {
 
     private OrderPerformanceDetails initializeOrderPerformanceDetails(OrderInfoResponse orderData,
         String scheduleId, List<String> redisSeatKeyList) {
+
+        // 공연 상세 정보 초기화
         OrderPerformanceDetails orderPerformanceDetails = OrderPerformanceDetails.create(
             orderData.performanceHallName(),
             orderData.performanceName(),
             orderData.startTime()
         );
-        ResponseEntity<CommonResponse<List<SeatResponse>>> seatResponseList = performanceClient.getAllScheduleSeats(
-            UUID.fromString(scheduleId)
-        );
-        List<SeatResponse> seatResponse = seatResponseList.getBody().getData();
 
-        for (String seatKey : redisSeatKeyList) {
+        // 모든 좌석 정보 요청
+        List<SeatResponse> seatResponse = fetchSeatResponses(scheduleId);
+
+        // Redis에서 좌석 정보 처리
+        redisSeatKeyList.forEach(seatKey -> {
             String redisSeatJson = redisService.getValue(seatKey);
 
             if (redisSeatJson != null) {
                 RedisSeat redisSeat = getRedisSeat(seatKey);
                 OrderSeatInfo orderSeatInfo = OrderSeatInfo.from(redisSeat);
-                // RedisSeat의 상태와 SeatResponse의 상태 비교
-                for (SeatResponse seatRes : seatResponse) {
-                    if (redisSeat.getSeatState() || seatRes.seatState()) {
-                        orderSeatInfo.updateSeatState(true);
-                    } else {
-                        orderSeatInfo.updateSeatState(false);
-                    }
-                }
+                updateSeatState(orderSeatInfo, redisSeat, seatResponse);
                 orderPerformanceDetails.addList(orderSeatInfo);
             }
-        }
+        });
+
         return orderPerformanceDetails;
     }
+
+    // 좌석 정보를 가져오는 메서드
+    private List<SeatResponse> fetchSeatResponses(String scheduleId) {
+        ResponseEntity<CommonResponse<List<SeatResponse>>> seatResponseList = performanceClient.getAllScheduleSeats(
+            UUID.fromString(scheduleId)
+        );
+        return seatResponseList.getBody().getData();
+    }
+
+    // 좌석 상태 업데이트 메서드
+    private void updateSeatState(OrderSeatInfo orderSeatInfo, RedisSeat redisSeat, List<SeatResponse> seatResponse) {
+        for (SeatResponse seatRes : seatResponse) {
+            if (redisSeat.getSeatId().equals(seatRes.seatId().toString()) &&
+                (redisSeat.getSeatState() || seatRes.seatState())) {
+                orderSeatInfo.updateSeatState(true);
+                break;
+            }
+        }
+    }
+
 
     @Transactional(readOnly = true)
     public List<UserReservationDto> getUserReservation(UUID userId) {
