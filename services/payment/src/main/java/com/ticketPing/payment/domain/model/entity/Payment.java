@@ -2,6 +2,8 @@ package com.ticketPing.payment.domain.model.entity;
 
 import audit.BaseEntity;
 import com.ticketPing.payment.application.dto.StripeResponseDto;
+import com.ticketPing.payment.domain.model.enums.PayStatus;
+import com.ticketPing.payment.domain.model.enums.PayType;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,6 +48,15 @@ public class Payment extends BaseEntity {
         this.orderInfo.setPerformanceName(responseDto.getPerformanceName());
         this.orderInfo.setPerformanceScheduleId(responseDto.getPerformanceScheduleId());
         this.paymentIntentTime = responseDto.getPaymentIntentTime();
+    }
+
+    public void saveStripeStatus(String status) {
+        if("succeeded".equals(status)) {
+            this.status = PayStatus.SUCCESS.getValue();
+        } else {
+            this.status = PayStatus.FAIL.getValue();
+        }
+
     }
 
     @PrePersist
