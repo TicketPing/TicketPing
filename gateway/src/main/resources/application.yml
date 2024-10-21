@@ -1,6 +1,20 @@
 spring:
   application:
     name: gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origin-patterns: '*'
+            allowedHeaders: '*'
+            allowedMethods:
+              - PUT
+              - GET
+              - POST
+              - DELETE
+              - PATCH
+              - OPTIONS
 
   data:
     redis:
