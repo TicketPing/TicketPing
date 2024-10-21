@@ -6,6 +6,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * tokenValue: 사용자 토큰 값 (작업열 토큰 키)
+ */
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 public class FindWorkingQueueTokenCommand {

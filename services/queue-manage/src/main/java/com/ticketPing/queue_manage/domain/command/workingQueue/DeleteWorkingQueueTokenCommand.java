@@ -7,6 +7,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * tokenValue: 사용자 토큰 값 (작업열 토큰 키)
+ * queueName: 작업열 이름 (작업 인원 카운터 키)
+ */
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 public class DeleteWorkingQueueTokenCommand {
