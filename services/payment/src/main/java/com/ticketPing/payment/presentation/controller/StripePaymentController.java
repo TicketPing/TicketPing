@@ -46,7 +46,7 @@ public class StripePaymentController {
     @PatchMapping("/{paymentIntentId}")
     public CommonResponse<StripeResponseDto> updateStatus(@PathVariable("paymentIntentId") String paymentIntentId) {
         paymentService.updateStatus(paymentIntentId);
-        return CommonResponse.success(ORDER_CALL_SUCCESS);
+        return CommonResponse.success(STATUS_CHANGE_SUCCESS);
     }
 
 
