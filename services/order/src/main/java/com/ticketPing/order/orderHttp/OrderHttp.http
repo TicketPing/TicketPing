@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 ### 주문 상태 업데이트 요청 seatId = fd634d4b-712e-4a6e-b2c0-846829ecd7d9
-PUT http://localhost:10023/api/v1/orders/21f32cc4-9d9e-4110-8e5f-02cf24ff89e4/status?status=success
+PUT http://localhost:10023/api/v1/orders/01d81298-2f3e-41d7-a2b9-f18f5ea79648/status?status=success
 
 ### GET 요청 - 모든 좌석 키 가져오기
 GET http://localhost:10023/api/v1/orders/seat-list
