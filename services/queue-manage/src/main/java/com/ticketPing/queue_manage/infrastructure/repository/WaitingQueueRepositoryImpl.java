@@ -22,7 +22,7 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
 
     @Override
     public QueueToken insertWaitingQueueToken(InsertWaitingQueueTokenCommand command) {
-        if (script.execute(command)) {
+        if (script.hasAvailableSlots(command)) {
             return WorkingQueueToken.create(command.getUserId(), command.getPerformanceId());
         }
         return WaitingQueueToken.create(command.getUserId(), command.getPerformanceId());

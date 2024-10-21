@@ -58,7 +58,7 @@ public class InsertWaitingQueueTokenScript {
         this.scriptSha = redissonClient.getScript().scriptLoad(SCRIPT);
     }
 
-    public boolean execute(InsertWaitingQueueTokenCommand command) {
+    public boolean hasAvailableSlots(InsertWaitingQueueTokenCommand command) {
         List<Object> keys = Arrays.asList(command.getWaitingQueueName(), command.getWorkingQueueName(), command.getTokenValue());
         Long result = redissonClient.getScript(StringCodec.INSTANCE)
                 .evalSha(RScript.Mode.READ_WRITE, scriptSha, RScript.ReturnType.VALUE,
