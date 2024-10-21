@@ -4,15 +4,12 @@ import static com.ticketPing.queue_manage.infrastructure.utils.TTLConverter.toLo
 
 import com.ticketPing.queue_manage.domain.command.workingQueue.DeleteWorkingQueueTokenCommand;
 import com.ticketPing.queue_manage.domain.command.workingQueue.InsertWorkingQueueTokenCommand;
-import com.ticketPing.queue_manage.domain.command.workingQueue.CountAvailableSlotsCommand;
 import com.ticketPing.queue_manage.domain.command.workingQueue.FindWorkingQueueTokenCommand;
-import com.ticketPing.queue_manage.domain.model.AvailableSlots;
 import com.ticketPing.queue_manage.domain.model.WorkingQueueToken;
 import com.ticketPing.queue_manage.domain.repository.WorkingQueueRepository;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RAtomicLong;
 import org.redisson.api.RBucket;
 import org.springframework.stereotype.Repository;
 
@@ -23,15 +20,9 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
     private final RedisRepository redisRepository;
 
     @Override
-    public AvailableSlots countAvailableSlots(CountAvailableSlotsCommand command) {
-        RAtomicLong counter = redisRepository.getAtomicLong(command.getQueueName());
-        return AvailableSlots.from(counter.get());
-    }
-
-    @Override
     public void insertWorkingQueueToken(InsertWorkingQueueTokenCommand command) {
         if (!isExistToken(command.getTokenValue())) {
-            cacheToken(command.getTokenValue(), command.getValue(), command.getTtl());
+            cacheToken(command.getTokenValue(), command.getCacheValue(), command.getTtl());
             increaseCounter(command.getQueueName());
         }
     }
@@ -63,12 +54,8 @@ public class WorkingQueueRepositoryImpl implements WorkingQueueRepository {
     @Override
     public void deleteWorkingQueueToken(DeleteWorkingQueueTokenCommand command) {
         switch (command.getDeleteCase()) {
-            case TOKEN_EXPIRED:
-                handleTokenExpired(command.getQueueName());
-                break;
-            case ORDER_COMPLETED:
-                handleOrderCompleted(command.getTokenValue(), command.getQueueName());
-                break;
+            case TOKEN_EXPIRED -> handleTokenExpired(command.getQueueName());
+            case ORDER_COMPLETED -> handleOrderCompleted(command.getTokenValue(), command.getQueueName());
         }
     }
 

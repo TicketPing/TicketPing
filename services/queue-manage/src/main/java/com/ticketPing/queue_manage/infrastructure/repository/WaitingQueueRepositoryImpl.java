@@ -1,10 +1,13 @@
 package com.ticketPing.queue_manage.infrastructure.repository;
 
-import com.ticketPing.queue_manage.domain.command.waitingQueue.InsertWaitingQueueTokenCommand;
 import com.ticketPing.queue_manage.domain.command.waitingQueue.DeleteFirstWaitingQueueTokenCommand;
 import com.ticketPing.queue_manage.domain.command.waitingQueue.FindWaitingQueueTokenCommand;
+import com.ticketPing.queue_manage.domain.command.waitingQueue.InsertWaitingQueueTokenCommand;
+import com.ticketPing.queue_manage.domain.model.QueueToken;
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
+import com.ticketPing.queue_manage.domain.model.WorkingQueueToken;
 import com.ticketPing.queue_manage.domain.repository.WaitingQueueRepository;
+import com.ticketPing.queue_manage.infrastructure.repository.script.InsertWaitingQueueTokenScript;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RScoredSortedSet;
@@ -15,11 +18,14 @@ import org.springframework.stereotype.Repository;
 public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
 
     private final RedisRepository redisRepository;
+    private final InsertWaitingQueueTokenScript script;
 
     @Override
-    public boolean insertWaitingQueueToken(InsertWaitingQueueTokenCommand command) {
-        RScoredSortedSet<String> sortedSet = redisRepository.getScoredSortedSet(command.getQueueName());
-        return sortedSet.add(command.getScore(), command.getTokenValue());
+    public QueueToken insertWaitingQueueToken(InsertWaitingQueueTokenCommand command) {
+        if (script.execute(command)) {
+            return WorkingQueueToken.create(command.getUserId(), command.getPerformanceId());
+        }
+        return WaitingQueueToken.create(command.getUserId(), command.getPerformanceId());
     }
 
     @Override

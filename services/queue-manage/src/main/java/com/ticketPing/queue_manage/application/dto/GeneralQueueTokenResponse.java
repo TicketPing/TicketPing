@@ -1,6 +1,7 @@
 package com.ticketPing.queue_manage.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.ticketPing.queue_manage.domain.model.QueueToken;
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
 import com.ticketPing.queue_manage.domain.model.WorkingQueueToken;
 import com.ticketPing.queue_manage.domain.model.enums.TokenStatus;
@@ -16,6 +17,18 @@ public record GeneralQueueTokenResponse(
         Long totalUsers,
         LocalDateTime validUntil
 ) {
+
+    public static GeneralQueueTokenResponse from(QueueToken token) {
+        return new GeneralQueueTokenResponse(
+                token.getUserId(),
+                token.getPerformanceId(),
+                token.getTokenValue(),
+                token.getTokenStatus(),
+                null,
+                null,
+                null
+        );
+    }
 
     public static GeneralQueueTokenResponse from(WaitingQueueToken token) {
         return new GeneralQueueTokenResponse(

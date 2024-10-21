@@ -6,6 +6,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * queueName: 대기열 이름 (대기열 Sorted Set 키)
+ */
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 public class DeleteFirstWaitingQueueTokenCommand {

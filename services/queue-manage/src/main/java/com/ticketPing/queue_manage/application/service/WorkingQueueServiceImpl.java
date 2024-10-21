@@ -32,9 +32,10 @@ public class WorkingQueueServiceImpl implements WorkingQueueService {
 
     @Override
     public void processQueueTransfer(DeleteWorkingTokenCase deleteCase, String tokenValue) {
+        System.out.println(1);
         // 작업열 토큰 삭제 및 카운터 감소
         workingQueueRepository.deleteWorkingQueueToken(DeleteWorkingQueueTokenCommand.create(deleteCase, tokenValue));
-        // 대기열 첫번째 토큰 조회 및 삭제
+        // 대기열 첫번째 토큰 조회, 삭제
         waitingQueueRepository.deleteFirstWaitingQueueToken(DeleteFirstWaitingQueueTokenCommand.create(tokenValue))
                 // 작업열 진입 및 카운터 증가
                 .ifPresent(deletedWaitingToken -> workingQueueRepository.insertWorkingQueueToken(
