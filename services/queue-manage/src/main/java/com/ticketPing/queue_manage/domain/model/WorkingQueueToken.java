@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(access = AccessLevel.PRIVATE)
-public class WorkingQueueToken {
+public class WorkingQueueToken implements QueueToken {
 
     private String userId;
     private String performanceId;
