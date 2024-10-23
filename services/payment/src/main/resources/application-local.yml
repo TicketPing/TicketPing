@@ -15,7 +15,7 @@ spring:
         use_sql_comments: true
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 
 server:
   port: 8080
@@ -23,3 +23,9 @@ server:
 stripe:
   secret-key: ${secret-key}
   public-key: ${public-key}
+  webhook-key: ${WEBHOOK_KEY}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:10000/eureka/

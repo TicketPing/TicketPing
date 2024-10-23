@@ -20,4 +20,5 @@ eureka:
 stripe:
   secret-key: ${SECRET_KEY}
   public-key: ${PUBLIC_KEY}
+  webhook-key: ${WEBHOOK_KEY}
 
