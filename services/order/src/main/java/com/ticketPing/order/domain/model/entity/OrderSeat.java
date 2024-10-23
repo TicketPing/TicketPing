@@ -1,12 +1,8 @@
 package com.ticketPing.order.domain.model.entity;
 
 import audit.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,36 +15,30 @@ import org.hibernate.annotations.Where;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "p_seats")
 @Builder(access = AccessLevel.PRIVATE)
-@Entity
+@Table(name = "p_order_seats")
 @Where(clause = "is_deleted = false")
+@Entity
 public class OrderSeat extends BaseEntity {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "order_seat_id")
     private UUID id;
-
-    @Column
     private UUID seatId;
+    private int row;
+    private int col;
+    private String seatRate;
+    private int cost;
 
-    @Column(name = "row_number")
-    private int row; // 행번호
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
-    @Column(name = "column_number")
-    private int col; // 열번호
-
-    @Column(name = "seat_grade")
-    private String seatGrade; // 좌석등급
-
-    @Column
-    private int cost; // 가격
-
-    public static OrderSeat create(UUID seatId, int row, int col, String seatGrade, int cost) {
+    public static OrderSeat create(UUID seatId, int row, int col, String seatRate, int cost) {
         return OrderSeat.builder()
             .seatId(seatId)
             .col(col)
-            .seatGrade(seatGrade)
+            .seatRate(seatRate)
             .cost(cost)
             .row(row)
             .build();

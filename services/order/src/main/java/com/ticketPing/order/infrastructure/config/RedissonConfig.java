@@ -1,4 +1,4 @@
-package com.ticketPing.order.infrastructure;
+package com.ticketPing.order.infrastructure.config;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
