@@ -1,6 +1,6 @@
 package com.ticketPing.performance.infrastructure.repository;
 
-import com.ticketPing.performance.domain.entity.PerformanceHall;
+import com.ticketPing.performance.domain.model.entity.PerformanceHall;
 import java.util.UUID;
 
 import com.ticketPing.performance.domain.repository.PerformanceHallRepository;

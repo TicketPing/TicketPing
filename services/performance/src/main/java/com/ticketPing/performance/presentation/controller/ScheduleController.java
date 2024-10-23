@@ -4,7 +4,7 @@ import com.ticketPing.performance.application.dtos.ScheduleResponse;
 import com.ticketPing.performance.application.dtos.SeatResponse;
 import com.ticketPing.performance.application.service.ScheduleService;
 import com.ticketPing.performance.application.service.SeatService;
-import com.ticketPing.performance.domain.entity.Schedule;
+import com.ticketPing.performance.domain.model.entity.Schedule;
 import com.ticketPing.performance.presentation.cases.success.ScheduleSuccessCase;
 import common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;

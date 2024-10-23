@@ -1,9 +1,9 @@
 package com.ticketPing.performance.application.dtos;
 
-import com.ticketPing.performance.domain.entity.Performance;
-import com.ticketPing.performance.domain.entity.PerformanceHall;
-import com.ticketPing.performance.domain.entity.Schedule;
-import com.ticketPing.performance.domain.entity.Seat;
+import com.ticketPing.performance.domain.model.entity.Performance;
+import com.ticketPing.performance.domain.model.entity.PerformanceHall;
+import com.ticketPing.performance.domain.model.entity.Schedule;
+import com.ticketPing.performance.domain.model.entity.Seat;
 import lombok.AccessLevel;
 import lombok.Builder;
 

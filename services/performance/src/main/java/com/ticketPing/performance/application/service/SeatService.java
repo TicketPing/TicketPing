@@ -2,8 +2,8 @@ package com.ticketPing.performance.application.service;
 
 import com.ticketPing.performance.application.dtos.OrderInfoResponse;
 import com.ticketPing.performance.application.dtos.SeatResponse;
-import com.ticketPing.performance.domain.entity.Schedule;
-import com.ticketPing.performance.domain.entity.Seat;
+import com.ticketPing.performance.domain.model.entity.Schedule;
+import com.ticketPing.performance.domain.model.entity.Seat;
 import com.ticketPing.performance.domain.repository.SeatRepository;
 import com.ticketPing.performance.infrastructure.service.RedisService;
 import com.ticketPing.performance.presentation.cases.exception.SeatExceptionCase;

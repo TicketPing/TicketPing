@@ -1,4 +1,4 @@
-package com.ticketPing.performance.domain.entity;
+package com.ticketPing.performance.domain.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

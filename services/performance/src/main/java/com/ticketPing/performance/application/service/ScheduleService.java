@@ -1,8 +1,8 @@
 package com.ticketPing.performance.application.service;
 
 import com.ticketPing.performance.application.dtos.ScheduleResponse;
-import com.ticketPing.performance.domain.entity.Performance;
-import com.ticketPing.performance.domain.entity.Schedule;
+import com.ticketPing.performance.domain.model.entity.Performance;
+import com.ticketPing.performance.domain.model.entity.Schedule;
 import com.ticketPing.performance.domain.repository.ScheduleRepository;
 import com.ticketPing.performance.presentation.cases.exception.ScheduleExceptionCase;
 import common.exception.ApplicationException;
