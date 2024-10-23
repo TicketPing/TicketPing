@@ -21,3 +21,13 @@ stripe:
   secret-key: ${SECRET_KEY}
   public-key: ${PUBLIC_KEY}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    enabled: true
