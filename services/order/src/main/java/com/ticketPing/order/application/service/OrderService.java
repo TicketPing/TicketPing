@@ -5,7 +5,7 @@ import com.ticketPing.order.application.dtos.OrderInfoResponse;
 import com.ticketPing.order.application.dtos.OrderResponse;
 import com.ticketPing.order.application.dtos.UserReservationDto;
 import com.ticketPing.order.application.dtos.temp.SeatResponse;
-import com.ticketPing.order.client.PerformanceClient;
+import com.ticketPing.order.infrastructure.client.PerformanceClient;
 import com.ticketPing.order.domain.model.entity.Order;
 import com.ticketPing.order.domain.model.entity.OrderSeat;
 import com.ticketPing.order.infrastructure.repository.OrderRepository;
@@ -38,13 +38,12 @@ import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCa
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderSeatRepository orderSeatRepository;
     private final PerformanceClient performanceClient;
     private final EventApplicationService eventApplicationService;
     private final RedisService redisService;
     private final RedissonClient redissonClient;
 
-    private final static int SEAT_LOCK_CACHE_EXPIRE_SECONDS = 330;
+    private final static int SEAT_LOCK_CACHE_EXPIRE_SECONDS = 10;
 
     @Transactional
     public OrderResponse createOrder(OrderCreateDto orderCreateRequestDto, UUID userId) {
@@ -115,9 +114,7 @@ public class OrderService {
 
         OrderSeat orderSeat = OrderSeat.create(orderData.seatId(), orderData.row(),
                 orderData.col(), orderData.seatRate(), orderData.cost());
-        OrderSeat savedOrderSeat = orderSeatRepository.save(orderSeat);
-
-        savedOrder.setOrderSeat(savedOrderSeat);
+        savedOrder.setOrderSeat(orderSeat);
         return order;
     }
 

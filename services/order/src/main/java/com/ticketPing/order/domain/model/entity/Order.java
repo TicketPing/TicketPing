@@ -7,8 +7,6 @@ import lombok.*;
 import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -32,7 +30,8 @@ public class Order extends BaseEntity {
     private String performanceName;
 
     @Setter
-    @OneToOne(mappedBy = "order", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_seat_id")
     private OrderSeat orderSeat;
 
     public static Order create(UUID userId, UUID companyId, String performanceName,
@@ -49,4 +48,7 @@ public class Order extends BaseEntity {
                 .build();
     }
 
+    public void updateOrderStatus(Boolean orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 }
