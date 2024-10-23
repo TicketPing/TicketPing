@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,20 +16,23 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class RedisService {
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
 
-    public void setValue(String key, String value) {
+    public void setValue(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
     }
 
-    public Boolean hasKey(String key) { return redisTemplate.hasKey(key); }
-
-    public String getValue(String key) {
-        return redisTemplate.opsForValue().get(key);
+    public void setValueWithTTL(String key, Object value, int seconds) {
+        redisTemplate.opsForValue().set(key, value, seconds, TimeUnit.SECONDS);
     }
 
-    public void setTtl(String key, String value, int time, TimeUnit unit) {
-        redisTemplate.opsForValue().set(key,value,time,unit);
+    public String getValue(String key) {
+        return (String) redisTemplate.opsForValue().get(key);
+    }
+
+    public <T> T getValueAsClass(String key, Class<T> clazz) {
+        return objectMapper.convertValue(redisTemplate.opsForValue().get(key), clazz);
     }
 
     public Boolean keysStartingWith(String prefix) {
@@ -52,25 +57,6 @@ public class RedisService {
         redisTemplate.delete(key);
     }
 
-    public List<String> getKeysStartingWith(String prefix) {
-        List<String> keys = new ArrayList<>();
-        ScanOptions options = ScanOptions.scanOptions().match(prefix + "*").count(100).build();
-        Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(redisConnection -> {
-            return redisConnection.scan(options);
-        });
-
-        try {
-            while (cursor.hasNext()) {
-                // 키를 문자열로 변환하여 리스트에 추가
-                keys.add(new String(cursor.next()));
-            }
-        } finally {
-            cursor.close(); // Cursor를 반드시 닫아야 합니다.
-        }
-
-        return keys; // 모든 키 반환
-    }
-
     public Boolean hasMultipleKeysStartingWith(String prefix) {
         ScanOptions options = ScanOptions.scanOptions().match(prefix + "*").count(100).build();
         Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(redisConnection -> {
@@ -93,6 +79,5 @@ public class RedisService {
 
         return false; // 키가 두 개 이상 존재하지 않으면 false 반환
     }
-
 
 }

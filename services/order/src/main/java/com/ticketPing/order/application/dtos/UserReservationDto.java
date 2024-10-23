@@ -43,7 +43,7 @@ public class UserReservationDto {
             .seatId(orderSeat.getSeatId())
             .row(orderSeat.getRow())
             .col(orderSeat.getCol())
-            .seatGrade(orderSeat.getSeatGrade())
+            .seatGrade(orderSeat.getSeatRate())
             .cost(orderSeat.getCost())
             .build();
     }
