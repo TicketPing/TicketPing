@@ -30,8 +30,7 @@ public class OrderSeat extends BaseEntity {
     private String seatRate;
     private int cost;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @OneToOne(mappedBy = "orderSeat")
     private Order order;
 
     public static OrderSeat create(UUID seatId, int row, int col, String seatRate, int cost) {
