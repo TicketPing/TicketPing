@@ -196,14 +196,6 @@ public class OrderService {
 
     }
 
-    public void test() {
-        // 예매 완료 이벤트 발행
-        String userId = "1";
-        String performanceId = "1";
-        eventApplicationService.publishOrderCompletedEvent(
-            OrderCompletedEvent.create(userId, performanceId));
-    }
-
     public PaymentResponseDto orderInfoResponseToPayment(UUID orderId) {
         Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new ApplicationException(REQUEST_ORDER_INFORMATION_BY_PAYMENT_NOT_FOUND));
@@ -213,7 +205,6 @@ public class OrderService {
     }
 
     public boolean verifyOrder(PaymentRequestDto requestDto) {
-
         String ttlPrefix = requestDto.getScheduleId()+":"+requestDto.getSeatId();
         Boolean hasMultipleKeys = redisService.hasMultipleKeysStartingWith(ttlPrefix);
         //2.TTL prefix 중복 여부
@@ -253,29 +244,6 @@ public class OrderService {
 //            }
 //        }
         return true;
-    }
-
-    public OrderPerformanceDetails getAllSeats() {
-        List<String> redisSeatKeyList = redisService.getKeysStartingWith("seat:");
-        // 첫 번째 키를 기준으로 seatId와 scheduleId 추출
-        String input = redisSeatKeyList.get(0);
-        String regex = "seat:([0-9a-fA-F-]+):([0-9a-fA-F-]+)";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(input);
-        String scheduleId = null;
-        String seatId = null;
-        if (matcher.find()) {
-            seatId = matcher.group(2); // 첫 번째 그룹: seatId
-            scheduleId = matcher.group(1); // 두 번째 그룹: scheduleId
-        }
-
-        ResponseEntity<CommonResponse<OrderInfoResponse>> orderInfo = performanceClient.getOrderInfo(
-            String.valueOf(seatId)
-        );
-        OrderInfoResponse orderData = orderInfo.getBody().getData();
-        // OrderPerformanceDetails 생성
-
-        return initializeOrderPerformanceDetails(orderData, scheduleId, redisSeatKeyList);
     }
 
     private OrderPerformanceDetails initializeOrderPerformanceDetails(OrderInfoResponse orderData,
@@ -349,6 +317,5 @@ public class OrderService {
 
         return userReservationDtos; // UserReservationDto 리스트 반환
     }
-
 
 }

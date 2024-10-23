@@ -33,7 +33,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @Operation(summary = "예매 좌석 선점", description = "레디스에서 캐싱된 공연정보를 바탕으로 TTL 좌석 선점 5분간 진행")
+    @Operation(summary = "예매 좌석 선점")
     @PostMapping
     public CommonResponse<OrderResponse> orderPerformanceSeats(@RequestBody OrderCreateDto requestDto, @RequestHeader("X_USER_ID") UUID userId
     ) {
@@ -41,42 +41,28 @@ public class OrderController {
         return CommonResponse.success(ORDER_OCCUPYING_SEAT_SUCCESS, orderResponse);
     }
 
-    @Operation(summary = "결제 성공/실패 후 호출",
-        description = "결제가 성공이면 캐싱된 redis 공연정보가 OCCUPIED 로 되고 performanceDB에 "
-            + "업데이트합니다. 실패시엔 유지가 됩니다. ")
-    @PutMapping("{orderId}/status")
-    public void updateOrderStatus( @PathVariable("orderId") UUID orderId, @RequestParam("status") String status) {
-        orderService.updateOrderStatus(orderId, status);
-    }
-
-    @PostMapping("/test")
-    public void test() {
-        orderService.test();
-    }
-
-    @Operation(summary = "결제 도메인에서 주문 정보를 가져옴",
-        description = "주문정보를 가져옵니다."
-    )
+    @Operation(summary = "주문 정보 조회 (결제 서버용)")
     @GetMapping("/{orderId}/info")
     public PaymentResponseDto getOrderInfo(@PathVariable("orderId") UUID orderId){
         return orderService.orderInfoResponseToPayment(orderId);
     }
 
+    @Operation(summary = "중복 예매 검증 (결제 서버용)")
     @GetMapping("/verify")
     public boolean verifyOrder(@RequestBody PaymentRequestDto requestDto) {
         return orderService.verifyOrder(requestDto);
     }
 
-    @GetMapping("/seat-list")
-    public CommonResponse<OrderPerformanceDetails> getAllSeats() {
-        OrderPerformanceDetails orderPerformanceDetails = orderService.getAllSeats();
-        return CommonResponse.success(ORDER_SEATS_RETURN_SUCCESS,orderPerformanceDetails);
+    @Operation(summary = "예매 상태 변경 (결제 서버용)")
+    @PutMapping("{orderId}/status")
+    public void updateOrderStatus( @PathVariable("orderId") UUID orderId, @RequestParam("status") String status) {
+        orderService.updateOrderStatus(orderId, status);
     }
 
+    @Operation(summary = "사용자 예매 목록 전체 조회")
     @GetMapping("/user/reservations")
     public CommonResponse<List<UserReservationDto>> getUserReservation(@RequestHeader("X_USER_ID") UUID userId) {
         List<UserReservationDto> userReservationDto = orderService.getUserReservation(userId);
         return CommonResponse.success(ORDER_USER_RESERVATION_LIST_RETURN_SUCCESS, userReservationDto);
     }
-
 }
