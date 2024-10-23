@@ -16,15 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,8 +37,10 @@ public class OrderController {
         description = "결제가 성공이면 캐싱된 redis 공연정보가 OCCUPIED 로 되고 performanceDB에 "
             + "업데이트합니다. 실패시엔 유지가 됩니다. ")
     @PutMapping("{orderId}/status")
-    public void updateOrderStatus( @PathVariable("orderId") UUID orderId, @RequestParam("status") String status) {
-        orderService.updateOrderStatus(orderId, status);
+    public void updateOrderStatus( @PathVariable("orderId") UUID orderId,
+                                   @RequestParam("status") String status,
+                                   @RequestParam("performanceId") UUID performanceId) {
+        orderService.updateOrderStatus(orderId, status, performanceId);
     }
 
     @PostMapping("/test")
@@ -62,7 +56,7 @@ public class OrderController {
         return orderService.orderInfoResponseToPayment(orderId);
     }
 
-    @GetMapping("/verify")
+    @PostMapping("/verify")
     public boolean verifyOrder(@RequestBody PaymentRequestDto requestDto) {
         return orderService.verifyOrder(requestDto);
     }

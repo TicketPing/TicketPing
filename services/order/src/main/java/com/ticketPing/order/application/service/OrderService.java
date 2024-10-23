@@ -175,7 +175,8 @@ public class OrderService {
 
 
     @Transactional
-    public void updateOrderStatus(UUID orderId, String status) {
+    public void updateOrderStatus(UUID orderId, String status, UUID performanceId) {
+        System.out.println("performanceId : " + performanceId);
         if(status.equals("fail")) return;
         // TODO: 로직을 status success/fail 상태에 따라 분리하기
         Order order = orderRepository.findById(orderId)
