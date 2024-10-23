@@ -1,17 +1,13 @@
 package com.ticketPing.order.infrastructure.service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
@@ -27,12 +23,12 @@ public class RedisService {
         redisTemplate.opsForValue().set(key, value, seconds, TimeUnit.SECONDS);
     }
 
-    public String getValue(String key) {
-        return (String) redisTemplate.opsForValue().get(key);
-    }
-
     public <T> T getValueAsClass(String key, Class<T> clazz) {
         return objectMapper.convertValue(redisTemplate.opsForValue().get(key), clazz);
+    }
+
+    public void deleteKey(String key) {
+        redisTemplate.delete(key);
     }
 
     public Boolean keysStartingWith(String prefix) {
@@ -51,10 +47,6 @@ public class RedisService {
         }
 
         return false; // 키가 존재하지 않으면 false 반환
-    }
-
-    public void deleteKey(String key) {
-        redisTemplate.delete(key);
     }
 
     public Boolean hasMultipleKeysStartingWith(String prefix) {
