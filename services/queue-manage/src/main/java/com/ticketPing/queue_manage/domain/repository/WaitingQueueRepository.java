@@ -5,10 +5,10 @@ import com.ticketPing.queue_manage.domain.command.waitingQueue.FindWaitingQueueT
 import com.ticketPing.queue_manage.domain.command.waitingQueue.InsertWaitingQueueTokenCommand;
 import com.ticketPing.queue_manage.domain.model.QueueToken;
 import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
-import java.util.Optional;
+import reactor.core.publisher.Mono;
 
 public interface WaitingQueueRepository {
-    QueueToken insertWaitingQueueToken(InsertWaitingQueueTokenCommand command);
-    Optional<WaitingQueueToken> findWaitingQueueToken(FindWaitingQueueTokenCommand command);
-    Optional<WaitingQueueToken> deleteFirstWaitingQueueToken(DeleteFirstWaitingQueueTokenCommand command);
+    Mono<QueueToken> insertWaitingQueueToken(InsertWaitingQueueTokenCommand command);
+    Mono<WaitingQueueToken> findWaitingQueueToken(FindWaitingQueueTokenCommand command);
+    Mono<WaitingQueueToken> deleteFirstWaitingQueueToken(DeleteFirstWaitingQueueTokenCommand command);
 }

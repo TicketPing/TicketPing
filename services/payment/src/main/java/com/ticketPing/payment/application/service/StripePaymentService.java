@@ -108,7 +108,6 @@ public class StripePaymentService {
     //결제 확인 후 updateStatus
     @Transactional
     public String updateStatus(String paymentIntentId) {
-
         try {
             //paymentIntentId 값으로 orderId값 찾아오기
             Payment payment = repository.findByPaymentIntentId(paymentIntentId)

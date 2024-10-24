@@ -30,7 +30,7 @@ public class InsertWaitingQueueTokenCommand {
     private double score;
     private String workingQueueName;
     private String cacheValue;
-    private long ttl;
+    private long ttlInMinutes;
     private int workingQueueMaxSlots;
 
     public static InsertWaitingQueueTokenCommand create(String userId, String performanceId) {
@@ -42,7 +42,7 @@ public class InsertWaitingQueueTokenCommand {
                 .score(System.currentTimeMillis() / 1000.0)
                 .workingQueueName(WORKING_QUEUE.getValue() + performanceId)
                 .cacheValue("NA")
-                .ttl(workingQueueTokenTTL())
+                .ttlInMinutes(workingQueueTokenTTL())
                 .workingQueueMaxSlots(workingQueueMaxSize())
                 .build();
     }

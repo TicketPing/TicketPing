@@ -3,11 +3,12 @@ package com.ticketPing.queue_manage.infrastructure.repository.script;
 import com.ticketPing.queue_manage.domain.command.waitingQueue.InsertWaitingQueueTokenCommand;
 import java.util.Arrays;
 import org.redisson.api.RScript;
-import org.redisson.api.RedissonClient;
 
 import java.util.List;
+import org.redisson.api.RedissonReactiveClient;
 import org.redisson.client.codec.StringCodec;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 /**
  * tokenValue: 사용자 토큰 값 (대기열 Sorted Set 멤버 or 작업열 토큰 키)
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class InsertWaitingQueueTokenScript {
 
-    private final RedissonClient redissonClient;
+    private final RedissonReactiveClient redissonClient;
     private final String scriptSha;
 
     private static final String SCRIPT =
@@ -53,23 +54,31 @@ public class InsertWaitingQueueTokenScript {
                     "       return 1 " +
                     "end";
 
-    public InsertWaitingQueueTokenScript(RedissonClient redissonClient) {
+    public InsertWaitingQueueTokenScript(RedissonReactiveClient redissonClient) {
         this.redissonClient = redissonClient;
-        this.scriptSha = redissonClient.getScript().scriptLoad(SCRIPT);
+        this.scriptSha = redissonClient.getScript()
+                .scriptLoad(SCRIPT)
+                .block();
     }
 
-    public boolean hasAvailableSlots(InsertWaitingQueueTokenCommand command) {
-        List<Object> keys = Arrays.asList(command.getWaitingQueueName(), command.getWorkingQueueName(), command.getTokenValue());
-        Long result = redissonClient.getScript(StringCodec.INSTANCE)
-                .evalSha(RScript.Mode.READ_WRITE, scriptSha, RScript.ReturnType.VALUE,
+    public Mono<Boolean> checkAvailableSlots(InsertWaitingQueueTokenCommand command) {
+        List<Object> keys = Arrays.asList(
+                command.getWaitingQueueName(),
+                command.getWorkingQueueName(),
+                command.getTokenValue()
+        );
+        return redissonClient.getScript(StringCodec.INSTANCE)
+                .evalSha(RScript.Mode.READ_WRITE,
+                        scriptSha,
+                        RScript.ReturnType.VALUE,
                         keys,
                         command.getWorkingQueueMaxSlots(),
                         command.getTokenValue(),
                         command.getScore(),
                         command.getCacheValue(),
-                        command.getTtl() * 60
-                        );
-        return result != null && result == 1;
+                        command.getTtlInMinutes() * 60
+                )
+                .map(result -> result.equals(1L));
     }
 
 }

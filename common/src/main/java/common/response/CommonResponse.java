@@ -32,6 +32,12 @@ public class CommonResponse<T> {
             .build();
     }
 
+    public static <T> CommonResponse<T> success(T data) {
+        return CommonResponse.<T>builder()
+                .data(data)
+                .build();
+    }
+
     public static <T> CommonResponse<T> error(ErrorCase errorCase) {
         return CommonResponse.<T>builder()
             .status(errorCase.getHttpStatus())

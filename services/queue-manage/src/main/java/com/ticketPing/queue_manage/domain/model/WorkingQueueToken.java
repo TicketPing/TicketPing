@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import reactor.core.publisher.Mono;
 
 @Getter
 @NoArgsConstructor
@@ -32,14 +33,13 @@ public class WorkingQueueToken implements QueueToken {
                 .build();
     }
 
-    public static WorkingQueueToken withValidUntil(String userId, String performanceId, String tokenValue, LocalDateTime validUntil) {
-        return WorkingQueueToken.builder()
+    public static Mono<WorkingQueueToken> withValidUntil(String userId, String performanceId, String tokenValue, LocalDateTime validUntil) {
+        return Mono.fromCallable(() -> WorkingQueueToken.builder()
                 .userId(userId)
                 .performanceId(performanceId)
                 .tokenValue(tokenValue)
                 .tokenStatus(TokenStatus.WORKING)
                 .validUntil(validUntil)
-                .build();
+                .build());
     }
-
 }
