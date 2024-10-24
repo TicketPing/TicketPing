@@ -1,6 +1,7 @@
 package com.ticketPing.queue_manage.infrastructure.config;
 
 import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
 import org.redisson.api.RedissonReactiveClient;
 import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,11 +18,16 @@ public class RedissonConfig {
     private String redisPort;
 
     @Bean
-    public RedissonReactiveClient redissonReactiveClient() {
+    public RedissonClient redissonClient() {
         Config config = new Config();
         config.useSingleServer()
                 .setAddress(String.format("redis://%s:%s", redisHost, redisPort));
-        return Redisson.create(config).reactive();
+        return Redisson.create(config);
+    }
+
+    @Bean
+    public RedissonReactiveClient redissonReactiveClient(RedissonClient redissonClient) {
+        return redissonClient.reactive();
     }
 
 }
