@@ -46,8 +46,10 @@ public class OrderController {
 
     @Operation(summary = "예매 상태 변경 (결제 서버용)")
     @PutMapping("{orderId}/status")
-    public void updateOrderStatus( @PathVariable("orderId") UUID orderId, @RequestParam("status") String status) {
-        orderService.updateOrderStatus(orderId, status);
+    public void updateOrderStatus( @PathVariable("orderId") UUID orderId,
+                                   @RequestParam("status") String status,
+                                   @RequestParam("performanceId") UUID performanceId) {
+        orderService.updateOrderStatus(orderId, status, performanceId);
     }
 
     @Operation(summary = "사용자 예매 목록 전체 조회")

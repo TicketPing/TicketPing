@@ -2,8 +2,10 @@ package com.ticketPing.order.domain.model.entity;
 
 
 import audit.BaseEntity;
+import com.ticketPing.order.domain.model.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
@@ -21,7 +23,7 @@ public class Order extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_id")
     private UUID id;
-    private Boolean orderStatus;
+    private OrderStatus orderStatus;
     private Boolean isOrderCancelled;
     private LocalDateTime reservationDate;
     private UUID userId;
@@ -35,7 +37,7 @@ public class Order extends BaseEntity {
     private OrderSeat orderSeat;
 
     public static Order create(UUID userId, UUID companyId, String performanceName,
-        LocalDateTime reservationDate, Boolean orderStatus, UUID scheduleId) {
+        LocalDateTime reservationDate, OrderStatus orderStatus, UUID scheduleId) {
         return Order.builder()
                 .companyId(companyId)
                 .performanceName(performanceName)
@@ -48,7 +50,7 @@ public class Order extends BaseEntity {
                 .build();
     }
 
-    public void updateOrderStatus(Boolean orderStatus) {
+    public void updateOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
 }

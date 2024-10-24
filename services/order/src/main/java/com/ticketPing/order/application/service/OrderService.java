@@ -5,6 +5,8 @@ import com.ticketPing.order.application.dtos.OrderInfoResponse;
 import com.ticketPing.order.application.dtos.OrderResponse;
 import com.ticketPing.order.application.dtos.UserReservationDto;
 import com.ticketPing.order.application.dtos.temp.SeatResponse;
+import com.ticketPing.order.domain.events.OrderCompletedEvent;
+import com.ticketPing.order.domain.model.enums.OrderStatus;
 import com.ticketPing.order.infrastructure.client.PerformanceClient;
 import com.ticketPing.order.domain.model.entity.Order;
 import com.ticketPing.order.domain.model.entity.OrderSeat;
@@ -43,7 +45,8 @@ public class OrderService {
     private final RedisService redisService;
     private final RedissonClient redissonClient;
 
-    private final static int SEAT_LOCK_CACHE_EXPIRE_SECONDS = 10;
+    private final static int SEAT_LOCK_CACHE_EXPIRE_SECONDS = 30;
+    private final static String TTL_PREFIX = "seat_ttl:";
 
     @Transactional
     public OrderResponse createOrder(OrderCreateDto orderCreateRequestDto, UUID userId) {
@@ -109,7 +112,7 @@ public class OrderService {
         OrderInfoResponse orderData = performanceClient.getOrderInfo(seatId.toString()).getBody().getData();
 
         Order order = Order.create(userId, orderData.companyId(), orderData.performanceName(),
-                LocalDateTime.now(), true, orderData.scheduleId());
+                LocalDateTime.now(), OrderStatus.PENDING, orderData.scheduleId());
         Order savedOrder =  orderRepository.save(order);
 
         OrderSeat orderSeat = OrderSeat.create(orderData.seatId(), orderData.row(),
@@ -119,24 +122,23 @@ public class OrderService {
     }
 
     @Transactional
-    public void updateOrderStatus(UUID orderId, String status) {
-        if(status.equals("fail")) return;
-        // TODO: 로직을 status success/fail 상태에 따라 분리하기
+    public void updateOrderStatus(UUID orderId, String status, UUID performanceId) {
         Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new ApplicationException(ORDER_NOT_FOUND));
-
-        UUID scheduleId = order.getScheduleId();
-        UUID seatId = order.getOrderSeat().getSeatId();
-        String ttlRedisKey = scheduleId+":"+seatId+":"+orderId;
-        redisService.deleteKey(ttlRedisKey); // 키 삭제
-
-        ResponseEntity<CommonResponse<SeatResponse>> savedPerformanceToDb
-            = performanceClient.updateSeatState(order.getOrderSeat().getSeatId(),
-            order.getOrderStatus());
-
-//        String performanceId = "1";
-//        eventApplicationService.publishOrderCompletedEvent(
-//            OrderCompletedEvent.create(String.valueOf(order.getUserId()), performanceId));
+        // success -> 예매 완료 -> seatStatus : true -> counter -1, ttl 삭제
+        if(status.equals("success")) {
+            UUID scheduleId = order.getScheduleId();
+            UUID seatId = order.getOrderSeat().getSeatId();
+            performanceClient.updateSeatState(order.getOrderSeat().getSeatId(), true);
+            //redis ttl 삭제
+            String ttlRedisKey = TTL_PREFIX + scheduleId + ":" + seatId + ":" + orderId;
+            redisService.deleteKey(ttlRedisKey); // 키 삭제
+            //counter -1
+            redisService.decreaseCounter(scheduleId);
+            //kafka
+            eventApplicationService.publishOrderCompletedEvent(
+                    OrderCompletedEvent.create(String.valueOf(order.getUserId()), performanceId.toString()));
+        }
 
     }
 
