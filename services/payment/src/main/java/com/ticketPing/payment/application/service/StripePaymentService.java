@@ -90,10 +90,10 @@ public class StripePaymentService {
 
     // TTL 확인
     public void verifyTtl(UUID orderId) {
-        // Todo : Redis에 orderId로 TTL 확인 (key = scheduleId:seatId:orderId)
+        // Todo : Redis에 orderId로 TTL 확인 (key = seat_ttl:scheduleId:seatId:orderId)
         Payment payment = repository.findByOrderInfoOrderId(orderId)
                 .orElseThrow(() -> new ApplicationException(PAYMENT_NOT_FOUND));
-        String redisKey = payment.getOrderInfo().getPerformanceScheduleId() + ":" + payment.getOrderInfo().getSeatId() + ":" + orderId;
+        String redisKey = "seat_ttl:" + payment.getOrderInfo().getPerformanceScheduleId() + ":" + payment.getOrderInfo().getSeatId() + ":" + orderId;
         redisCheckTTL(redisKey);
     }
 
