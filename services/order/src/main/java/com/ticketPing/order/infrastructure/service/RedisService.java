@@ -19,7 +19,6 @@ import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCa
 public class RedisService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
-    private final AuthorizationAuditListener authorizationAuditListener;
 
     public void setValue(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
