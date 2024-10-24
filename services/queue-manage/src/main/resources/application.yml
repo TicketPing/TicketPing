@@ -1,6 +1,9 @@
 spring:
   application:
     name: queue-manage
+  redis:
+    host: redis
+    port: 6379
   kafka:
     bootstrap-servers: kafka:29092
     consumer:
@@ -21,10 +24,6 @@ eureka:
   client:
     service-url:
       defaultZone: http://eureka-server:10000/eureka/
-
-redis:
-  host: redis
-  port: 6379
 
 token-value:
   secret-key: secret-key
