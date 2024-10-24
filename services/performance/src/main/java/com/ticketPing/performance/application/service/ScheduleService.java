@@ -1,8 +1,8 @@
 package com.ticketPing.performance.application.service;
 
 import com.ticketPing.performance.application.dtos.ScheduleResponse;
-import com.ticketPing.performance.domain.entity.Performance;
-import com.ticketPing.performance.domain.entity.Schedule;
+import com.ticketPing.performance.domain.model.entity.Performance;
+import com.ticketPing.performance.domain.model.entity.Schedule;
 import com.ticketPing.performance.domain.repository.ScheduleRepository;
 import com.ticketPing.performance.presentation.cases.exception.ScheduleExceptionCase;
 import common.exception.ApplicationException;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -43,5 +44,13 @@ public class ScheduleService {
     public Page<ScheduleResponse> getSchedulesByPerformance(Performance performance, Pageable pageable) {
         Page<Schedule> schedules = scheduleRepository.findByPerformance(performance, pageable);
         return schedules.map(ScheduleResponse::of);
+    }
+
+    public List<Schedule> finadAllScheduleByPerformance(Performance performance) {
+        List<Schedule> schedules = scheduleRepository.findByPerformance(performance);
+        if(schedules.isEmpty()) {
+            throw new ApplicationException(ScheduleExceptionCase.SCHEDULE_NOT_FOUND);
+        }
+        return schedules;
     }
 }

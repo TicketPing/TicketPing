@@ -27,7 +27,7 @@ public class SeatController {
                 .body(CommonResponse.success(SeatSuccessCase.SUCCESS_SEAT, seatResponse));
     }
 
-    @Operation(summary = "좌석 주문 정보 조회")
+    @Operation(summary = "좌석 주문 정보 조회 (order 서비스에서 호출용)")
     @GetMapping("/{seatId}/order-info")
     public ResponseEntity<CommonResponse<OrderInfoResponse>> getOrderInfo(@PathVariable("seatId") UUID seatId) {
         OrderInfoResponse orderInfoResponse = seatService.getOrderInfo(seatId);
@@ -36,7 +36,7 @@ public class SeatController {
                 .body(CommonResponse.success(SeatSuccessCase.SUCCESS_SEAT_ORDERINFO, orderInfoResponse));
     }
 
-    @Operation(summary = "좌석 상태 수정")
+    @Operation(summary = "좌석 상태 수정 (order 서비스에서 호출용)")
     @PutMapping("/{seatId}")
     public ResponseEntity<CommonResponse<SeatResponse>> updateSeatState(@PathVariable("seatId") UUID seatId,
                                                                         @RequestParam("seatState") Boolean seatState) {

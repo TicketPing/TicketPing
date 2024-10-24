@@ -27,7 +27,9 @@ public class StripePaymentController {
 
     @Operation(summary = "결제 요청", description = "실제 결제 전 pi, secretClient 받기 위한 api")
     @PostMapping("/{orderId}")
-    public CommonResponse<StripeForClientResponseDto> paymentIntent(@PathVariable("orderId") UUID orderId) {
+    public CommonResponse<StripeForClientResponseDto> paymentIntent(@PathVariable("orderId") UUID orderId,
+                                                                    @RequestParam("performanceId") UUID performanceId) {
+        System.out.println("결제 요청 performanceId : " + performanceId);
         StripeForClientResponseDto responseDto = paymentService.payment(orderId);
         //시크릿 키, dpmCheckerLink
         return CommonResponse.success(PAYMENT_INTENT_SUCCESS, responseDto);
@@ -36,16 +38,20 @@ public class StripePaymentController {
     //결제 전 ttl 확인
     @Operation(summary = "결제 전 TTL 확인", description = "결제 전 TTL 확인 api")
     @PostMapping("/verify-ttl/{orderId}")
-    public ResponseEntity verifyTtl(@PathVariable("orderId") UUID orderId) {
+    public ResponseEntity verifyTtl(@PathVariable("orderId") UUID orderId,
+                                    @RequestParam("performanceId") UUID performanceId) {
+        System.out.println("결제 전 TTL 확인 performanceId : " + performanceId);
         paymentService.verifyTtl(orderId);
         return ResponseEntity.status(TTL_VERIFY_SUCCESS.getHttpStatus()).body(CommonResponse.success(TTL_VERIFY_SUCCESS));
     }
 
 
     @Operation(summary = "결제 확인 및 상태 변경", description = "결제 완료 여부 확인 api")
-    @PatchMapping("/{paymentIntentId}")
-    public CommonResponse<StripeResponseDto> updateStatus(@PathVariable("paymentIntentId") String paymentIntentId) {
-        paymentService.updateStatus(paymentIntentId);
+    @PutMapping("/{paymentIntentId}")
+    public CommonResponse<StripeResponseDto> updateStatus(@PathVariable("paymentIntentId") String paymentIntentId,
+                                                          @RequestParam("performanceId") UUID performanceId) {
+        System.out.println("결제 확인 및 상태 변경 performanceId : " + performanceId);
+        paymentService.updateStatus(paymentIntentId, performanceId);
         return CommonResponse.success(STATUS_CHANGE_SUCCESS);
     }
 

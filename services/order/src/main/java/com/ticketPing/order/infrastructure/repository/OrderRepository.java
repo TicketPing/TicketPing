@@ -1,4 +1,4 @@
-package com.ticketPing.order.domain.repository;
+package com.ticketPing.order.infrastructure.repository;
 
 import com.ticketPing.order.domain.model.entity.Order;
 import java.util.List;

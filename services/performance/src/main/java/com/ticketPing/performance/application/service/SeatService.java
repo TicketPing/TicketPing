@@ -2,8 +2,8 @@ package com.ticketPing.performance.application.service;
 
 import com.ticketPing.performance.application.dtos.OrderInfoResponse;
 import com.ticketPing.performance.application.dtos.SeatResponse;
-import com.ticketPing.performance.domain.entity.Schedule;
-import com.ticketPing.performance.domain.entity.Seat;
+import com.ticketPing.performance.domain.model.entity.Schedule;
+import com.ticketPing.performance.domain.model.entity.Seat;
 import com.ticketPing.performance.domain.repository.SeatRepository;
 import com.ticketPing.performance.infrastructure.service.RedisService;
 import com.ticketPing.performance.presentation.cases.exception.SeatExceptionCase;
@@ -49,21 +49,30 @@ public class SeatService {
     @Transactional
     public List<SeatResponse> getAllScheduleSeats(UUID scheduleId) {
         Set<String> ids = redisService.getKeys("seat:" + scheduleId + ":*");
+        if(ids.isEmpty()) {
+            throw new ApplicationException(SeatExceptionCase.SEAT_CACHE_NOT_FOUND);
+        }
         return redisService.getValuesAsClass(ids.stream().toList(), SeatResponse.class);
     }
 
     @Transactional
-    public void createSeatsCache(Schedule schedule) {
-        List<Seat> seats = findSeatsByScheduleJoinSeatCost(schedule);
+    public void createSeatsCache(List<Schedule> schedules, UUID performanceId) {
+        long availableSeats = 0;
+
+        for(Schedule schedule : schedules) {
+            List<Seat> seats = findSeatsByScheduleJoinSeatCost(schedule);
+
+            availableSeats += seats.stream().filter(s -> !s.getSeatState()).count();
+
+            // 좌석 캐싱
+            String prefix = "seat:" + schedule.getId() + ":";
+            Map<String, Object> seatMap = new HashMap<>();
+            seats.forEach(seat -> {seatMap.put(prefix+seat.getId(), SeatResponse.of(seat));});
+            redisService.setValues(seatMap);
+        }
 
         // counter 생성
-        redisService.setValue("counter:" + schedule.getId(), String.valueOf(seats.size()));
-
-        // 좌석 캐싱
-        String prefix = "seat:" + schedule.getId() + ":";
-        Map<String, Object> seatMap = new HashMap<>();
-        seats.forEach(seat -> {seatMap.put(prefix+seat.getId(), SeatResponse.of(seat));});
-        redisService.setValues(seatMap);
+        redisService.setValue("AvailableSeats:" + performanceId, String.valueOf(availableSeats));
     }
 
     @Transactional

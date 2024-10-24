@@ -1,7 +1,7 @@
 package com.ticketPing.performance.domain;
 
-import com.ticketPing.performance.domain.entity.*;
-import com.ticketPing.performance.domain.entity.enums.SeatRate;
+import com.ticketPing.performance.domain.model.entity.*;
+import com.ticketPing.performance.domain.model.enums.SeatRate;
 import com.ticketPing.performance.domain.repository.PerformanceHallRepository;
 import com.ticketPing.performance.domain.repository.PerformanceRepository;
 import com.ticketPing.performance.domain.repository.ScheduleRepository;
@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class DataLoader implements CommandLineRunner {
+public class DataInitializer implements CommandLineRunner {
 
     private final PerformanceRepository performanceRepository;
     private final PerformanceHallRepository performanceHallRepository;

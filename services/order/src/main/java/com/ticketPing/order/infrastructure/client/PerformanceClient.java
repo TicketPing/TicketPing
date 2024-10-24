@@ -1,4 +1,4 @@
-package com.ticketPing.order.client;
+package com.ticketPing.order.infrastructure.client;
 
 
 import com.ticketPing.order.application.dtos.OrderInfoResponse;
@@ -9,7 +9,6 @@ import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;

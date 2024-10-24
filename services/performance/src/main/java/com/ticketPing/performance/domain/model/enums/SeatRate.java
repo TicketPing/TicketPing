@@ -1,4 +1,4 @@
-package com.ticketPing.performance.domain.entity.enums;
+package com.ticketPing.performance.domain.model.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
