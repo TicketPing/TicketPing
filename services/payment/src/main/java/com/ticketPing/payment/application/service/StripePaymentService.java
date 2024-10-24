@@ -54,7 +54,8 @@ public class StripePaymentService {
     private void verifyOrder(PaymentStripeRequestDto requestDto) {
         PaymentRequestDto request = PaymentRequestDto.field(
                 requestDto.getPerformanceScheduleId(),
-                requestDto.getSeatId());
+                requestDto.getSeatId(),
+                requestDto.getUserId());
         if (!orderClient.verifyOrder(request)) throw new ApplicationException(ORDER_VERIFY_FAIL);
     }
 
