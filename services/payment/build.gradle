@@ -33,6 +33,10 @@ dependencies {
 	implementation project(':dtos:payment-dto')
 	implementation project(':dtos:order-dto')
 
+	// Monitoring
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'

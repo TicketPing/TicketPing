@@ -22,4 +22,13 @@ eureka:
     service-url:
       defaultZone: http://eureka-server:10000/eureka/
 
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    enabled: true

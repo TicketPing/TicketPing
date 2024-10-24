@@ -28,10 +28,10 @@ public class AuthController {
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<CommonResponse<UserCacheDto>> validateToken(String token) {
+    public ResponseEntity<UserCacheDto> validateToken(String token) {
         UserCacheDto response = authService.validateToken(token);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.success(AuthSuccessCase.USER_EXISTS, response));
+                .body(response);
     }
 
 }

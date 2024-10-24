@@ -24,7 +24,8 @@ public enum OrderExceptionCase implements ErrorCase {
     JSON_PROCESSING_EXCEPTION(HttpStatus.UNPROCESSABLE_ENTITY, "Redis 값 역직렬화에 실패했습니다."),
     ORDER_IN_REDIS_NOT_OCCUPIED(HttpStatus.GONE,"캐싱된 저장정보에 주문상태가 false 입니다."),
     REQUEST_ORDER_INFORMATION_BY_PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제 도메인에서 요청된 orderId로 order 조회를 실패하였습니다."),
-    ORDER_STATUS_UNKNOWN(HttpStatus.CONFLICT,"저장된 enum 상태값을 사용해야 합니다.");
+    ORDER_STATUS_UNKNOWN(HttpStatus.CONFLICT,"저장된 enum 상태값을 사용해야 합니다."),
+    SOLD_OUT(HttpStatus.BAD_REQUEST, "매진되었습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
