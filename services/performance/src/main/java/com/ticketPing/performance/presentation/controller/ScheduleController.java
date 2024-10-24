@@ -39,14 +39,4 @@ public class ScheduleController {
                 .status(200)
                 .body(CommonResponse.success(ScheduleSuccessCase.GET_SCHEDULE_SEATS, seatResponses));
     }
-
-    @Operation(summary = "스케줄 전체 좌석 캐싱 생성")
-    @PostMapping("/{scheduleId}/seats")
-    public ResponseEntity<CommonResponse<Object>> createSeatsCache(@PathVariable("scheduleId") UUID scheduleId) {
-        Schedule schedule = scheduleService.findScheduleById(scheduleId);
-        seatService.createSeatsCache(schedule);
-        return ResponseEntity
-                .status(201)
-                .body(CommonResponse.success(ScheduleSuccessCase.SCHEDULE_SEATS_CACHED));
-    }
 }

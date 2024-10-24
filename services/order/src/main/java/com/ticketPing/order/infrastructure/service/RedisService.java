@@ -78,8 +78,8 @@ public class RedisService {
         return false; // 키가 두 개 이상 존재하지 않으면 false 반환
     }
 
-    public void decreaseCounter(UUID scheduleId) {
-        String key = "counter:" + scheduleId;
+    public void decreaseCounter(UUID performanceId) {
+        String key = "AvailableSeats:" + performanceId;
         Long updatedValue = redisTemplate.opsForValue().decrement(key);
         if(updatedValue != null && updatedValue < 0) {
             throw new ApplicationException(SOLD_OUT);
