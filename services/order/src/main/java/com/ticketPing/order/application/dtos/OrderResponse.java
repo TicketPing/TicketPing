@@ -1,6 +1,7 @@
 package com.ticketPing.order.application.dtos;
 
 import com.ticketPing.order.domain.model.entity.Order;
+import com.ticketPing.order.domain.model.enums.OrderStatus;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -10,7 +11,7 @@ import java.util.UUID;
 @Builder(access = AccessLevel.PRIVATE)
 public record OrderResponse(
     UUID id,
-    Boolean orderStatus,
+    OrderStatus orderStatus,
     LocalDateTime reservationDate,
     UUID userId,
     UUID scheduleId,

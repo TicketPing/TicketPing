@@ -3,6 +3,8 @@ package com.ticketPing.order.application.dtos;
 import com.ticketPing.order.domain.model.entity.OrderSeat;
 import com.ticketPing.order.domain.model.entity.Order;
 import java.time.LocalDateTime;
+
+import com.ticketPing.order.domain.model.enums.OrderStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +18,7 @@ import java.util.UUID;
 @Builder(access = AccessLevel.PROTECTED)
 public class UserReservationDto {
     private UUID orderId;            // 주문 ID
-    private Boolean orderStatus;     // 주문 상태
+    private OrderStatus orderStatus;     // 주문 상태
     private LocalDateTime reservationDate; // 예매 생성 시간
     private Boolean isOrderCancelled; // 예매 취소 여부
     private UUID userId;             // 사용자 ID

@@ -1,19 +1,25 @@
 package com.ticketPing.order.infrastructure.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import common.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.actuate.security.AuthorizationAuditListener;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.SOLD_OUT;
 
 @Component
 @RequiredArgsConstructor
 public class RedisService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final AuthorizationAuditListener authorizationAuditListener;
 
     public void setValue(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
@@ -72,4 +78,12 @@ public class RedisService {
         return false; // 키가 두 개 이상 존재하지 않으면 false 반환
     }
 
+    public void decreaseCounter(UUID scheduleId) {
+        String key = "counter:" + scheduleId;
+        Long updatedValue = redisTemplate.opsForValue().decrement(key);
+        if(updatedValue != null && updatedValue < 0) {
+            throw new ApplicationException(SOLD_OUT);
+        }
+        System.out.println("남은 좌석 수 : " + updatedValue);
+    }
 }
