@@ -11,17 +11,14 @@ import com.ticketPing.order.infrastructure.client.PerformanceClient;
 import com.ticketPing.order.domain.model.entity.Order;
 import com.ticketPing.order.domain.model.entity.OrderSeat;
 import com.ticketPing.order.infrastructure.repository.OrderRepository;
-import com.ticketPing.order.infrastructure.repository.OrderSeatRepository;
 import com.ticketPing.order.infrastructure.service.RedisService;
 import common.exception.ApplicationException;
-import common.response.CommonResponse;
 import dto.PaymentRequestDto;
 import dto.PaymentResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -151,45 +148,21 @@ public class OrderService {
     }
 
     public boolean verifyOrder(PaymentRequestDto requestDto) {
-        String ttlPrefix = requestDto.getScheduleId()+":"+requestDto.getSeatId();
-        Boolean hasMultipleKeys = redisService.hasMultipleKeysStartingWith(ttlPrefix);
-        //2.TTL prefix 중복 여부
-        if (hasMultipleKeys) {
-            return false;
-        }
-        Boolean isExist = redisService.keysStartingWith(ttlPrefix);
-        if(!isExist) {
-           return false;
-        }
-        // performanceDB 에서 주문 상태 확인
-        if (!checkSeatOrderStatus(requestDto)) {
-            return false;
-        }
-        return true;
-    }
+        // TODO: 중복 검증
+        // 같은 seatId, scheduleId로 예매된 내역이 있는지
+        // userId -> 내거는 아니면서 삭제가 안됐고, 결제 대기중이거나 예매 완료인 친구가 있는지?
+        UUID seatId = requestDto.getSeatId();
+        UUID scheduleId = requestDto.getScheduleId();
+        UUID userId = requestDto.getUserId();
 
-    private boolean checkSeatOrderStatus(PaymentRequestDto requestDto) {
-        ResponseEntity<CommonResponse<OrderInfoResponse>> orderInfoResponse = performanceClient.getOrderInfo(
-            String.valueOf(requestDto.getSeatId()));
+        List<Order> order = orderRepository.findByScheduleIdAndOrderSeatSeatId(seatId, scheduleId)
+                .stream()
+                .filter(o -> !o.getUserId().equals(userId) &&
+                        (o.getOrderStatus().equals(OrderStatus.PENDING)
+                                || o.getOrderStatus().equals(OrderStatus.RESERVATION_COMPLETED)))
+                .toList();
 
-        if(orderInfoResponse.getBody().getData().seatState()) {
-            return false;
-        }
-
-        //TODO : 4. order entity soft delete 된것 제외 seatId, scheduleId가 같은 것이 있으면 false
-//        List<Order> orderList = orderRepository.findAll();
-//        int cnt = 0;
-//        for(Order order : orderList) {
-//
-//            if(order.getOrderSeat().getSeatId().equals(requestDto.getSeatId())
-//                && order.getScheduleId().equals(requestDto.getScheduleId())) {
-//                cnt++;
-//            }
-//            if(cnt >= 2) {
-//                return false;
-//            }
-//        }
-        return true;
+        return order.isEmpty();
     }
 
     @Transactional(readOnly = true)
