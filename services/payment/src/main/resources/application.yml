@@ -22,3 +22,13 @@ stripe:
   public-key: ${PUBLIC_KEY}
   webhook-key: ${WEBHOOK_KEY}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    enabled: true

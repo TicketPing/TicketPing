@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum OrderSuccessCase implements SuccessCase {
 
-    ORDER_OCCUPYING_SEAT_SUCCESS(HttpStatus.OK, "좌석 선점 성공 하었습니다."),
+    SUCCESS_CREATE_ORDER(HttpStatus.OK, "좌석 선점 성공 하었습니다."),
     ORDER_REQUEST_PAYMENT_SUCCESS(HttpStatus.OK, "결제 요청 성공 하었습니다."),
     ORDER_RESPONSE_PAYMENT_SUCCESS(HttpStatus.OK, "결제가 완료 되었습니다."),
     ORDER_SEATS_LIST_RESPONSE(HttpStatus.OK, "좌석리스트를 반환하였습니다."),

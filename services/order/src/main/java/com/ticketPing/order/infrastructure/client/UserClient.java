@@ -1,4 +1,4 @@
-package com.ticketPing.order.client;
+package com.ticketPing.order.infrastructure.client;
 
 import com.ticketPing.order.application.dtos.temp.UserResponse;
 import common.response.CommonResponse;

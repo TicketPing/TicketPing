@@ -32,3 +32,14 @@ token-value:
 working-queue:
   max-size: 1000
   token-ttl: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    enabled: true

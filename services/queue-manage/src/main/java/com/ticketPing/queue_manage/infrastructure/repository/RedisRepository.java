@@ -15,7 +15,7 @@ public class RedisRepository {
     private final RedissonClient redissonClient;
 
     public RScoredSortedSet<String> getScoredSortedSet(String key) {
-        return redissonClient.getScoredSortedSet(key);
+        return redissonClient.getScoredSortedSet(key, StringCodec.INSTANCE);
     }
 
     public RAtomicLong getAtomicLong(String key) {
@@ -25,5 +25,7 @@ public class RedisRepository {
     public RBucket<String> getBucket(String key) {
         return redissonClient.getBucket(key, StringCodec.INSTANCE);
     }
+
+
 
 }
