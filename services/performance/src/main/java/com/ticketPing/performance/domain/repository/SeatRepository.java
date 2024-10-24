@@ -1,7 +1,7 @@
 package com.ticketPing.performance.domain.repository;
 
-import com.ticketPing.performance.domain.entity.Schedule;
-import com.ticketPing.performance.domain.entity.Seat;
+import com.ticketPing.performance.domain.model.entity.Schedule;
+import com.ticketPing.performance.domain.model.entity.Seat;
 
 import java.util.List;
 import java.util.Optional;

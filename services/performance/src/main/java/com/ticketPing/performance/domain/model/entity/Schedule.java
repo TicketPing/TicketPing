@@ -1,4 +1,4 @@
-package com.ticketPing.performance.domain.entity;
+package com.ticketPing.performance.domain.model.entity;
 
 import audit.BaseEntity;
 import jakarta.persistence.*;

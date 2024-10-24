@@ -1,7 +1,7 @@
 package com.ticketPing.performance.infrastructure.repository;
 
-import com.ticketPing.performance.domain.entity.Schedule;
-import com.ticketPing.performance.domain.entity.Seat;
+import com.ticketPing.performance.domain.model.entity.Schedule;
+import com.ticketPing.performance.domain.model.entity.Seat;
 import com.ticketPing.performance.domain.repository.SeatRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

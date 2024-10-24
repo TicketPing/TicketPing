@@ -1,6 +1,6 @@
 package com.ticketPing.performance.application.dtos;
 
-import com.ticketPing.performance.domain.entity.Schedule;
+import com.ticketPing.performance.domain.model.entity.Schedule;
 import lombok.*;
 
 import java.time.LocalDateTime;

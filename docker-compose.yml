@@ -131,23 +131,35 @@ services:
     ports:
       - "10000:10000"
 
-#  auth-server:
-#    container_name: auth-server
-#    image: ticketping/auth-server:latest
-#    ports:
-#      - "10010:10010"
-#    depends_on:
-#      user-db:
-#        condition: service_healthy
-#      eureka-server:
-#        condition: service_started
+  auth-server:
+    container_name: auth-server
+    image: ticketping/auth-server:latest
+    env_file:
+      - .env
+    environment:
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    ports:
+      - "10010:10010"
+    depends_on:
+      user-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
 
   gateway-server:
     container_name: gateway-server
     image: ticketping/gateway-server:latest
+    env_file:
+      - .env
+    environment:
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     ports:
       - "10020:10020"
     depends_on:
+      auth-server:
+        condition: service_started
+      user-server:
+        condition: service_started
       performance-server:
         condition: service_started
       order-server:
@@ -158,17 +170,17 @@ services:
         condition: service_started
       redis:
         condition: service_healthy
-#
-#  user-server:
-#    container_name: user-server
-#    image: ticketping/user-server:latest
-#    ports:
-#      - "10021:10021"
-#    depends_on:
-#      user-db:
-#        condition: service_healthy
-#      eureka-server:
-#        condition: service_started
+
+  user-server:
+    container_name: user-server
+    image: ticketping/user-server:latest
+    ports:
+      - "10021:10021"
+    depends_on:
+      user-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
 
   performance-server:
     container_name: performance-server
@@ -197,8 +209,12 @@ services:
   payment-server:
     container_name: payment-server
     image: ticketping/payment-server:latest
+    env_file:
+      - .env
     environment:
       - SECRET_KEY=${SECRET_KEY}
+      - PUBLIC_KEY=${PUBLIC_KEY}
+      - WEBHOOK_KEY=${WEBHOOK_KEY}
     ports:
       - "10024:10024"
       - "5005:5005"

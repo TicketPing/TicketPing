@@ -32,15 +32,10 @@ public class RedisConfig {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.deactivateDefaultTyping(); // @class 제거
-
-        // Jackson2JsonRedisSerializer 설정
         Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
 
-        // 키는 String, 값은 JSON 형식으로 처리
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(serializer);
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(serializer);
 
         return template;
     }

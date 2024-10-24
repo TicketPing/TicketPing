@@ -39,4 +39,4 @@ out/
 application-private.yml
 application-local.yml
 
-/services/payment/.env
+.env

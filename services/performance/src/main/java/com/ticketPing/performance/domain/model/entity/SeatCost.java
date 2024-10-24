@@ -1,7 +1,7 @@
-package com.ticketPing.performance.domain.entity;
+package com.ticketPing.performance.domain.model.entity;
 
 import audit.BaseEntity;
-import com.ticketPing.performance.domain.entity.enums.SeatRate;
+import com.ticketPing.performance.domain.model.enums.SeatRate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
