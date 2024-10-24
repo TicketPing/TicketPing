@@ -1,8 +1,6 @@
 spring:
   application:
     name: auth
-  profiles:
-    include: private
   data:
     redis:
       host: redis
@@ -26,3 +24,6 @@ management:
       show-details: always
   prometheus:
     enabled: true
+
+jwt:
+  secret: ${JWT_SECRET_KEY}

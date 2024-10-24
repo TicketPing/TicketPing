@@ -59,8 +59,8 @@ public class JwtFilter implements ServerSecurityContextRepository {
 
                 exchange.mutate()
                         .request(r -> r.headers(headers -> {
-                            headers.add("X-User-Id", userId);
-                            headers.add("X-User-Role", userCache.role());
+                            headers.add("X_User_Id", userId);
+                            headers.add("X_User_Role", userCache.role());
                         }))
                         .build();
 
