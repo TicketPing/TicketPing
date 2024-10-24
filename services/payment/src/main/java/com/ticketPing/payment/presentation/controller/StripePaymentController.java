@@ -55,5 +55,4 @@ public class StripePaymentController {
         return CommonResponse.success(STATUS_CHANGE_SUCCESS);
     }
 
-
 }

@@ -21,14 +21,14 @@ public class InsertWorkingQueueTokenCommand {
     private String tokenValue;
     private String queueName;
     private String cacheValue;
-    private long ttl;
+    private long ttlInMinutes;
 
     public static InsertWorkingQueueTokenCommand create(WorkingQueueToken token) {
         return InsertWorkingQueueTokenCommand.builder()
                 .tokenValue(token.getTokenValue())
                 .queueName(WORKING_QUEUE.getValue() + token.getPerformanceId())
                 .cacheValue("NA")
-                .ttl(workingQueueTokenTTL()).build();
+                .ttlInMinutes(workingQueueTokenTTL()).build();
     }
 
 }

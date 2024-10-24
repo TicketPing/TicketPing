@@ -4,10 +4,10 @@ import com.ticketPing.queue_manage.domain.command.workingQueue.DeleteWorkingQueu
 import com.ticketPing.queue_manage.domain.command.workingQueue.InsertWorkingQueueTokenCommand;
 import com.ticketPing.queue_manage.domain.command.workingQueue.FindWorkingQueueTokenCommand;
 import com.ticketPing.queue_manage.domain.model.WorkingQueueToken;
-import java.util.Optional;
+import reactor.core.publisher.Mono;
 
 public interface WorkingQueueRepository {
-    void insertWorkingQueueToken(InsertWorkingQueueTokenCommand command);
-    Optional<WorkingQueueToken> findWorkingQueueToken(FindWorkingQueueTokenCommand command);
-    void deleteWorkingQueueToken(DeleteWorkingQueueTokenCommand command);
+    Mono<Boolean> insertWorkingQueueToken(InsertWorkingQueueTokenCommand command);
+    Mono<WorkingQueueToken> findWorkingQueueToken(FindWorkingQueueTokenCommand command);
+    Mono<Boolean> deleteWorkingQueueToken(DeleteWorkingQueueTokenCommand command);
 }

@@ -8,11 +8,12 @@ import com.ticketPing.queue_manage.domain.model.WaitingQueueToken;
 import com.ticketPing.queue_manage.domain.model.WorkingQueueToken;
 import com.ticketPing.queue_manage.domain.repository.WaitingQueueRepository;
 import com.ticketPing.queue_manage.infrastructure.repository.script.InsertWaitingQueueTokenScript;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RScoredSortedSet;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
@@ -21,36 +22,37 @@ public class WaitingQueueRepositoryImpl implements WaitingQueueRepository {
     private final InsertWaitingQueueTokenScript script;
 
     @Override
-    public QueueToken insertWaitingQueueToken(InsertWaitingQueueTokenCommand command) {
-        if (script.hasAvailableSlots(command)) {
-            return WorkingQueueToken.create(command.getUserId(), command.getPerformanceId());
-        }
-        return WaitingQueueToken.create(command.getUserId(), command.getPerformanceId());
+    public Mono<QueueToken> insertWaitingQueueToken(InsertWaitingQueueTokenCommand command) {
+        return script.checkAvailableSlots(command)
+                .map(hasSlots -> hasSlots
+                        ? WorkingQueueToken.create(command.getUserId(), command.getPerformanceId())
+                        : WaitingQueueToken.create(command.getUserId(), command.getPerformanceId())
+                );
     }
 
     @Override
-    public Optional<WaitingQueueToken> findWaitingQueueToken(FindWaitingQueueTokenCommand command) {
-        RScoredSortedSet<String> sortedSet = redisRepository.getScoredSortedSet(command.getQueueName());
-        try {
-            int rank = sortedSet.rank(command.getTokenValue()) + 1;
-            int size = sortedSet.size();
-            WaitingQueueToken token = WaitingQueueToken.withPosition(command.getUserId(), command.getPerformanceId(), command.getTokenValue(), rank, size);
-            return Optional.of(token);
-        } catch (Exception e) {
-            return Optional.empty();
-        }
+    public Mono<WaitingQueueToken> findWaitingQueueToken(FindWaitingQueueTokenCommand command) {
+        return Mono.zip(
+                        redisRepository.getMemberRankFromSortedSet(command.getQueueName(), command.getTokenValue()),
+                        redisRepository.getSortedSetSize(command.getQueueName())
+                )
+                .map(tuple -> WaitingQueueToken.withPosition(
+                        command.getUserId(),
+                        command.getPerformanceId(),
+                        command.getTokenValue(),
+                        tuple.getT1() + 1,
+                        tuple.getT2()
+                ));
     }
 
     @Override
-    public Optional<WaitingQueueToken> deleteFirstWaitingQueueToken(DeleteFirstWaitingQueueTokenCommand command) {
-        RScoredSortedSet<String> sortedSet = redisRepository.getScoredSortedSet(command.getQueueName());
-        String tokenValue = sortedSet.first();
-        if (sortedSet.first() == null) {
-            return Optional.empty();
-        }
-        sortedSet.remove(tokenValue);
-        WaitingQueueToken deletedToken = WaitingQueueToken.valueOf(command.getPerformanceId(), tokenValue);
-        return Optional.of(deletedToken);
+    public Mono<WaitingQueueToken> deleteFirstWaitingQueueToken(DeleteFirstWaitingQueueTokenCommand command) {
+        return redisRepository.getFirstMemberFromSortedSet(command.getQueueName())
+                .flatMap(tokenValue ->
+                        redisRepository.deleteMemberFromSortedSet(command.getQueueName(), tokenValue)
+                                .then(Mono.just(tokenValue))
+                )
+                .map(tokenValue -> WaitingQueueToken.valueOf(command.getPerformanceId(), tokenValue));
     }
 
 }
