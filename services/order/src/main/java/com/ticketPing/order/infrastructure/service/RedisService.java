@@ -1,33 +1,40 @@
 package com.ticketPing.order.infrastructure.service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import common.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.actuate.security.AuthorizationAuditListener;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import static com.ticketPing.order.presentation.cases.exception.OrderExceptionCase.SOLD_OUT;
+
 @Component
 @RequiredArgsConstructor
 public class RedisService {
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
+    private final AuthorizationAuditListener authorizationAuditListener;
 
-    public void setValue(String key, String value) {
+    public void setValue(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
     }
 
-    public Boolean hasKey(String key) { return redisTemplate.hasKey(key); }
-
-    public String getValue(String key) {
-        return redisTemplate.opsForValue().get(key);
+    public void setValueWithTTL(String key, Object value, int seconds) {
+        redisTemplate.opsForValue().set(key, value, seconds, TimeUnit.SECONDS);
     }
 
-    public void setTtl(String key, String value, int time, TimeUnit unit) {
-        redisTemplate.opsForValue().set(key,value,time,unit);
+    public <T> T getValueAsClass(String key, Class<T> clazz) {
+        return objectMapper.convertValue(redisTemplate.opsForValue().get(key), clazz);
+    }
+
+    public void deleteKey(String key) {
+        redisTemplate.delete(key);
     }
 
     public Boolean keysStartingWith(String prefix) {
@@ -46,29 +53,6 @@ public class RedisService {
         }
 
         return false; // 키가 존재하지 않으면 false 반환
-    }
-
-    public void deleteKey(String key) {
-        redisTemplate.delete(key);
-    }
-
-    public List<String> getKeysStartingWith(String prefix) {
-        List<String> keys = new ArrayList<>();
-        ScanOptions options = ScanOptions.scanOptions().match(prefix + "*").count(100).build();
-        Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(redisConnection -> {
-            return redisConnection.scan(options);
-        });
-
-        try {
-            while (cursor.hasNext()) {
-                // 키를 문자열로 변환하여 리스트에 추가
-                keys.add(new String(cursor.next()));
-            }
-        } finally {
-            cursor.close(); // Cursor를 반드시 닫아야 합니다.
-        }
-
-        return keys; // 모든 키 반환
     }
 
     public Boolean hasMultipleKeysStartingWith(String prefix) {
@@ -94,5 +78,12 @@ public class RedisService {
         return false; // 키가 두 개 이상 존재하지 않으면 false 반환
     }
 
-
+    public void decreaseCounter(UUID scheduleId) {
+        String key = "counter:" + scheduleId;
+        Long updatedValue = redisTemplate.opsForValue().decrement(key);
+        if(updatedValue != null && updatedValue < 0) {
+            throw new ApplicationException(SOLD_OUT);
+        }
+        System.out.println("남은 좌석 수 : " + updatedValue);
+    }
 }
