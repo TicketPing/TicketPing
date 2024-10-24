@@ -197,8 +197,11 @@ services:
   payment-server:
     container_name: payment-server
     image: ticketping/payment-server:latest
+    env_file:
+      - .env
     environment:
       - SECRET_KEY=${SECRET_KEY}
+      - PUBLIC_KEY={PUBLIC_KEY}
     ports:
       - "10024:10024"
       - "5005:5005"
