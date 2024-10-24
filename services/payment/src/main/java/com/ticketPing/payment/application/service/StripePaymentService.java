@@ -91,7 +91,7 @@ public class StripePaymentService {
     // TTL 확인
     public void verifyTtl(UUID orderId) {
         // Todo : Redis에 orderId로 TTL 확인 (key = scheduleId:seatId:orderId)
-        Payment payment = repository.findByOrderId(orderId)
+        Payment payment = repository.findByOrderInfoOrderId(orderId)
                 .orElseThrow(() -> new ApplicationException(PAYMENT_NOT_FOUND));
         String redisKey = payment.getOrderInfo().getPerformanceScheduleId() + ":" + payment.getOrderInfo().getSeatId() + ":" + orderId;
         redisCheckTTL(redisKey);
@@ -107,7 +107,7 @@ public class StripePaymentService {
 
     //결제 확인 후 updateStatus
     @Transactional
-    public String updateStatus(String paymentIntentId) {
+    public String updateStatus(String paymentIntentId, UUID performanceId) {
 
         try {
             //paymentIntentId 값으로 orderId값 찾아오기
@@ -117,7 +117,8 @@ public class StripePaymentService {
             //paymentIntentId로 Stripe에서 paymentIntent 내역 찾아오기
             PaymentIntent paymentIntent = client.paymentIntents().retrieve(paymentIntentId);
             payment.saveStripeStatus(paymentIntent.getStatus());
-            orderClient.updateOrderStatus(orderId, payment.getStatus());
+            orderClient.updateOrderStatus(orderId, payment.getStatus(), performanceId);
+            System.out.println("performanceId : " + performanceId);
             repository.save(payment);
             return paymentIntent.getStatus();
         } catch (Exception e) {

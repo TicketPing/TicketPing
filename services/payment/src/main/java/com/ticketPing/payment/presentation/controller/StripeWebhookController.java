@@ -3,17 +3,21 @@ package com.ticketPing.payment.presentation.controller;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
 import com.stripe.net.Webhook;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("/api/v1/payments")
 public class StripeWebhookController {
 
-    private static final String endpointSecret = "whsec_tNetAhqw4xyPG6PSNyRaaocG6M0xKloc";
 
-    @PostMapping("/webhook")
+    @Value("${stripe.webhook-key}")
+    private static String endpointSecret;
+
+    @PostMapping("/webhooks")
     public String handleWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
 
         Event event;
