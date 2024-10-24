@@ -27,11 +27,9 @@ public class RouteConfig {
                         .uri("lb://performance"))
 
                 .route("order-service", r -> r.path("/api/v1/orders/**")
-                        .filters(f -> f.filter(queueCheckFilter::filter))
                         .uri("lb://order"))
 
                 .route("payment-service", r -> r.path("/api/v1/payments/**")
-                        .filters(f -> f.filter(queueCheckFilter::filter))
                         .uri("lb://payment"))
 
                 .route("queue-manage-service", r -> r.path(

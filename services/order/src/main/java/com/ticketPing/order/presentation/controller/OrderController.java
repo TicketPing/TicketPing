@@ -39,7 +39,7 @@ public class OrderController {
     }
 
     @Operation(summary = "중복 예매 검증 (결제 서버용)")
-    @GetMapping("/verify")
+    @PostMapping("/verify")
     public boolean verifyOrder(@RequestBody PaymentRequestDto requestDto) {
         return orderService.verifyOrder(requestDto);
     }

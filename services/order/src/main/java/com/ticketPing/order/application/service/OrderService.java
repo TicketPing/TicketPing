@@ -45,7 +45,7 @@ public class OrderService {
     private final RedisService redisService;
     private final RedissonClient redissonClient;
 
-    private final static int SEAT_LOCK_CACHE_EXPIRE_SECONDS = 30;
+    private final static int SEAT_LOCK_CACHE_EXPIRE_SECONDS = 330;
     private final static String TTL_PREFIX = "seat_ttl:";
 
     @Transactional

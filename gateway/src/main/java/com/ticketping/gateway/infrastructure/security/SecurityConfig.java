@@ -27,6 +27,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/users/signup").permitAll()
                         .pathMatchers(HttpMethod.GET, "/api/v1/performances/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/api/v1/schedules/{scheduleId}").permitAll()
+                        .pathMatchers("/api/v1/payments/**").permitAll()
                         .anyExchange().authenticated()  // 그 외 모든 경로는 인증 필요
                 )
                 .build();
