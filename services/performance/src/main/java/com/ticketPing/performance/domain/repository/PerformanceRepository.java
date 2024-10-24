@@ -1,6 +1,6 @@
 package com.ticketPing.performance.domain.repository;
 
-import com.ticketPing.performance.domain.entity.Performance;
+import com.ticketPing.performance.domain.model.entity.Performance;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

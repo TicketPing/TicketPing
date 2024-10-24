@@ -134,7 +134,7 @@ public class OrderService {
             String ttlRedisKey = TTL_PREFIX + scheduleId + ":" + seatId + ":" + orderId;
             redisService.deleteKey(ttlRedisKey); // 키 삭제
             //counter -1
-            redisService.decreaseCounter(scheduleId);
+            redisService.decreaseCounter(performanceId);
             //kafka
             eventApplicationService.publishOrderCompletedEvent(
                     OrderCompletedEvent.create(String.valueOf(order.getUserId()), performanceId.toString()));

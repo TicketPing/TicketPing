@@ -1,6 +1,6 @@
 package com.ticketPing.performance.application.dtos;
 
-import com.ticketPing.performance.domain.entity.Performance;
+import com.ticketPing.performance.domain.model.entity.Performance;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
